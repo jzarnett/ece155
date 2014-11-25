@@ -1,1 +1,90 @@
-../beamerthemeMyPittsburgh.sty
+% Copyright 2007 by Till Tantau
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% See the file doc/licenses/LICENSE for more details.
+
+\ProvidesPackage{beamerthemeMyPittsburgh}
+
+
+\mode<presentation>
+
+\setbeamertemplate{frametitle}[default][right]
+
+\useinnertheme{rectangles}
+
+
+\defbeamertemplate{footline}{sf temp}
+{
+  \usebeamercolor[fg]{page number in head/foot}%
+  \usebeamerfont{page number in head/foot}%
+  \hskip5pt%
+  ECE 155 Spring 2014%
+  \hfill%
+  \insertframenumber\,/\,\inserttotalframenumber\kern1em\vskip2pt%
+}
+
+
+\setbeamertemplate{footline}[sf temp]
+
+
+
+%\setbeamertemplate{footline}[default]{
+%hello}
+
+
+\setbeamersize{text margin left=4ex, text margin right=4ex}
+
+
+%\setbeamersize{sidebar width right=2cm}
+%\setbeamertemplate{sidebar right}[default]{
+%  hello
+%}
+
+%\setbeamersize{sidebar width left=0cm,sidebar width right=0.5cm}
+
+% \usebackgroundtemplate{
+% %  \vskip{1.5em}
+% %  \hskip{3pt}
+%   \begin{minipage}{1.0\linewidth}
+%     \vfill
+%     \hfill
+%     hello
+%   \end{minipage}
+% }
+%  \begin{minipage}{1.08\linewidth}
+%  \hfill
+%    \tikz \node {Hello}
+%  \end{minipage}
+
+
+%\useoutertheme{sidebar}
+
+
+%\setbeamertemplate{sidebar canvas right}[horizontal
+%shading][left=red,middle=green,right=blue] {}
+
+% \setbeamertemplate{sidebar right}[default]{
+%     \begin{beamercolorbox}[wd=\paperwidth]{frametitle}
+%       \ifx\beamer@sidebarside\beamer@lefttext%
+%       \else%
+%         \hfill%
+%       \fi%
+%       \ifdim\beamer@sidebarwidth>0pt%
+%         \usebeamercolor[bg]{logo}%
+%         \vrule width\beamer@sidebarwidth height \beamer@headheight%
+%         \hskip-\beamer@sidebarwidth%
+%         \hbox to \beamer@sidebarwidth{\hss\vbox to
+%           \beamer@headheight{\vss\hbox{\color{fg}\insertlogo}\vss}\hss}%
+%       \else%
+%         \vrule width0pt height \beamer@headheight%
+%       \fi%
+%     \end{beamercolorbox}
+% }
+
+
+
+\mode<all>
