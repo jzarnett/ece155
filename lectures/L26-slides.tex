@@ -638,7 +638,7 @@ Be sure to delete the class after you've inlined it.}
 
 In this example, we are (ab)using an Exception and handler:
 
-\begin{lstlisting}[language={Java}]
+\begin{verbatim}[language={Java}]
 try {
    fileReader.readFile(
       fileSelector.getSelection().getFileName());
@@ -646,7 +646,7 @@ try {
    showErrorDialog(Error.NO_FILE_SELECTED);
    return;
 }
-\end{lstlisting} 
+\end{verbatim} 
 \end{changemargin}
 \end{frame}
 
@@ -656,14 +656,14 @@ try {
 
 Rewrite to avoid the Exception in the first place:
 
-\begin{lstlisting}[language={Java}]
+\begin{verbatim}[language={Java}]
 if (fileSelector.getSelection() == null) {
    showErrorDialog(Error.NO_FILE_SELECTED);
    return;
 }
 fileReader.readFile(
       fileSelector.getSelection().getFileName());
-\end{lstlisting} 
+\end{verbatim} 
 \end{changemargin}
 \end{frame}
 

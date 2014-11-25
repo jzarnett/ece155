@@ -129,7 +129,7 @@ run.
 
 \paragraph{Account Example.} Here is a simple example.
 
-\begin{lstlisting}[language={Java}]
+\begin{verbatim}[language={Java}]
 public class Account
 {
   private float balance;
@@ -146,11 +146,11 @@ public class Account
 
   public float getBalance() { return balance; }
 }
-\end{lstlisting}
+\end{verbatim}
 
 Let's write a unit test for this class:
 
-\begin{lstlisting}[language={Java}]
+\begin{verbatim}[language={Java}]
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -167,7 +167,7 @@ public class AccountTest {
     assertEquals("source balance", 100.00f, source.getBalance(), 0.01);
   }
 }
-\end{lstlisting}
+\end{verbatim}
 We've labelled the {\tt transferFunds()} method as a test with the
 @Test annotation. Then, we do operations on the {\tt source} and {\tt
   destination} accounts, and {\em assert} that, after we transfer {\tt
@@ -177,12 +177,12 @@ We've labelled the {\tt transferFunds()} method as a test with the
 If we run this test, we'd get a red bar; {\tt transferFunds} doesn't
 do anything yet. Adding this code:
 
-\begin{lstlisting}[language={Java}]
+\begin{verbatim}[language={Java}]
 public void transferFunds(Account destination, float amount) {
     destination.deposit(amount);
     withdraw(amount);
 }
-\end{lstlisting}
+\end{verbatim}
 makes the bar green, since the test now passes.
 
 
@@ -191,7 +191,7 @@ Sometimes you have a number of objects that get used by more than
 one test. Setting up these objects can be repetitive. JUnit provides
 the notion of test fixtures to help alleviate this problem.
 
-\begin{lstlisting}[language={Java}]
+\begin{verbatim}[language={Java}]
 public class AccountTest {
   private Account account1;
 
@@ -199,7 +199,7 @@ public class AccountTest {
     account1 = new Account(); account1.deposit(200.00f);
   }
 }
-\end{lstlisting}
+\end{verbatim}
 
 Similarly, you can free any resources (like files) that you open 
 in a {\tt @Before} by writing a teardown method and annotating it

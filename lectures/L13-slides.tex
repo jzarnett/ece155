@@ -61,9 +61,9 @@ Can be private to your application or shared across applications.
 
 How do we get our
 hands on the shared preferences?
-\begin{lstlisting}
+\begin{verbatim}
   SharedPreferences settings = getPreferences(0);
-\end{lstlisting}
+\end{verbatim}
 Or, call {\tt getSharedPreferences()} and pass it a preferences file
 name as the first parameter.
 \end{changemargin}
@@ -74,9 +74,9 @@ name as the first parameter.
 \begin{changemargin}{1cm}
 Now that you have a {\tt SharedPreferences} object, you can get data from it:
 
-\begin{lstlisting}
+\begin{verbatim}
   v = settings.getString("textFieldValue", "");
-\end{lstlisting}
+\end{verbatim}
 Retrieves the value of {\tt String} preference {\tt textFieldValue}. 
   
   If no value is present, the {\tt getString} call
@@ -96,12 +96,12 @@ You have to first get a {\tt SharedPreferences.Editor}.
 
 Then ``commit'' it once you're done with the changes.
 
-\begin{lstlisting}
+\begin{verbatim}
   SharedPreferences settings = getPreferences(0);
   SharedPreferences.Editor editor = settings.edit();
   editor.putString("textFieldValue", newFieldValue);
   editor.commit();
-\end{lstlisting}
+\end{verbatim}
 
 
 \end{changemargin}
@@ -175,7 +175,7 @@ Warning: these files may go away anytime.
 
 \begin{changemargin}{0.1cm}
 Sometimes the media is not there, or not writable.
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
 String state = Environment.getExternalStorageState();
 
 if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -187,7 +187,7 @@ if (Environment.MEDIA_MOUNTED.equals(state)) {
     // It may be one of many other states, but all we need
     //  to know is we can neither read nor write
 }
-\end{lstlisting}
+\end{verbatim}
 \end{changemargin}
 \end{frame}
 
@@ -197,21 +197,21 @@ if (Environment.MEDIA_MOUNTED.equals(state)) {
 It actually delegates to an XML parsing library. 
 
 Recall that you call:
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
     NavigationalMap map = 
        MapLoader.loadMap(getExternalFilesDir(null), 
                          "Lab-room-peninsula.svg");
     mapView.setMap(map);
-\end{lstlisting}
+\end{verbatim}
 
 The {\tt MapLoader} contains this line:
-\begin{lstlisting}
+\begin{verbatim}
 File map = new File(dir, filename);
-\end{lstlisting}
+\end{verbatim}
 and then it builds a parser using the library call:
-\begin{lstlisting}
+\begin{verbatim}
 doc = docBuilder.parse(map);
-\end{lstlisting}
+\end{verbatim}
 which does all the I/O.
 
 \end{changemargin}
@@ -253,7 +253,7 @@ To read from external storage: \\
 \frametitle{Reading from Files}
 \begin{changemargin}{0.1cm}
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
 try {
     // internal storage: 
     FileInputStream os = openFileInput("internal.txt");
@@ -267,7 +267,7 @@ try {
     // --> i contains the line you just read.
     os.close();
 } catch (IOException e) {}
-\end{lstlisting}
+\end{verbatim}
 
 \end{changemargin}
 \end{frame}
@@ -277,7 +277,7 @@ try {
 \frametitle{Writing to Files}
 \begin{changemargin}{1cm}
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
 try {
     // internal storage:
     FileOutputStream os = openFileOutput("internal.txt", 
@@ -293,7 +293,7 @@ try {
     osw.println(i);
     osw.close();
 } catch (IOException e) {}
-\end{lstlisting}
+\end{verbatim}
 
 
 \end{changemargin}
@@ -353,9 +353,9 @@ To deal with sensor noise, smooth the data.
 
 Below is a very simple low-pass filter:
 
-\begin{lstlisting}
+\begin{verbatim}
   smoothedAccel += (newValue - smoothedAccel) / C;
-\end{lstlisting}
+\end{verbatim}
 
 \end{changemargin}
 \end{frame}
@@ -391,15 +391,15 @@ Can you think of any pattern that might describe a step?
 
  Sometimes you want to display a short message to the user.
 Use {\tt Toast} to do that. Just include the following code:
-\begin{lstlisting}
+\begin{verbatim}
   Toast.makeText(getApplicationContext(), "A Toast!", 
                  Toast.LENGTH_LONG).show();
-\end{lstlisting}
+\end{verbatim}
 It's also OK to use in your onClick event listener:
-\begin{lstlisting}
+\begin{verbatim}
   Toast.makeText(MainActivity.this, "A Toast!", 
                  Toast.LENGTH_LONG).show();
-\end{lstlisting}
+\end{verbatim}
 
 
 \end{changemargin}
@@ -631,10 +631,10 @@ Display a toast when the user chooses a list item.
 Of course, we can also
 add items to the {\tt ListView} programmatically. In a click listener (or
 anywhere else), you can write:
-\begin{lstlisting}
+\begin{verbatim}
   String now = String.valueOf(System.currentTimeMillis());
   listAdapter.add(now);
-\end{lstlisting}
+\end{verbatim}
 
 }
 \end{changemargin}

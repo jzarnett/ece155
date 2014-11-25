@@ -72,7 +72,7 @@ Previously: {\tt Handler} for interval timers.
 \begin{frame}[fragile]
 \frametitle{Handlers for Infinitely-Recurring Interval Timers}
 
-\begin{lstlisting}
+\begin{verbatim}
   Handler h = new Handler();
   Runnable r = new Runnable() {
     public void run() {
@@ -81,7 +81,7 @@ Previously: {\tt Handler} for interval timers.
     }
   };
   h.postDelayed(r, delayInMS);
-\end{lstlisting}
+\end{verbatim}
 
 \end{frame}
 
@@ -90,9 +90,9 @@ Previously: {\tt Handler} for interval timers.
 
 \begin{changemargin}{1cm}
 By the way, you can cancel an upcoming task like this:
-\begin{lstlisting}
+\begin{verbatim}
   h.removeCallbacks(r);
-\end{lstlisting}
+\end{verbatim}
 \end{changemargin}
 \end{frame}
 
@@ -124,7 +124,7 @@ Generally more overhead for {\tt java.util.Timer}, not great for Android apps.
 \begin{changemargin}{1cm}
 Start the Timer like this:
 
-\begin{lstlisting}
+\begin{verbatim}
   Timer t = new Timer();
   t.schedule(new TimerTask() {
     @Override
@@ -132,7 +132,7 @@ Start the Timer like this:
       runOnUiThread(timerTick);
     }
   }, firstDelayMS, repeatIntervalMS);
-\end{lstlisting}
+\end{verbatim}
 If you omit repeatIntervalMS, you get a one-shot timer.
 
 Don't call {\tt timerTick.run()} directly.
@@ -145,7 +145,7 @@ Don't call {\tt timerTick.run()} directly.
 
 \begin{changemargin}{1cm}
 Put your UI-manipulating code in {\tt timerTick}:
-\begin{lstlisting}
+\begin{verbatim}
 Runnable timerTick = new Runnable() {
   @Override
   public void run() {
@@ -154,7 +154,7 @@ Runnable timerTick = new Runnable() {
                    Toast.LENGTH_SHORT).show();
   }
 };
-\end{lstlisting}
+\end{verbatim}
 \end{changemargin}
 
 \end{frame}

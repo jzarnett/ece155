@@ -34,7 +34,7 @@ with different frequencies.
 Reminder: Here's some code for executing an infinitely recurring task using
 {\tt Handler}:
 
-{\small \begin{lstlisting}
+{\small \begin{verbatim}
   Handler h = new Handler();
   Runnable r = new Runnable() {
     public void run() {
@@ -43,12 +43,12 @@ Reminder: Here's some code for executing an infinitely recurring task using
     }
   };
   h.postDelayed(r, delayInMS);
-\end{lstlisting}}
+\end{verbatim}}
 
 By the way, you can cancel an upcoming task like this:
-{\small \begin{lstlisting}
+{\small \begin{verbatim}
   h.removeCallbacks(r);
-\end{lstlisting}}
+\end{verbatim}}
 
 \paragraph{True Interval Timers.}
 Strictly speaking, the timers we'll be implementing aren't actually
@@ -65,7 +65,7 @@ on Android, but you should know about them.
 Here's how you can use {\tt Timer} successfully. You can put this code
 anywhere, including {\tt onCreate()} or in an on-click listener.
 
-{\small \begin{lstlisting}
+{\small \begin{verbatim}
   Timer t = new Timer();
   t.schedule(new TimerTask() {
     @Override
@@ -73,7 +73,7 @@ anywhere, including {\tt onCreate()} or in an on-click listener.
       runOnUiThread(timerTick);
     }
   }, firstDelayMS, repeatIntervalMS);
-\end{lstlisting}}
+\end{verbatim}}
 
 You are creating a Java {\tt Timer} object, which takes a
 delay-before-first-event and a repeat interval, both in
@@ -84,7 +84,7 @@ event-oriented programming), you are asking Android to run the {\tt
   timerTick.run()}, your app will crash!
 
 Let's also create the {\tt timerTick} object.
-{\small \begin{lstlisting}
+{\small \begin{verbatim}
   Runnable timerTick = new Runnable() {
     @Override
     public void run() {
@@ -92,7 +92,7 @@ Let's also create the {\tt timerTick} object.
                      "ding!", Toast.LENGTH_SHORT).show();
     }
   };
-\end{lstlisting}}
+\end{verbatim}}
 
 A recap: you have to do the following to set up a Java timer.
 \begin{itemize}
@@ -138,7 +138,7 @@ Choosing an appropriate timer length is important and is usually a matter of pra
 \paragraph{Example.}
 Here's an example of an Android analogy of a watchdog timer.
 
-{\scriptsize \begin{lstlisting}
+{\scriptsize \begin{verbatim}
 class MainActivity extends Activity
 {
     @Override
@@ -176,7 +176,7 @@ class MainActivity extends Activity
         });
     }
 }
-\end{lstlisting}}
+\end{verbatim}}
 
 If the user clicks on the button fast enough,
 the app navigates to \texttt{patricklam.ca}. Otherwise, the app's main activity finishes.

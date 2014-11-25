@@ -37,18 +37,18 @@ directory.)
 There are two important points: putting data into the shared preferences
 and getting it from the shared preferences. But first, how do we get our
 hands on the shared preferences? Here's how.
-\begin{lstlisting}
+\begin{verbatim}
   SharedPreferences settings = getPreferences(0);
-\end{lstlisting}
+\end{verbatim}
 Or, call {\tt getSharedPreferences()} and pass it a preferences file
 name as the first parameter.
 
 \paragraph{Reading data from shared preferences.}
 Now that you have a {\tt SharedPreferences} object, you can get data from it, 
 mostly like you get data from a {\tt Bundle}:
-\begin{lstlisting}
+\begin{verbatim}
   v = settings.getString("textFieldValue", "");
-\end{lstlisting}
+\end{verbatim}
 This retrieves the value of the {\tt String} preference {\tt
   textFieldValue}; if no value is present, the {\tt getString} call
 returns the default value {\tt ""}.
@@ -58,12 +58,12 @@ It's a bit more complicated to write to the {\tt SharedPreferences}
 object.  You have to first get a {\tt SharedPreferences.Editor} and
 then commit it once you're done with the changes.
 
-\begin{lstlisting}
+\begin{verbatim}
   SharedPreferences settings = getPreferences(0);
   SharedPreferences.Editor editor = settings.edit();
   editor.putString("textFieldValue", newFieldValue);
   editor.commit();
-\end{lstlisting}
+\end{verbatim}
 
 \subsection*{Files: Internal and External Storage}
 Android allows your app to read and write to internal storage; and
@@ -87,7 +87,7 @@ the user could just pull out the SD card from the slot.
 \paragraph{Checking External Storage availability.} The following
 code determines whether or not external storage is accessible and
 writable at the moment. Of course, that can change anytime.
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
     String state = Environment.getExternalStorageState();
 
     if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -99,25 +99,25 @@ writable at the moment. Of course, that can change anytime.
         // It may be one of many other states, but all we need
         //  to know is we can neither read nor write
     }
-\end{lstlisting}
+\end{verbatim}
 
 \paragraph{External Storage Example: MapLoader.} Our provided 
 Lab 4 code reads from external storage. We'll see what it does.
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
     NavigationalMap map = 
        MapLoader.loadMap(getExternalFilesDir(null), 
                          "Lab-room-peninsula.svg");
     mapView.setMap(map);
-\end{lstlisting}
+\end{verbatim}
 
 Our {\tt MapLoader} contains this line:
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
   File map = new File(dir, filename);
-\end{lstlisting} 
+\end{verbatim} 
 and then it builds a parser using the library call:
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
   doc = docBuilder.parse(map);
-\end{lstlisting}
+\end{verbatim}
 which we call to get specific information about the map. It is
 actually the {\tt docBuilder} that does all the I/O.
 
@@ -140,7 +140,7 @@ into the {\tt String} variable {\tt i}. It currently reads from internal
 storage, but if you comment out the {\tt openFileInput} line and uncomment
 the {\tt new FileInputStream} line, it'll read from external storage instead.
 
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
 try {
     // internal storage: 
     FileInputStream os = openFileInput("internal.txt");
@@ -150,13 +150,13 @@ try {
     // --> i contains the line you just read.
     os.close();
 } catch (IOException e) {}
-\end{lstlisting}
+\end{verbatim}
 
 \paragraph{Writing to Files.} You can use the following code to write to
 the filesystem. Again, the external storage code will work if you
 comment out the {\tt openFileOutput} call for internal storage and uncomment the 
 {\tt new FileOutputStream} call for external storage.
-\begin{lstlisting}[basicstyle=\scriptsize]
+\begin{verbatim}[basicstyle=\scriptsize]
 try {
     // internal storage:
     FileOutputStream os = openFileOutput("internal.txt", Context.MODE_PRIVATE);
@@ -166,7 +166,7 @@ try {
     osw.println(i);
     osw.close();
 } catch (IOException e) {}
-\end{lstlisting}
+\end{verbatim}
 
 
 \paragraph{Digression: About the Lab.} First, a quick preview of 
@@ -182,9 +182,9 @@ to recognize when a step occurs.
 To deal with sensor noise, you will probably benefit from smoothing the data.
 Below is a very simple low-pass filter:
 
-\begin{lstlisting}
+\begin{verbatim}
   smoothedAccel += (newValue - smoothedAccel) / C;
-\end{lstlisting}
+\end{verbatim}
 
 To recognize a step, you'll need to identify a change in the value of the $y$-axis
 acceleration. Identifying a change means that you'll need the previous value along
@@ -198,15 +198,15 @@ Let us now continue with some more Android material.
 
 \paragraph{Toast.} Sometimes you want to display a short message to the user.
 Use {\tt Toast} to do that. Just include the following code:
-\begin{lstlisting}
+\begin{verbatim}
   Toast.makeText(getApplicationContext(), "A Toast!", 
                  Toast.LENGTH_LONG).show();
-\end{lstlisting}
+\end{verbatim}
 It's also OK to use in your onClick event listener:
-\begin{lstlisting}
+\begin{verbatim}
   Toast.makeText(MainActivity.this, "A Toast!", 
                  Toast.LENGTH_LONG).show();
-\end{lstlisting}
+\end{verbatim}
 
 You can store all of these parameters, as well as the {\tt Toast} object itself,
 in local variables.
@@ -227,7 +227,7 @@ something happens.
 class to define a {\tt BroadcastReceiver}:
 
 {\small
-\begin{lstlisting}
+\begin{verbatim}
 public class MainActivity extends Activity {
   BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
     @Override
@@ -252,16 +252,16 @@ public class MainActivity extends Activity {
     registerReceiver(broadcastReceiver, intentFilter);
   }
 }
-\end{lstlisting}
+\end{verbatim}
 }
 In principle, you should also unregister the {\tt BroadcastReceiver}:
-\begin{lstlisting}
+\begin{verbatim}
   @Override
   protected void onDestroy() {
     unregisterReceiver(broadcastReceiver);
     super.onDestroy();
   }
-\end{lstlisting}
+\end{verbatim}
 Unfortunately, by default Android destroys your app on a screen rotate event, so 
 that doesn't work unless you ask Android to not destroy your app on rotation. 
 
@@ -270,23 +270,23 @@ We'll see another example of setting up a broadcast receiver, this time to liste
 for phone calls. First, you need to modify the {\tt manifest.xml} file to permit
 the app to listen for phone calls:
 
-\begin{lstlisting}
+\begin{verbatim}
 <uses-permission android:name="android.permission.READ_PHONE_STATE">
 </uses-permission>
-\end{lstlisting}
+\end{verbatim}
 
 This time, we'll also choose to register the listener statically in
 the manifest. Include inside the \verb+<application>+ tag:
 
-\begin{lstlisting}
+\begin{verbatim}
 <receiver android:name="ca.patricklam.ece155demo.MyPhoneReceiver" >
     <intent-filter>
         <action android:name="android.intent.action.PHONE_STATE" />
     </intent-filter>
 </receiver>
-\end{lstlisting}
+\end{verbatim}
 This means that we have to create a separate class {\tt MyPhoneReceiver}:
-{\small \begin{lstlisting}
+{\small \begin{verbatim}
 package ca.patricklam.ece155demo;
 
 public class MyPhoneReceiver extends BroadcastReceiver {
@@ -304,7 +304,7 @@ public class MyPhoneReceiver extends BroadcastReceiver {
     }
   }
 }
-\end{lstlisting}}
+\end{verbatim}}
 Note the use of the extras on the incoming Intent object.
 
 
@@ -328,7 +328,7 @@ set the items of the ListView. Also, you need to add a field {\tt
 
 We then want to actually populate the list with entries. In the 
 {\tt onCreate} method, add:
-\begin{lstlisting}
+\begin{verbatim}
   List<String> data = new ArrayList<String>();
   data.add("ECE155");
   data.add("ECE106");
@@ -337,27 +337,27 @@ We then want to actually populate the list with entries. In the
                            android.R.layout.simple_list_item_1,
                            data);
   setListAdapter(listAdapter);
-\end{lstlisting}
+\end{verbatim}
 
 Finally, we want something to happen when we click on a list item.
 Create a new method in the ListActivity:
-\begin{lstlisting}
+\begin{verbatim}
   @Override
   protected void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     String s = (String) getListAdapter().getItem(position);
     Toast.makeText(this, "Aha: "+s, Toast.LENGTH_SHORT).show();
   }
-\end{lstlisting}
+\end{verbatim}
 This will cause the phone to display a toast when the user chooses a list item.
 
 \paragraph{Dynamically updating the ListView.} Of course, we can also
 add items to the {\tt ListView} programmatically. In a click listener (or
 anywhere else), you can write:
-\begin{lstlisting}
+\begin{verbatim}
   String now = String.valueOf(System.currentTimeMillis());
   listAdapter.add(now);
-\end{lstlisting}
+\end{verbatim}
 
 \paragraph{Some notes.} Note that adding elements to the ArrayAdapter also adds them to the ListActivity.
 
