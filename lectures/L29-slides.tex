@@ -1,0 +1,383 @@
+\input{../configuration}
+\usepackage{tikz-3dplot}
+
+\title{Lecture 29 --- Simulation}
+
+\author{Patrick Lam \& Jeff Zarnett \\ \small \texttt{p.lam@ece.uwaterloo.ca} \& \texttt{jzarnett@uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+
+  \vfill
+  \begin{center}
+    \CcGroupBySa{0.83}{0.95ex}\\
+                  {\tiny\CcNote{\CcLongnameByNcSa}}
+                  \vspace*{-2.5ex}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Examples of simulations}
+
+\begin{changemargin}{1cm}
+physics N-body simulation:\\
+\url{http://www.youtube.com/watch?v=HUGjUvjtwS8} \\[1em]
+
+aircraft:\\
+\url{http://www.youtube.com/watch?v=JGyJqXJWkuY} \\[1em]
+
+nuclear plant control room:\\
+\url{http://www.youtube.com/watch?v=No5N6uYJaNk} 
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Basic Idea}
+
+\begin{changemargin}{1cm}
+\huge
+
+A \structure{simulation} evaluates a mathematical model of a system
+to estimate the behaviour of the system.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Why simulate?}
+
+\begin{changemargin}{1cm}
+It's never as good as the real thing. But:
+\end{changemargin}
+\only<1>{\includegraphics[width=\textwidth]{images/800px-All_Nippon_Airways_Boeing_787-8_Dreamliner_JA801A_OKJ_in_flight.jpg}\\\hfill (credit Spaceaero2, wikipedia)}
+\only<2>{\begin{center}\includegraphics[width=.8\textwidth]{images/401px-STS-124_launch_from_a_distance.jpg}\end{center}}
+\only<3>{\includegraphics[width=\textwidth]{images/Three_Mile_Island_(color)-2.jpg}}
+\only<4>{\includegraphics[width=\textwidth]{images/800px-BrantaLeucopsisMigration.jpg}\\ \hfill (credit Thermos, wikipedia)}
+\only<5>{\begin{center}\includegraphics[width=.3\textwidth]{images/306px-Nexus_One.png}\end{center}}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Models are Inherently Wrong}
+\begin{changemargin}{1cm}
+
+\begin{quote}
+\textit{...essentially, all models are wrong, but some are useful.}
+\end{quote}
+\hfill George E. P. Box
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Models are Inherently Wrong}
+\begin{changemargin}{1cm}
+
+Simulation is an abstraction and not as detailed as reality.
+
+$\pi$ has an infinite number of digits. After the first thousand digits, the error introduced by rounding is so small it has no relevance for architectural calculations. 
+
+How much is ``enough'' is a matter of engineering judgement.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Model Validity}
+\begin{changemargin}{1cm}
+Critical element: models have a range of validity.
+
+This range must be respected if the model is useful.
+
+Outside the range, the model is useless or misleading.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Model Validity Example: Physics}
+\begin{changemargin}{1cm}
+Newton's equations are valid at speeds below 0.1$c$.\\
+\quad \small{Where $c$ is the speed of light in a vacuum.}
+
+In that range, the error is small and can be ignored.
+
+If you try to apply it at speeds of 0.5$c$, your answer is wrong.
+
+Instead, use Einstein's equations as the model.\\
+\quad They have a different (larger) range of validity.
+
+Key point: understand the model's limitations.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Map and the Territory}
+\begin{changemargin}{1cm}
+
+\begin{quote}
+\textit{The map is not the territory.}
+\end{quote}
+\hfill Alfred Korzybski
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Map and the Territory}
+\begin{changemargin}{1cm}
+Don't confuse the map (abstraction) and territory (reality).
+
+The model can be helpful, but don't overdo it.
+
+Don't spend all your time modelling or studying model output.
+
+Also take time to understand the real challenges.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Map and the Territory: Example}
+\begin{changemargin}{1cm}
+A literal example of the map and territory: Canada-US Border.
+
+West of Ontario, the border drawn on most maps as being exactly the $49^{th}$ parallel.
+
+This is, however, wrong.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Map and the Territory: Example}
+\begin{changemargin}{1cm}
+Surveyors placed small monuments at discrete distances.
+
+The border is legally the series of line segments connecting these monuments.
+
+Given the level of technology available at the time of measurement, these are not in a perfectly straight line.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Map and the Territory: Example}
+\begin{changemargin}{1cm}
+Even a map representing those is wrong.
+
+Shrinking thousands of kilometres of country down to centimetres will introduce error and inaccuracy.
+
+How small can you print the dots marking the monuments?
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Case studies}
+
+\begin{center}
+\includegraphics[width=.9\textwidth]{images/tribot}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Coarse Simulation}
+
+\begin{changemargin}{1cm}
+\Large
+Create a set of classes:
+
+\begin{itemize}
+\only<1>{\item class Board: says whether the class is black or white at
+a point.
+
+\begin{center}
+\includegraphics[width=.5\textwidth]{images/lab-board}
+\end{center}
+}
+\only<2>{\item class Robot: simulates the position and velocity of the robot;
+contains main logic.
+
+\begin{center}
+\includegraphics[width=.4\textwidth]{images/coarse-sim}
+\end{center}
+}
+
+\only<3>{
+\item class LightSensor: provides an interface between the
+{\tt Robot} and the {\tt Board}.
+}
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Coding the Coarse Simulation}
+
+\begin{changemargin}{2.5cm}
+
+\Large
+You'd provide a main simulation driver, which calls the {\tt Robot} to:
+\begin{itemize}
+\item update its position according to its velocity;
+\item turn the robot if necessary.
+\end{itemize}
+~\\
+
+Each call to the {\tt Robot}'s update simulates the effect of time moving forward
+by one time-step.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{\small Detailed Simulation: Visual Simulation Environment}
+
+\includegraphics[width=\textwidth]{images/vse-shot1}
+\begin{changemargin}{2.5cm}
+Implements physics. Calls your actual code.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Simulation Caveat}
+
+\begin{changemargin}{2.5cm}
+\huge
+Paraphrased: ``Everything worked fine in simulation, but needed
+lots more work in reality.''
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Other Simulation Examples}
+\begin{center}
+\includegraphics[width=.7\textwidth]{images/800px-Relogio_binario}
+\end{center}
+
+\begin{changemargin}{1cm}
+Use discrete techniques: gates change values at specific times,
+in response to changing inputs.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Other Simulation Examples}
+\begin{center}
+\includegraphics[width=.7\textwidth]{images/fig6}
+
+\hfill (credit: Russell et al, \url{http://www-ssc.igpp.ucla.edu/personnel/russell/papers/ggs-polar/})
+\end{center}
+
+\begin{changemargin}{1cm}
+Analog circuit: continuous techniques.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Techniques for simulation}
+
+\Large
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item Discrete: use an event queue.
+\item Continuous: numerically integrate an ordinary differential equation repeatedly (ECE204).
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Classifying simulations: Three axes}
+
+\begin{center}
+\tdplotsetmaincoords{60}{125}
+\begin{tikzpicture}
+		[tdplot_main_coords,
+			cube/.style={very thick,black},
+			grid/.style={very thin,gray},
+			axis/.style={->,blue,thick}]
+
+	%draw the axes
+	\draw[axis] (0,0,0) -- (3,0,0) node[anchor=east]{continuous/discrete};
+	\draw[axis] (0,0,0) -- (0,3,0) node[anchor=west]{dynamic/static};
+	\draw[axis] (0,0,0) -- (0,0,3) node[anchor=west]{deterministic/stochastic};
+	
+\end{tikzpicture}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Discrete versus Continuous}
+
+\Large
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item Discrete: time steps ahead in increments (e.g. finite state machine)
+\item Continuous: evaluate at discrete times, but system has values at all times.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Dynamic versus Static}
+
+\Large
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item Dynamic: system evolves over time; recomputes state.
+\item Static: one-shot deal \\(e.g. what-if simulations).
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Deterministic versus Stochastic}
+
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item Deterministic: exactly computes state at every step
+\item Stochastic: uses randomness to guess expected behaviour (with high accuracy).
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Simulation Tools}
+
+\begin{changemargin}{1cm}
+Some examples:
+\begin{itemize}
+\item \emph{Microsoft Visual Simulation Environment}: MS robotics.
+\item \emph{Arena}: businesses, services, and manufacturing processes.
+\item \emph{Simulink}: time-varying systems, e.g. communications, controls, signal processing, video processing, and image processing.
+\item \emph{SPICE} \& variants: analog circuits.
+\end{itemize}
+
+Also: simulator-building languages.
+\end{changemargin}
+
+\end{frame}
+
+\end{document}

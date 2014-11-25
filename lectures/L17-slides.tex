@@ -1,0 +1,476 @@
+\input{../configuration}
+\usepackage{alltt}
+
+\title{Lecture 17 --- More Testing}
+
+\author{Jeff Zarnett \& Patrick Lam \\ \small \texttt{jzarnett@uwaterloo.ca} \& \texttt{p.lam@ece.uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+
+  \vfill
+  \begin{center}
+    \CcGroupBySa{0.83}{0.95ex}\\
+                  {\tiny\CcNote{\CcLongnameByNcSa}}
+                  \vspace*{-2.5ex}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Testing}
+\begin{changemargin}{1cm}
+The name ``regression'' testing comes from the desire that software goes forward (``progress'') not backwards (``regress'').
+
+Previously fixed bugs should stay fixed.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Testing}
+
+\begin{changemargin}{1cm}
+``any software testing that uncovers errors
+by retesting the modified program'' (Wikipedia). \\[1em]
+\mnote{Regression - software should go only forward, not backwards ``regress''}
+
+
+Often refers to large
+suites of test cases which detect regressions:
+\begin{itemize}
+\item of a bug fix that a developer has proposed.
+\item of related and unrelated other features that have been added.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Testing: Attributes}
+
+\begin{changemargin}{1cm}
+
+\begin{itemize}
+\item \textbf{Automated}: no reason to have manual regression tests.\\[1em]
+\item \textbf{Appropriately Sized}: suites that are too-small will miss bugs; suites that are too-large take too long to run.\\[1em]
+\item \textbf{Up-to-date}: ensure that tests are valid for the version of program being tested.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Stress Testing}
+
+\begin{changemargin}{1cm}
+Stress testing is common in industry where reliability matters.
+
+Testing the system ``under stress''.
+
+Find out how it performs ``under pressure''.
+
+Systems often crash, hang, or behave badly when under the right (wrong) kind of pressure.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Stress Testing}
+
+\begin{changemargin}{1cm}
+Programs under stress are \textit{constrained in some resource}.
+
+Adding more concurrent users is one way.
+
+Some systems start having trouble at 2 concurrent users.\\
+\quad Others can easily handle thousands.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Stress Testing}
+
+\begin{changemargin}{1cm}
+Other things to restrict: CPU, RAM, disk space, network speed.
+
+Surprisingly many programs crash when the hard disk is full!
+
+Also might test unreliable network, bad RAM, etc.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Stress Testing: Inevitability}
+
+\begin{changemargin}{1cm}
+There will be some point where the system will fail.\\
+\quad No system is invincible.
+
+The only hope: fail gracefully.
+
+Example: Tell the user he can't log in: server full.\\
+\quad The user is mad, but it's better than crashing the server.\\
+\quad The people logged in can continue, at least.
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Stress Testing: Simulation}
+
+\begin{changemargin}{1cm}
+
+Stress testing is usually just a simulation.
+
+Test setup of 50 computers $\times$ 1000 clients + user simulators.\\
+\quad A good stress test, but not identical to 50~000 users.
+
+Why not? \mnote{ Some obvious differences: the user simulator will never be the same as actual user behaviour, having 50 computers with 1~000 clients each means 50 IP addresses to communicate with instead of 50~000, communication takes place within the internal network so it is fast and reliable, and so on.}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{System Testing}
+\begin{changemargin}{1cm}
+System testing is not an area of focus for this course.
+
+Test the system by using it as users will use it.
+
+Acceptance Testing.
+
+\end{changemargin}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Tests in Practice}
+
+\begin{changemargin}{1cm}
+
+Practices used in industry:
+
+\begin{itemize}
+\item \textbf{Unit Tests:} Modify the class, modify the test. \mnote{Each class has an associated unit test. If you change a class, you must also modify the unit test.}
+
+\item \textbf{Code Reviews:} Branches/modules have owners. \mnote{Each branch or module in the central version control system has owners. To commit code to that branch or module, you must have your code reviewed and approved by an owner. Ensures code quality.}
+
+
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Tests in Practice}
+
+\begin{changemargin}{1cm}
+
+Practices used in industry:
+
+\begin{itemize}
+
+\item \textbf{Continuous Builds:} A machine continuously checks out and tests the latest code.
+
+All unit and regression tests are run; status made public. \\
+
+Social pressure: if you break something, everyone knows!
+
+\item \textbf{QA Team:} If all tests have passed, a QA team will look for additional bugs.
+
+\item \textbf{Release:} Once QA has approved a build, it is released for use.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Bug Tracking Systems}
+
+\begin{changemargin}{1cm}
+
+If you don't write it down, you'll forget it. \\[1em]
+
+Defect tracking systems
+keep lists of defects in a database (these days, often
+web-accessible).\\[1em]
+
+Tracking systems keep track of:
+\begin{itemize}
+\item reported defects and
+their confirmations; 
+\item who is assigned to fix the defect; and 
+\item defect
+status.
+\end{itemize} Close a defect
+by changing its status to ``resolved''.
+
+Popular web-based example: Bugzilla\footnote{\url{http://www.bugzilla.org}}.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Choosing Test Inputs}
+\begin{changemargin}{1cm}
+We talked about creating tests, but we haven't covered choosing inputs to them.
+
+Inputs matter, of course, because the test need input to run.
+
+How can you test \texttt{int add(int number1, int number2)} without choosing values for
+\texttt{number1} and \texttt{number2}?
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Why Choose?}
+\begin{changemargin}{1cm}
+
+Why choose? Let's test all possible inputs!
+
+\mnote{Answer: it's impossible to test exhaustively (all inputs). And impossible really means that, not just unpleasant.}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Assumptions}
+\begin{changemargin}{1cm}
+Let us assume we have:
+
+A 32-bit computer\\
+	\quad This means an integer has $2^{32}$ possible values.
+
+A computer that can run 1 billion ($1\times10^{9}$) tests per second.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{1-Parameter Function}
+\begin{changemargin}{1cm}
+
+\texttt{public int compute(int number1)}
+
+How long will it take to test this exhaustively?
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{1-Parameter Function}
+\begin{changemargin}{1cm}
+
+\texttt{public int compute(int number1)}
+
+How long will it take to test this exhaustively? \alert{0.07 minutes}.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{1-Parameter Function}
+\begin{changemargin}{1cm}
+
+Wait a minute!
+
+You said this was impossible!
+
+\mnote{Yes, but a 1 parameter function is a trivial example.}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{2-Parameter Function}
+\begin{changemargin}{1cm}
+
+\texttt{public int compute(int number1, int number2)}
+
+How long will it take to test this exhaustively? \alert{584.9}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{2-Parameter Function}
+\begin{changemargin}{1cm}
+
+\texttt{public int compute(int number1, int number2)}
+
+How long will it take to test this exhaustively? \alert{584.9 YEARS!}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{584.9 Years}
+\begin{changemargin}{1cm}
+
+This test, if started in the year 1428 would finish about now.
+
+Christopher Columbus sailed for the new world in 1492.\\
+\quad In 1428 he had not even been born.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Sanity Check}
+\begin{changemargin}{1cm}
+Are our numbers correct? \mnote{What if the computers easily run $1\times10^{21}$ tests per second?}
+
+The first 32-bit Processor (Motorola 68k) came out in 1979.
+
+It did about 700~000 instructions per second. 
+
+Assume the function is so simple it is executed in 1 operation.
+
+It would take the 68k about: \alert{835~362} years to run. \mnote{So more than 500 years is not inconceivable}
+
+If we started this test in 1979, in 2013 we'd be about: \alert{0.00407\%} done.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{3-Parameter Function}
+\begin{changemargin}{1cm}
+
+\texttt{public int compute(int number1, int number2, int number3)}
+
+How long will it take to test this exhaustively?
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{3-Parameter Function}
+\begin{changemargin}{1cm}
+
+\texttt{public int compute(int number1, int number2, int number3)}
+
+How long will it take to test this exhaustively? \\\alert{2.512 trillion years}\\
+or... about 180 times the age of the universe.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Choosing Inputs}
+\begin{changemargin}{1cm}
+
+Conclusion: We have to choose our inputs (carefully).
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Valid and Invalid Inputs}
+\begin{changemargin}{1cm}
+
+Typically we choose ``good'' (valid) inputs.
+
+It's also important to choose invalid inputs.\\
+\quad (Note: this makes the exhaustion testing problem worse!)
+
+What does the spec say it should do?
+
+Example: Fibonacci function given -1 as input. \mnote{Does it return an error? Does it crash?}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Black Box and White Box Testing}
+\begin{changemargin}{1cm}
+
+Two ways we might write tests:
+
+\alert{Black-Box} Testing
+
+and
+
+\alert{White-Box} Testing
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Black Box Testing}
+\begin{changemargin}{1cm}
+
+Tests written without looking at the source code.
+
+The code being tested is treated as a ``Black Box''.
+
+Sometimes someone else writes them.
+
+Test-Driven Development: Write tests 1st; can't look at a non-existent implementation.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{White Box Box Testing}
+\begin{changemargin}{1cm}
+
+Gets its name because it's the opposite of Black Box;\\we look at the source.
+
+Analyze the source code and use results to write tests. 
+
+Examine if-statements; make the code take all branches.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{White Box Box Testing}
+\begin{changemargin}{1cm}
+
+Look for magic numbers (values).
+
+If you see a statement \texttt{if (variable > 42)}.
+
+We know 3 possible test inputs for \texttt{variable}:
+\begin{enumerate}
+	\item A number $>$ 42;
+    \item A number $<$ 42; and
+    \item 42 (the edge case)
+\end{enumerate}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Final Note on Testing}
+\begin{changemargin}{1cm}
+
+Testing is potentially endless: no way to say we have found all the bugs.
+
+At some point, we have to ship it.
+
+Testing is a tradeoff between budget, time, and quality.
+
+Use engineering judgement to decide how much is ``enough''.
+
+For more, take the Software Testing course!
+
+\end{changemargin}
+\end{frame}
+
+\end{document}

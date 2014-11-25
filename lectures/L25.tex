@@ -1,0 +1,176 @@
+\input{header.tex}
+
+\begin{document}
+
+\lecture{ 25 --- Code Reviews}{\term}{Patrick Lam \& Jeff Zarnett}
+
+
+\section*{Reviews}
+
+A \emph{review} is any activity where reviewers examine a work product
+to provide feedback.  Reviews can reveal defects early, when the
+defects are less costly to fix.  You can review anything, including:
+software requirements specifications, schedules, design documents,
+code, test plans, test cases, and defect reports.
+
+Reviews can be either informal or formal.
+\begin{itemize}
+\item An \emph{informal review} is a written or verbal review
+  requested by a developer of a work product to improve that product.
+\item A \emph{formal review} is a written review conducted by a team
+  leader or a moderator for the purpose of identifying, documenting,
+  and fixing defects in a work product.  
+\end{itemize}
+
+\paragraph{Types of Reviews.}
+Here are some types of reviews.
+\begin{itemize}
+\item A \emph{desk check} is an informal review where the author distributes
+a work product to peers for reviews and comments.
+\item A \emph{walkthrough} is an informal review meeting, moderated by the author of a work product.
+\item An \emph{inspection} is a formal review meeting, guided by a moderator. The meeting produces a log of identified defects in a work product.
+\item A \emph{code review} is a software inspection where defects in source code are identified, logged, and perhaps corrected.
+\end{itemize}
+
+It is useful to combine informal and formal reviews. Informal reviews
+help identify simple defects. Formal reviews can identify complex
+defects that might be missed by simple desk checks.
+
+\paragraph{Desk Checks.}
+A \emph{desk check} is the first line of defence against defects.  You
+can speed up formal inspections by taking care of simple defects in
+desk checks first. For many work products, desk checks suffice, and you
+might not need to go to a formal inspection.
+
+However, desk checks are only effective if taken seriously. It's easy
+to just say ``LGTM'' (Looks Good To Me) without actually checking the
+product. It's important to spend enough time on desk checks, and
+managers must allocate time for them. 
+
+\paragraph{Walkthroughs.}
+
+A \emph{walkthrough} guides reviewers through the review of a work
+product.  The author of the work product presents the design and
+ensures that the attendees understand its design.
+
+Walkthroughs allow people with less expertise to review a work
+product, and users of the work product are often invited to
+walkthroughs.  New points-of-view often help identify defects.
+
+\begin{itemize}
+\item Prior to the walkthrough, the author should distribute presentation materials to attendees.
+\item During the walkthrough, the author should solicit feedback from the audience.
+\item After the walkthrough, the author should follow up with attendees who have helped out by giving comments.
+\end{itemize}
+
+\paragraph{Formal Inspections.}
+
+An \emph{inspection} is a formal review meeting where participants
+identify and document defects or possible improvements in a work
+product. At an inspection, participants aim to identify and propose
+ideas for solving defects. Having a good mix of participants can help
+find previously-overlooked defects (perhaps subtle or complex ones).
+
+Here are some steps for a formal inspection:
+\begin{itemize}
+\item \emph{Preparation}: Before the meeting, distribute a printout of the work project to each member of the inspection team, along with a checklist indicating what to review.
+\item \emph{Overview}: At the inspection meeting, the moderator
+provides an overview of the work product.
+\item \emph{Page-by-page Review}: The moderator walks the inspection team
+through the work product page-by-page and logs defects.
+\item \emph{Rework}: After the meeting, the author
+goes through the list of defects and fixes them.
+\item \emph{Follow-up}: The inspection team members verify that
+the author has fixed the defects.
+\item \emph{Approval}: The inspection team approves the work.
+\end{itemize}
+We do something similar for master's and PhD theses.
+
+\paragraph{Code Reviews.}
+
+A \emph{code review} examines source code (or, more commonly, a patch)
+to identify defects or possible improvements.
+
+Different projects have different review coverage; some projects
+(Mozilla) review everything, whereas companies might review only 
+a representative sample. One can argue for sampling because developers
+tend to repeat the same mistakes, so that finding one issue will prompt
+developers to look for the same issue elsewhere. 
+
+When sampling, here are some places to look:
+\begin{itemize}
+\item source code that only one person has the expertise to maintain;
+\item tricky algorithms that are susceptible to defects;
+\item source code that calls difficult-to-use libraries;
+\item code written by inexperienced developers; and
+\item functions that could fail catastrophically if a defect is present.
+\end{itemize}
+
+In industry, you might have code review by a team; I don't
+know. However, in the open-source world (more below), you typically
+have 1 experienced developer doing a review. Generally, code reviews
+look for: clarity, maintainability, accuracy, reliability and
+robustness, security, scalability, reusability, and efficiency.
+
+\paragraph{Pair Programming.} We've talked about pair programming in the 
+context of agile programming. Ideally, it can serve as instantaneous code
+review.
+
+\subsection*{Code Reviews and University}
+One problem we clearly have at Waterloo, and other universities, is that we have the students do a lot of programming assignments but we do not review student code. We never sit down with students and take a look at the code and give feedback on variable names, on comments, on documentation (if appropriate). None of those items matter to the compiler or to the execution of the program, but they're important six months or a year down the road when someone else will need to read and understand that code. In the context of the university-assigned programming you will do, possibly the only case where a piece of code you write will be seen again more than four months later is in your Fourth-Year Design Project. The result is that students write throwaway code (not commented, not documented, hard to understand or debug) because there are no consequences for doing so and doing it the ``right'' way seems more difficult. This will fall flat in the real world~\cite{pumps}. Perhaps students get some code reviews done on co-op terms, but there is no guarantee of that.
+
+This is something we are trying to address in the ECE~155 labs, by asking the TAs to review your code and give you feedback about things like your choice of variable name, comments, et cetera. Still, the most important issue is not really how the variables are named, but how the problem is decomposed.
+
+\subsection*{Problem Decomposition} Problem decomposition is one of the most critical problem-solving skills. It means taking a big, complex problem, and breaking it down into a number of smaller problems that are easier to solve. Each of the subproblems can be broken down further as necessary until the subproblems are of small enough size that they can be easily implemented.  If your starting problem is ``write ATM software'', you can break this down into a few subproblems: withdraw cash, deposit cash, and check balance. Each of those will need to be broken down into some series of other subproblems (like verify card and PIN). 
+
+When doing a code review of something larger than a minor patch, such as when a new feature is being added, it is important to consider how well the problem has been decomposed. 
+
+Good programmers decompose the problems well into subproblems that can be clearly described, independently implemented, and easily tested. Some documentation about what the parts do is often written in advance, but writing the rest of the documentation is simple because of the good structure~\cite{pumps}.
+
+Adequate programmers decompose problems reasonably, but they tend to have some awkward data structures which result in a lot of special-case code. The code seems to be ``debugged'' into existence and the documentation is written all at the end once things are more or less finished~\cite{pumps}.
+
+Poor programmers decompose the problem seemingly randomly, with unhelpful variable and method names like \texttt{x}, \texttt{foo}, or \texttt{doIt()}. Their code is often poorly tested and fails on boundary conditions. It sometimes appears that the code is ``evolved'' into existence: make random changes and see if that improves the output. Documentation, if it exists, is difficult to read or misleading~\cite{pumps}.
+
+Problem decomposition is a skill and the best way to improve is to practice it. Make the effort to define your subproblems well, choose appropriate variable names, and write (at least an outline of the) documentation early on. Proper decomposing of the problems might be valuable at university, in that you can complete assignments quicker and with fewer errors. Things like variable names might not make much of a difference in assignments, but it will get you into the correct habits for later -- and just might impress your employers!
+
+\subsection*{Reviews for Open-Source Software Projects}
+We've mentioned that open-source projects have an official repository.
+These projects also have a set of committers, who may commit changes
+to the repository. Outside contributors sometimes send patches to a
+project, adding new features or fixing bugs; in that case, a committer
+will typically review the patch before committing it. Committers may
+also seek review for their patches if they want someone else to take a
+look at it.
+
+\paragraph{Case Study: Mozilla Review Policy.}
+The Mozilla Project develops the Firefox web browser (and others
+projects). Due to the size of the codebase, they have an elaborate
+reviewing
+policy~\cite{moz:sr, moz:cr}:
+they require at least one review (``owner/peer review'') for all
+patches, and a second review (``super-review'') for many of the
+patches as well.
+
+The owner/peer review is by a domain expert who understands the code
+being modified and the implications of the change.  In particular, ``A
+review is focused on a patch's design, implementation, usefulness in
+fixing a stated problem, and fit within its module.''  From the Code
+Review FAQ, reviews check for: whether the patch fixes a problem; the
+API/design; maintainability; security; integration; testing; and
+license compliance.
+
+Super-reviews are by ``strong hackers'', who understand the way
+Mozilla code is supposed to look, but need not have domain expertise.
+In particular (per the Code Review FAQ), they are supposed to look out
+for: proper use of APIs; adherence to Mozilla's portability
+guidelines; cross-module effects; and respect of Mozilla coding
+practices.
+
+\paragraph{Other organizations.} Google and the Linux kernel both
+review code extensively. You can also read about
+Gerrit~\cite{gerrit}, a tool out of
+Google for code reviews.
+
+\input{bibliography.tex}
+
+\end{document}

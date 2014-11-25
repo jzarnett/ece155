@@ -1,0 +1,722 @@
+\input{../configuration}
+\usepackage{tikz-3dplot}
+
+\title{Lecture 34 --- Security}
+
+\author{Jeff Zarnett \\ \small \texttt{jzarnett@uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+
+  \vfill
+  \begin{center}
+    \CcGroupBySa{0.83}{0.95ex}\\
+                  {\tiny\CcNote{\CcLongnameByNcSa}}
+                  \vspace*{-2.5ex}
+  \end{center}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Security}
+\begin{changemargin}{1cm}
+
+Security has recently been a hot topic.
+
+The goal is to give an intro so you are aware of the subject.
+
+Introducing this topic so late in this term violates one of the most important rules about security: you can't ``bolt on'' security; design with it in mind.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Security: Terminology}
+\begin{changemargin}{1cm}
+
+\alert{Attacker}: a malicious user who is trying to damage or exploit the system.
+
+\alert{Countermeasure}: ction or process we can take or implement to defend against attacks.
+
+ An attacker is successful if he or she:
+\begin{itemize}
+	\item Gains access to information he/she shouldn't have.
+	\item Damages the system in some way.
+	\item Interferes with the system's legitimate operations.
+\end{itemize} 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Security Holes}
+\begin{changemargin}{1cm}
+
+Security holes can come from design \& implementation errors.
+
+Example: Attacker inputs specific sequence to trigger a crash.
+
+There is (naturally) a 4th year course on security.
+
+We'll discuss the intersection of security \& embedded systems.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Security and Embedded Systems}
+\begin{changemargin}{1cm}
+
+Some properties of embedded systems that have implications:
+
+\begin{itemize}
+	\item Physical Access \mnote{Probably the most critical issue is physical access: a great number of security measures are easily defeated if an attacker has physical access to the device. Many embedded systems are out there in the world and not kept under meaningful physical security. ATMs (Bank machines) are often easily accessible; contrast this against the bank's servers, which are (hopefully) kept under strict security lockdown at the bank's data centres.}
+	\item Limited Resources \mnote{While a typical desktop has the power and processor cycles necessary to run security checks, in embedded systems the situation is different. Virus scanners make sense on a desktop, but an embedded system may not be capable of that. Only limited resources are available to use for security }
+	\item Hard to Update \mnote{It might be difficult or impossible to update an embedded system, for many reasons. If you discover a security vulnerability, you can't just create an update and expect it to get pushed out in Microsoft's next ``Patch Tuesday''.}
+	\item Connectivity \mnote{A remarkable number of embedded systems are connected, either to the internet or to other systems. This provides a gateway for attack. If a system is connected to the internet, then it can be exploited from anywhere in the world}
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Attacks on Embedded Systems}
+\begin{changemargin}{1cm}
+
+Attack 1: Physical Tampering
+
+Attacker with physical access might be able to:
+
+\begin{itemize}
+	\item Read data from its storage.
+	\item Attach listening devices to the input/output.
+	\item Pull the plug.
+	\item Pick it up and take it home.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Physical Tampering}
+\begin{changemargin}{1cm}
+
+In fact, the device might already be in the attacker's home.
+
+Imagine you are designing software for a cable tuner / PVR.
+
+Access restrictions: customers should not be able to watch channels they don't pay for.
+
+Key problem: box is located in the customer's living room.
+
+How do you stop the customer from tampering with it?
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Physical Tampering}
+\begin{changemargin}{1cm}
+
+Another example: credit card swipe terminals.
+
+Machines typically store information temporarily.
+
+Store owners supposed to clear them daily, but many don't.
+
+Attacker takes the terminal home and extracts data.
+
+Returns it later so its presence is not missed.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Attacks on Embedded Systems}
+\begin{changemargin}{1cm}
+
+Attack 2: Denial-of-Service (DoS) attack.
+
+DoS: The target system is flooded with requests overwhelming the ability of the software to respond.
+
+Problem is more acute in embedded systems due to limited resources.
+
+Variation: Distributed DoS attack (DDoS).
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Denial-of-Service Attack}
+\begin{changemargin}{1cm}
+
+Example: Exhaustion attack.
+
+The attacker causes the system to run down its battery faster than normal. \mnote{(through computation, use of sensors/actuators, disable sleep mode).}
+
+When the battery is exhausted, the system shuts down.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Attacks on Embedded Systems}
+\begin{changemargin}{1cm}
+
+Attack 3: Sensor Tampering.
+
+Bypass or disable the system by damaging or disabling sensors.
+
+High tech (feed false input) or low tech (smash camera).
+
+Movie example: Spy movie where a segment of security video is looped so the guards don't notice.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Countermeasures}
+\begin{changemargin}{1cm}
+
+We don't have to suffer attacks helplessly. Fight back!
+
+Physical security makes a big difference, such as locking the credit card terminal to the cash register.
+
+What can we do in our embedded software?
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Encryption}
+\begin{changemargin}{1cm}
+
+\alert{Encryption}: a way of encoding data in a way that an attacker cannot read the data, but authorized parties can. \mnote{Taking data and encoding it is called encryption and transforming the encoded data back to its original form is called decryption.}
+
+It's generally a good idea to encrypt all sensitive data.
+
+This is critical when the system is physically vulnerable.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Encryption}
+\begin{changemargin}{1cm}
+
+If the credit card swipe terminal has its data encrypted, the attacker won't be (easily) able to read the credit card data.
+
+If the PVR box uses an encrypted software image, it's much harder to tamper with. \mnote{If you have a PVR box that you do not want users to alter the code on, you might use an encrypted software image, decrypted on boot; if the image is not encrypted with the correct key, it will not run at all.}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{A Warning about Encryption}
+\begin{changemargin}{1cm}
+
+Encryption is really hard.
+
+There are a number of well-known and well-understood cryptographic algorithms.
+
+You must use one of them. Attempting to create your own will create a vulnerable system.
+
+Reasoning is a lot of math beyond the scope of this course.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Defeating DoS Attacks}
+\begin{changemargin}{1cm}
+
+A large area of research; not always possible to defend against. DDoS especially hard.
+
+It might be necessary to simply fail gracefully.
+
+Limit the rate at which requests can be entered. \mnote{This is commonly seen in messaging software, where there is some limit for how many messages can be sent in a short period of time. If that is exceeded, no further messages can be sent until after some waiting period.}
+
+Assign requests very low priority. \mnote{Another option is to assign the requests very low priority; the  user who is taking up too much of the system's resources then has to wait while other users' requests take priority.}
+
+Lock out offenders (temporarily or permanently).
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Monitoring}
+\begin{changemargin}{1cm}
+
+A secondary software process to check on the health of the system.
+
+Could be another thread, another process, or a separate embedded system.
+
+Might run periodically or continuously.
+
+If something unusual is detected, take some action(s):
+\begin{itemize}
+	\item Correct the problem.
+	\item Trigger an alert.
+	\item Begin detailed logging.
+	\item Shut the system down.
+	\item And more...
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Authentication and Authorization}
+\begin{changemargin}{1cm}
+
+\textit{Authentication} verifies who the user is. \mnote{ In many computer systems this is done with a username and password, but it could also be done in other ways: fingerprint scan, key card, et cetera.}
+
+\textit{Authorization} verifies what the user is allowed to do. \mnote{It is common that users are not shown options for which they do not have permissions, but in some cases a simple message denying the action is returned (e.g., deleting a file might result in a popup that says this action is not allowed).}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Authentication and Authorization Example}
+\begin{changemargin}{1cm}
+
+We will take Learn as an example. 
+
+The first step in Learn is to log in - to authenticate yourself - using your UW user ID and your password. 
+
+If you made a mistake in typing your password, access is denied; you are not authenticated as a user of the system. 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Authentication and Authorization Example}
+\begin{changemargin}{1cm}
+
+Now you log in successfully.
+
+Then you go to look at ECE~155. Learn checks that you are authorized to see the class ECE~155 and grants access. 
+
+There are other courses offered in a given term, but if you do not have access to them, they are not shown on the page.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control}
+\begin{changemargin}{1cm}
+
+We are very much interested in who has access to different things.
+
+We need not spend any time going over motivations.
+
+OSes control access to files as a part of the file system.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: MS-DOS}
+\begin{changemargin}{1cm}
+
+In OSes, like MS-DOS, Win95, files do not have permissions.
+
+It was possible to set ``read only flags''.\\\
+\quad But anyone could set and clear this flag and delete the file.
+
+This is the ``no security'' model.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: UNIX-Style}
+\begin{changemargin}{1cm}
+
+These are used often in UNIX(-like) systems.
+
+Each file has an owner and a group. 
+
+Permissions can be assigned for the:
+\begin{itemize}
+	\item Owner
+	\item Group
+	\item Everyone
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: UNIX-Style}
+\begin{changemargin}{1cm}
+
+There are three basic permissions: 
+
+\begin{itemize}
+	\item Read
+	\item Write
+	\item Execute
+\end{itemize}
+
+Permissions are represented by 10 bits:\\ 
+\quad 1 indicates true and 0 indicates false.
+
+First bit is the directory bit.
+
+Next three are read, write, execute for the owner.\\
+Then read, write, execute for the group.\\
+Finally, read, write, execute for everyone.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: UNIX-Style}
+\begin{changemargin}{1cm}
+
+The permissions can be shown in a human-readable format.
+
+The order is always the same, and so a dash (\texttt{-}) appears if a bit is zero (permission does not exist). 
+
+The character \texttt{d} is used to indicate a directory.
+
+\texttt{r} to indicate read access.
+
+\texttt{w} to indicate write access.
+
+\texttt{x} to indicate execute access.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: UNIX-Style Example}
+\begin{changemargin}{1cm}
+
+Example: \texttt{-rwxr{-}{-}{-}{-}{-}} 
+
+This means:
+\begin{itemize}
+\item not a directory; 
+\item the owner can read, write, and execute; 
+\item other members of the group can read it only
+\item everyone else has no access to the file (cannot read, write, or execute).
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: UNIX-Style}
+\begin{changemargin}{1cm}
+
+Permissions can also be written in octal (base 8): \\
+\quad r = 4, w = 2, and x = 1. 
+
+Start with 0, and then add the value of the  permissions that are present, using zero where permissions are absent. 
+
+Example: \texttt{750} \mnote{meaning that the owner has read, write and execute access (0 + 4 + 2 + 1 = 7); group members have read and execute access (0 + 4 + 0 + 1 = 5); everyone else has no access to it at all.}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: UNIX-Style}
+\begin{changemargin}{1cm}
+
+More details: like what the permissions mean on directories, 
+
+Advanced topics like \texttt{setuid}, \texttt{setgid}, and ``sticky bit''.
+
+Beyond the scope of this course.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: UNIX-Style}
+\begin{changemargin}{1cm}
+
+The obvious shortcoming: very coarse grained.
+
+Another strategy used by SELinux and Windows NT.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: ACLs}
+\begin{changemargin}{1cm}
+
+Files are protected by Access Control Lists.
+
+Each file can have as many security descriptors as we like.
+
+Descriptor lists the permissions a user/group has.
+
+Permissions are more than just \texttt{rwx}.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: ACLs}
+\begin{changemargin}{1cm}
+
+In NTFS, you can see the security descriptors for a file: right click it in Explorer, properties dialog, choose the security tab. 
+
+The descriptors have two checkboxes: allow and deny, with 
+
+Deny takes precedence over allow.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: ACLs}
+\begin{changemargin}{1cm}
+
+Permissions can start out at \alert{default deny}, in which case only the users explicitly granted access may access the file.
+
+Alternative: \alert{default permit} in which case everyone has access, minus those users whose privileges are explicitly denied. 
+
+Default deny is obviously more secure.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Access Control: ACLs}
+\begin{changemargin}{1cm}
+
+Represent an access control list as a set of tuples:
+\begin{verbatim}
+	(alice, read)
+	(bob, read)
+	(charlie, read)
+	(charlie, write)
+	(bob, execute)
+\end{verbatim}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: ACLs}
+\begin{changemargin}{1cm}
+
+ACLs have an extra complexity: inheritance.
+
+It is supposed to be a convenience feature...\\
+\quad but it can often be a cause of problems.
+
+If inheritance is enabled: 
+Any new file crated in this directory will receive the same ACL as the directory.
+
+The danger is that any existing file moved into the directory will retain its original ACL. 
+
+If it is supposed to get the ACL of the directory, it needs to be explicitly set.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Access Control: RBAC}
+\begin{changemargin}{1cm}
+
+Extension of ACLS: Role-Based Access Control (RBAC).
+
+In RBAC:
+
+\begin{itemize}
+	\item Roles are created
+	\item Users are assigned roles
+	\item Access is granted based on the roles users have
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: RBAC}
+\begin{changemargin}{1cm}
+
+Example: only accounting staff may view payroll files.
+
+Payroll documents are marked as being accessible only by accounting. 
+
+When a user tries to access a payroll document, the user's roles are checked. 
+
+If the user's roles contains accounting, access is granted; otherwise access is denied.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: RBAC}
+\begin{changemargin}{1cm}
+
+Advantage over ACLs: assignment is simpler.
+
+If many files are sysadmin only, easier to assign the new user the sysadmin role than add the user to all files.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Access Control: RBAC}
+\begin{changemargin}{1cm}
+
+Like ACLs, we can write the permissions as a list of tuples:
+\begin{verbatim}
+	(Doctors, read)
+	(Nurses, read)
+	(Technicians, read)
+	(Technicians, write)
+	(Technicians, delete)
+\end{verbatim}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Access Control: RBAC}
+\begin{changemargin}{1cm}
+
+There can be relations between roles.
+
+Doctors might be able to do all the things a nurse can do. 
+
+Make the doctor role \textit{subsume} the nurse role: the doctor role has all the rights of the nurse role, and may have others.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Malware}
+\begin{changemargin}{1cm}
+
+\alert{Malware}: short for malicious software.
+
+A brief discussion of different kinds of malicious software.
+
+We will look at viruses, worms, and trojans.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Malware: Virus}
+\begin{changemargin}{1cm}
+
+Before the internet, the virus was the most common kind of malware.
+
+Propagates by inserting itself into another program.
+
+Attached to an executable file.
+
+Virus might be annoying or might damage data.
+
+Spread by sharing documents, software, floppy disks...
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Malware: Virus Example}
+\begin{changemargin}{1cm}
+
+In 1999, the ``Melissa Virus''.
+
+Spread by MS Word Document.
+
+Sent copies to 50 people from the address book.
+
+Some companies suspended e-mail service.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Malware: Worm}
+\begin{changemargin}{1cm}
+
+Worms are like viruses in that they spread copies and can do damage.
+
+Unlike a virus, the worm needs no host: it is a standalone piece of software. 
+
+They often exploit a vulnerability of the system and take advantage of the capabilities of that system to spread.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Malware: Worm Example}
+\begin{changemargin}{1cm}
+
+In 2001, the Code Red worm used an operating system vulnerability in Windows 2000 and Windows NT. 
+
+It tried to spread itself to other vulnerable machines.
+
+It also would deface web sites and try to send many requests to the White House website, overloading their web servers. 
+
+Microsoft released a patch that fixed the vulnerability.\\
+\quad They  didn't automatically remove it from infected machines.
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Malware: Trojan}
+\begin{changemargin}{1cm}
+A Trojan is another type of malware, named after the wooden horse the Greeks used to sneak into the city of Troy.
+
+Users are tricked into installing it in their system, and usually gives access to the attacker who can then control the system. 
+
+Trojans do not self-replicate.
+
+The victim unwittingly installs the server on his/her computer and the attacker controls it remotely with the client.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Malware: Trojan Example}
+\begin{changemargin}{1cm}
+In 1998, there was a popular Trojan called ``Back Orifice''. 
+
+It consisted of a simple client and server and an attacker could execute the following operations on the victim's machine
+
+\begin{itemize}
+\item Execute any application on the target machine.
+\item Log keystrokes from the target machine.
+\item Restart the target machine.
+\item Lockup the target machine.
+\item View the contents of any file on the target machine.
+\item Transfer files to and from the target machine.
+\item Display the screen saver password of the current user of the target machine. 
+\end{itemize}
+
+
+\end{changemargin}
+\end{frame}
+
+\end{document}

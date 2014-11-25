@@ -1,0 +1,329 @@
+\input{../configuration}
+\usepackage{alltt}
+
+\title{Lecture 20 --- Debugging II }
+
+\author{Jeff Zarnett \\ \small \texttt{jzarnett@uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+
+  \vfill
+  \begin{center}
+    \CcGroupBySa{0.83}{0.95ex}\\
+                  {\tiny\CcNote{\CcLongnameByNcSa}}
+                  \vspace*{-2.5ex}
+  \end{center}
+
+\end{frame}
+
+
+\part{Types of Bugs}
+\frame{\partpage}
+
+
+\begin{frame}
+\frametitle{Types of Bugs}
+\begin{changemargin}{1cm}
+Bugs are our enemies.
+
+Knowing our enemies helps us defeat them.
+
+Fixing a bug might be impossible if we can't \alert{reproduce} it.
+
+How to reproduce it? Depends on the type.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Common Bug}
+\begin{changemargin}{1cm}
+The basic type.
+
+In the source code, and behaves predictably.
+\mnote{It is sometimes the result of an ambiguous specification or something not tested, or simply programmer error.}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Sporadic Bug}
+\begin{changemargin}{1cm}
+Not so consistent as the common bug. 
+
+Challenge: finding the right test case.
+
+\mnote{The common bug strikes predictably when a test case is executed. The sporadic bug is not so consistent, but it can be lured out if you are careful. Some tricks that can lure out the bug: leaving a trap in place (a watchdog to identify when something has gone wrong) or finding the right bait (test case). Once the right test case is found, however, this bug is reproducible.}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Heisenbug}
+\begin{changemargin}{1cm}
+
+Recall Werner Heisenberg's uncertainty principle in physics:\\~\\
+\quad \textit{The more precisely the position of a particle is known,\\
+\quad the less precisely the momentum is, and vice versa.}
+
+The harder we try to debug, the better the bug hides. \mnote{When you step through the code the bug doesn't happen, or printing debug statements prevents the problem from happening at all.}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Heisenbug}
+\begin{changemargin}{1cm}
+
+Heisenbugs are usually one of the following problems:
+
+\begin{itemize}
+	\item Race Conditions
+	\item Memory Errors
+	\item Optimization
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Heisenbug: Race Condition}
+\begin{changemargin}{1cm}
+
+The cause of most Heisenbugs.
+
+Two things are running in parallel and program behaviour depends on the order in which they finish.
+
+Adding statements changes how long it takes to execute; \\
+\quad this might suppress the bug!
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Heisenbug: Memory Error}
+\begin{changemargin}{1cm}
+
+Reading an uninitialized variable, reading off the end of an array, reading an area of memory after it has been freed.
+
+When we read an uninitialized variable, what value do we get?
+
+
+Not an issue in Java. \mnote{This isn't a problem in Java, because accessing an uninitialized variable is a compile-time warning and will always result in a null value . Similarly, because of how memory works in Java, we won't have the situation of using a variable after the memory for it has been released. Although we use it in the labs, Java is not the only programming language in the world, so we had better be prepared for this situation.}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Heisenbug: Optimization}
+\begin{changemargin}{1cm}
+
+\vspace{2em}
+\begin{quote}
+	\textit{... premature optimization is the root of all evil.}
+\end{quote}
+\hfill Donald Knuth
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Heisenbug: Optimization}
+\begin{changemargin}{1cm}
+
+Optimizations are necessary, but sometimes it's a shortcut.
+
+The shortcut might cause an error.
+
+To find out, try disabling the optimization.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Bugs Hiding Behind Bugs}
+\begin{changemargin}{1cm}
+
+Sometimes we have multiple bugs interacting in some way.
+
+Fix the bugs in the order of their occurrence in execution.
+
+Look for the first error message.
+
+If solving more than one at a time, keep good notes.
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{The Secret Bug}
+\begin{changemargin}{1cm}
+
+The customer is using the software but they can't give you a bug report.
+
+May have confidential information (or they don't know how).
+
+Try to reproduce the problem locally.
+
+Solicit anonymized data or visit the customer site.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Configuration Bugs}
+\begin{changemargin}{1cm}
+
+Sometimes there's nothing wrong with the software.
+
+Problem is the environment. Example: user lacks permissions.
+
+Can change the environment or configuration procedure.
+
+Consider changing software to handle the situation gracefully.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Hardware Bugs}
+\begin{changemargin}{1cm}
+
+Embedded systems often have hardware bugs.
+
+Proving that the problem in hardware is a challenge.
+
+Might need to create a software workaround.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Hardware Bugs}
+\begin{changemargin}{1cm}
+
+A famous example of a hardware bug: the Pentium FDIV bug.
+
+The processor returned incorrect floating point division values.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pentium FDIV Bug}
+\begin{changemargin}{1cm}
+
+$\frac{4195835.0}{3145727.0} = 1.333 820 449 136 241 002 5$  (Correct value)
+
+
+$\frac{4195835.0}{3145727.0} = 1.333 739 068 902 037 589 4$  (Flawed Pentium)
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pentium FDIV Bug}
+\begin{changemargin}{1cm}
+
+Intel fixed the problem in future processors.
+
+They also recalled the flawed chips.
+
+The suggested interim workaround: multiply numerator \& denominator by $\frac{15}{16}$. \mnote{Intel recommended multiplying the numerator and denominator each by $15/16$ before the division is performed (this factor will of course cancel when the division takes place) because it shifts the bits in such a way that the error is not encountered. }
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Not-a-Bug}
+\begin{changemargin}{1cm}
+
+Sometimes when examining a bug, you discover it's not a bug.
+
+The software does what the spec says it should.
+
+How to explain this to the customer?
+
+\end{changemargin}
+\end{frame}
+
+\part{Creating Test Cases}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Creating Test Cases}
+\begin{changemargin}{1cm}
+
+Hopefully while debugging we had a way to reproduce the bug.
+
+This is the basis for our test case.
+
+Add the test case to your regression tests.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Trimming the Test Case}
+\begin{changemargin}{1cm}
+
+Some reasons why we might need to trim the test case down:
+
+\begin{itemize}
+	\item Privacy laws may require removal of proprietary datae.
+	\item More easily run if there are fewer dependencies.
+	\item Smaller test cases make debugging easier.
+	\item Easier for developers to work with.
+	\item Easier to add to the regression tests.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Trimming the Test Case}
+\begin{changemargin}{1cm}
+
+We want to remove as much as possible.
+
+The remaining code does not have to make sense.
+
+There are many things to try, but do them one at a time.
+
+If the test case no longer fails, undo your last change.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Trimming the Test Case}
+\begin{changemargin}{1cm}
+
+Suggestions about what to try to make the test case simpler:
+
+\begin{itemize}
+	\item Remove function calls (replace with their return values or delete if they are \texttt{void})
+	\item Remove I/O (like logging) except where necessary to demonstrate the failure.
+	\item Remove unused variables.
+	\item Replace user-defined types (classes) with built-in types (\texttt{int}, \texttt{double}).
+	\item Simplify class hierarchies: Remove base classes, or use base classes instead of derived ones.
+	\item Remove: unused class variables/functions, unused data types, unneeded references to other classes.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+
+
+
+
+\end{document}

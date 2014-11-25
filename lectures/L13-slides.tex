@@ -1,0 +1,661 @@
+\input{../configuration}
+
+\title{Lecture 13 --- Android III}
+
+\author{Patrick Lam \\ \small \texttt{p.lam@ece.uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\part{Android Persistent Storage}
+
+\begin{frame}
+\partpage
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Storing Data}
+
+\begin{changemargin}{1cm}
+So far, we haven't seen any ways to store data so that you can re-load
+it across different instances of your application.
+
+
+Four+ options:
+\begin{itemize}
+\item Shared Preferences
+\item Files: Internal and External Storage
+\item SQLite
+\item on the Internet
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Shared Preferences}
+
+\begin{changemargin}{1cm}
+Key-value pairs.
+
+Persists across user sessions, even if app gets killed.
+
+Can be private to your application or shared across applications.
+\end{changemargin}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Using Shared Preferences}
+\begin{changemargin}{1cm}
+
+How do we get our
+hands on the shared preferences?
+\begin{lstlisting}
+  SharedPreferences settings = getPreferences(0);
+\end{lstlisting}
+Or, call {\tt getSharedPreferences()} and pass it a preferences file
+name as the first parameter.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Reading Data from Shared Preferences}
+\begin{changemargin}{1cm}
+Now that you have a {\tt SharedPreferences} object, you can get data from it:
+
+\begin{lstlisting}
+  v = settings.getString("textFieldValue", "");
+\end{lstlisting}
+Retrieves the value of {\tt String} preference {\tt textFieldValue}. 
+  
+  If no value is present, the {\tt getString} call
+returns the default value {\tt ""}, an empty string.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Writing to Shared Preferences}
+\begin{changemargin}{1cm}
+
+It's a bit more complicated to write to the {\tt SharedPreferences}.
+
+You have to first get a {\tt SharedPreferences.Editor}.
+
+Then ``commit'' it once you're done with the changes.
+
+\begin{lstlisting}
+  SharedPreferences settings = getPreferences(0);
+  SharedPreferences.Editor editor = settings.edit();
+  editor.putString("textFieldValue", newFieldValue);
+  editor.commit();
+\end{lstlisting}
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Files: Internal \& External Storage}
+
+\begin{changemargin}{1cm}
+Android phones have internal storage (small) and external storage
+(larger).
+
+The commands to write to them are more or less the same.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Internal Storage}
+\begin{changemargin}{1cm}
+
+All Android devices have internal storage. 
+
+It is generally
+invisible to the user, other apps, and when the phone is mounted as
+USB Mass Storage. 
+
+When you remove an app, Android automatically
+erases its internal storage. 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{External Storage}
+\begin{changemargin}{1cm}
+
+External storage may be on an SD card (as on many phones).
+
+It may be
+enclosed in the device (as on the Nexus 7 tablet). 
+
+Applications may access
+their own external storage space, shared storage space, or even other
+apps' storage space. 
+
+However, external storage may go away anytime, since
+the user could just pull out the SD card from the slot.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Files: External Storage}
+
+\begin{changemargin}{1cm}
+Our Lab 4 mapper code loads files from external storage in {\tt MapLoader.java}.
+
+You can use DDMS to put files into external storage,
+as well as using USB Mass Storage.
+
+Files in external storage are world-accessible.
+
+Warning: these files may go away anytime.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Files: Checking External Storage Availability}
+
+\begin{changemargin}{0.1cm}
+Sometimes the media is not there, or not writable.
+\begin{lstlisting}[basicstyle=\scriptsize]
+String state = Environment.getExternalStorageState();
+
+if (Environment.MEDIA_MOUNTED.equals(state)) {
+    // We can read and write the media
+} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+    // We can only read the media
+} else {
+    // Something else is wrong. 
+    // It may be one of many other states, but all we need
+    //  to know is we can neither read nor write
+}
+\end{lstlisting}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Files: How MapLoader Works}
+\begin{changemargin}{1cm}
+It actually delegates to an XML parsing library. 
+
+Recall that you call:
+\begin{lstlisting}[basicstyle=\scriptsize]
+    NavigationalMap map = 
+       MapLoader.loadMap(getExternalFilesDir(null), 
+                         "Lab-room-peninsula.svg");
+    mapView.setMap(map);
+\end{lstlisting}
+
+The {\tt MapLoader} contains this line:
+\begin{lstlisting}
+File map = new File(dir, filename);
+\end{lstlisting}
+and then it builds a parser using the library call:
+\begin{lstlisting}
+doc = docBuilder.parse(map);
+\end{lstlisting}
+which does all the I/O.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Files: about getExternalFilesDir()}
+
+\begin{changemargin}{1cm}
+Android provides a number of shared directories:
+\begin{itemize}
+\item DIRECTORY\_MUSIC
+\item DIRECTORY\_PICTURES
+\item DIRECTORY\_RINGTONES
+\end{itemize}
+which all apps on the system can access.
+
+\end{changemargin}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Reading from Storage Example}
+\begin{changemargin}{1cm}
+
+The following code will read a line of text
+into the {\tt String} variable {\tt i}.
+
+It currently reads from internal storage.
+
+To read from external storage: \\
+\quad 1) comment out the {\tt openFileInput} line; and\\
+\quad 2) uncomment the {\tt new FileInputStream} line
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Reading from Files}
+\begin{changemargin}{0.1cm}
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+try {
+    // internal storage: 
+    FileInputStream os = openFileInput("internal.txt");
+    
+    //InputStream os = new FileInputStream(
+           new File(getExternalFilesDir(null), "external.txt"));
+           
+    BufferedReader br = new BufferedReader(
+           new InputStreamReader(os));
+    String i = br.readLine();
+    // --> i contains the line you just read.
+    os.close();
+} catch (IOException e) {}
+\end{lstlisting}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Writing to Files}
+\begin{changemargin}{1cm}
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+try {
+    // internal storage:
+    FileOutputStream os = openFileOutput("internal.txt", 
+                        Context.MODE_PRIVATE);
+                        
+    //FileOutputStream os = new FileOutputStream(
+                 new File(getExternalFilesDir(null), 
+                        "external.txt"));
+
+    PrintWriter osw = new PrintWriter(
+                 new OutputStreamWriter(os));
+    // --> write out the contents of string i.
+    osw.println(i);
+    osw.close();
+} catch (IOException e) {}
+\end{lstlisting}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{SQLite}
+
+\begin{changemargin}{1cm}
+SQL: Structured Query Language, \\
+allows access to databases.
+
+What's a database?
+
+\begin{center}
+\begin{tabular}{l|l|l|l}
+id & front & frontFileName & back \\
+17 & ``one'' & ``one.png'' & ``1'' \\
+42 & ``two'' & ``two.png'' & ``2'' \\
+99 & ``three'' & ``three.png'' & ``3'' \\
+\end{tabular}
+\end{center}
+~
+
+Basic interface: \structure{queries} on the database.
+
+\end{changemargin}
+
+\end{frame}
+
+\part{Digression: Labs}
+\frame{\partpage}
+
+
+\begin{frame}
+\frametitle{Lab 2: Sensor Data}
+\begin{changemargin}{1cm}
+This lab is about interpreting sensor data.
+
+In particular, you are going to
+read the accelerometer data and count the number of steps taken by the holder
+of the phone. 
+
+There are two main problems:\\
+\quad 1) sensor data is noisy; and\\
+\quad 2) you need
+to recognize when a step occurs.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Sensor Noise}
+\begin{changemargin}{1cm}
+
+
+To deal with sensor noise, smooth the data.
+
+Below is a very simple low-pass filter:
+
+\begin{lstlisting}
+  smoothedAccel += (newValue - smoothedAccel) / C;
+\end{lstlisting}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Recognizing a Step}
+\begin{changemargin}{1cm}
+
+To recognize a step, you'll need to identify a change in the value of the $y$-axis
+acceleration. 
+
+Identifying a change means that you'll need the previous value along
+with the current value. 
+
+You could do that using a finite state machine (as described
+in the lab manual). 
+
+You could do that by doing tests both on the previous value 
+and the current value. 
+
+Can you think of any pattern that might describe a step?
+
+\end{changemargin}
+\end{frame}
+
+
+\part{Toast, Broadcast Receivers, \& Lists}
+\frame{\partpage}
+
+\begin{frame}[fragile]
+\frametitle{Toast!}
+\begin{changemargin}{1cm}
+
+ Sometimes you want to display a short message to the user.
+Use {\tt Toast} to do that. Just include the following code:
+\begin{lstlisting}
+  Toast.makeText(getApplicationContext(), "A Toast!", 
+                 Toast.LENGTH_LONG).show();
+\end{lstlisting}
+It's also OK to use in your onClick event listener:
+\begin{lstlisting}
+  Toast.makeText(MainActivity.this, "A Toast!", 
+                 Toast.LENGTH_LONG).show();
+\end{lstlisting}
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Broadcast Receivers}
+\begin{changemargin}{1cm}
+
+We talked earlier about the concept of Android Intents.
+
+Android also uses Intents to broadcast information about what's
+happening on the system between applications. 
+
+Applications want to
+know about events such as the phone being plugged into a power source;
+or, screen rotation.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Broadcast Analogy}
+\begin{changemargin}{1cm}
+
+A ``party line''
+for Android Broadcast Receivers. 
+
+Many different applications can
+register an event listener, and they all get notified whenever
+something happens.
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Broadcast Receiver Example: Rotation Listener}
+\begin{changemargin}{0.5cm}
+{\scriptsize
+\begin{verbatim}
+ BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context c, Intent i) {
+      int orientation = c.getResources().getConfiguration().orientation;
+      if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        Toast.makeText(c, "Portrait", Toast.LENGTH_SHORT).show();
+      } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        Toast.makeText(c, "Landscape", Toast.LENGTH_SHORT).show();
+      } else {
+        Toast.makeText(c, "???", Toast.LENGTH_SHORT).show();
+      }
+    }
+  };
+\end{verbatim}
+
+}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Register \& Unregister the Receiver}
+\begin{changemargin}{1cm}
+To register: {\scriptsize \texttt{registerReceiver(broadcastReceiver, intentFilter);}}
+
+To unregister: {\scriptsize \texttt{unregisterReceiver(broadcastReceiver);}}
+
+Unfortunately, by default Android destroys your app on a screen rotate event. 
+
+This example only works if you tell Android not to do that.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Broadcast Receiver: Phone Ring Listener}
+\begin{changemargin}{1cm}
+
+This time to listen for phone calls. 
+
+First, you need to modify the {\tt manifest.xml} file to permit
+the app to listen for phone calls:
+
+
+
+{\scriptsize
+\begin{verbatim}
+<uses-permission android:name="android.permission.READ_PHONE_STATE">
+</uses-permission>
+\end{verbatim}
+}
+\end{changemargin}
+
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Registering it in the Manifest}
+\begin{changemargin}{1cm}
+
+Include inside the \verb+<application>+ tag:
+{\scriptsize
+\begin{verbatim}
+<receiver android:name="ca.patricklam.ece155demo.MyPhoneReceiver" >
+    <intent-filter>
+        <action android:name="android.intent.action.PHONE_STATE" />
+    </intent-filter>
+</receiver>
+\end{verbatim}
+}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Phone Receiver}
+\begin{changemargin}{1cm}
+This means that we have to create a separate class {\tt MyPhoneReceiver}:
+{\scriptsize
+\begin{verbatim}
+public class MyPhoneReceiver extends BroadcastReceiver {
+  @Override
+  public void onReceive(Context context, Intent intent) {
+    Bundle extras = intent.getExtras();
+    if (extras != null) {
+      String state = extras.getString(TelephonyManager.EXTRA_STATE);
+      Log.w("PHONE", state);
+      if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+        String phoneNumber = extras.getString
+                               (TelephonyManager.EXTRA_INCOMING_NUMBER);
+        Log.w("PHONE", phoneNumber);
+      }
+    }
+  }
+}
+\end{verbatim}
+
+}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lists}
+\begin{changemargin}{1cm}
+
+Another useful UI element is the {\tt ListView}.
+
+We can use it to show 
+a list of items to the user (for instance, so that the user can choose
+one of the list elements). 
+
+There are a couple of caveats with using the
+{\tt ListView}.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Creating a ListView}
+\begin{changemargin}{1cm}
+
+First, create a {\tt ListView} object by dragging it onto the Activity's XML file.
+\begin{itemize}
+\item Note: you have to manually edit the {\tt android:id} attribute so
+that its value is \verb+@android:id/list+.
+\end{itemize}
+Next, change your Activity to be a ListActivity. 
+
+Add a field {\tt listAdapter} of type \verb+ArrayAdapter<String>+.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Populating a ListView}
+\begin{changemargin}{1cm}
+
+Populate the list with entries:
+
+{\scriptsize
+\begin{verbatim}
+  List<String> data = new ArrayList<String>();
+  data.add("ECE155");
+  data.add("ECE106");
+  data.add("ECE124");
+  listAdapter = new ArrayAdapter<String>(this,
+                           android.R.layout.simple_list_item_1,
+                           data);
+  setListAdapter(listAdapter);
+\end{verbatim}
+}
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Clicking an Item}
+\begin{changemargin}{1cm}
+
+Finally, we want something to happen when we click on a list item:
+
+{\scriptsize
+\begin{verbatim}
+  @Override
+  protected void onListItemClick(ListView l, View v, 
+                                    int position, long id) {
+    super.onListItemClick(l, v, position, id);
+    String s = (String) getListAdapter().getItem(position);
+    Toast.makeText(this, "Aha: "+s, Toast.LENGTH_SHORT).show();
+  }
+\end{verbatim}
+}
+Display a toast when the user chooses a list item.
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Dynamically Updating a ListView}
+\begin{changemargin}{1cm}
+{\scriptsize
+Of course, we can also
+add items to the {\tt ListView} programmatically. In a click listener (or
+anywhere else), you can write:
+\begin{lstlisting}
+  String now = String.valueOf(System.currentTimeMillis());
+  listAdapter.add(now);
+\end{lstlisting}
+
+}
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{ListView}
+\begin{changemargin}{1cm}
+
+Note that adding elements to the ArrayAdapter also adds them to the ListActivity.
+
+Also, we currently store the ArrayAdapter as a field.
+
+
+That means it'll go away whenever the Activity is destroyed (e.g.
+rotation). 
+
+We'll want to do something about that.
+
+\end{changemargin}
+\end{frame}
+
+\end{document}

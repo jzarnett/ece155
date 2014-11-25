@@ -1,0 +1,411 @@
+\input{header.tex}
+
+\begin{document}
+
+\lecture{ 7 --- Android II}{\term}{Patrick Lam}
+
+\section*{Programming Tips}
+
+First, a programming tip for object-oriented systems. Sometimes, you have code
+in a class, say an {\tt EventListener}, which needs access to the object
+that created it, say the {\tt MainActivity}. Add a field to the {\tt EventListener}
+with a reference to the {\tt MainActivity}, as follows:
+
+{\scriptsize \begin{lstlisting}[escapechar=!]
+    public class MainActivity extends Activity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+        // ...
+        LightSensorEventListener el = new LightSensorEventListener(!{\bf this}!);
+      }
+    }
+
+    class LightSensorEventListener implements SensorEventListener {
+      !{\bf MainActivity m;}!
+
+      !{\bf public LightSensorEventListener(MainActivity m) \{}!
+        !{\bf this.m = m;}!
+      !{\bf \} }!
+
+      // ...
+    }
+\end{lstlisting}
+}
+
+A second tip: don't put your app in the {\tt com.example} namespace. Put it
+in {\tt ca.uwaterloo}.
+
+\section*{Intents}
+So far, we've seen Activities in isolation, and that'll be all you need
+for the labs. However, real apps often have more than one Activity. Today's topic
+is going to be about how to link Activities. Android uses Intents.
+
+\begin{quote}
+An \emph{Intent} specifies a request or describes an event.
+\end{quote}
+
+\paragraph{Examples: Starting another Activity.} The simplest possible Intent
+explicitly names the Activity it would like to start.
+
+{\small 
+\begin{lstlisting}
+  Intent intent = new Intent(this, OtherActivity.class);
+  startActivity(intent);
+\end{lstlisting}
+}
+
+\paragraph{Examples: Requests.} The Map activity puts up hyperlinks to webpages 
+and phone numbers. Upon click, the Map broadcasts either the web browser
+Intent or the call Intent and trusts that some other application will
+handle the Intent.
+
+\paragraph{Examples: Events.} The system broadcasts an Intent when the phone
+goes into airplane mode.
+
+\paragraph{How Intents Work.} One component broadcasts an Intent. Then, 
+0 or more components receive the Intent. Android may pick a component
+to act upon the Intent.
+
+\paragraph{Parts of an Intent.} Each intent contains an \emph{action} which represents the requested
+action, along with optional data. For instance:
+
+\hspace*{2em} \begin{tabular}{ll}
+ACTION\_MAIN & Launch an activity \\
+ACTION\_DIAL & Dial a phone number \\
+ACTION\_SEARCH & Perform a search
+\end{tabular}
+
+The two following code fragments yield identical Intents with an action (but no data):
+{\small
+\begin{lstlisting}
+new Intent(Intent.ACTION_EDIT);   |  Intent intent = new Intent();
+                                  |  intent.setAction(Intent.ACTION_EDIT);
+\end{lstlisting}
+}
+
+The \emph{data} is the payload of the event. Android intent data is in
+URI (Universal Resource Identifier) format\footnote{What's a URI? It's
+  like a URL. The exact distinction is unimportant for ECE155.}. The
+obvious thing to put into data is a web address, but other data formats
+are possible as well:
+
+{\scriptsize
+\begin{lstlisting}
+new Intent(Intent.ACTION_DIAL,           | Intent intent = 
+                                         |   new Intent(Intent.ACTION_DIAL);
+           Uri.parse("tel:6175551212")); | intent.setData(
+                                         |   Uri.parse("tel:6175551212"));
+\end{lstlisting}
+}
+
+You can also tell Android what type of data to expect it to find at
+the URI, using the {\tt setType} method. This is optional. Example: {\tt
+  intent.setType("audio/mp3");}
+
+%% You can also tell Android about which components can handle the intent
+%% by providing \emph{category} information. Each intent has a set of
+%% categories. Examples of categories include CATEGORY_DEFAULT and
+%% CATEGORY_LAUNCHER.
+
+Beyond the data, Intents may also contain \emph{extras}. The extras
+consist of key-value pairs: they contain more information than what you
+can easily put into a URI. Here's an example.
+
+{\small 
+\begin{lstlisting}
+Intent intent = new Intent(Intent.ACTION_SEND);
+intent.putExtra(android.content.Intent.EXTRA_EMAIL,
+  new String[] {
+    "p.lam@ece.uwaterloo.ca", "root@uwaterloo.ca"
+  });
+\end{lstlisting}
+}
+
+(Key-value pairs are a key concept you'll encounter over and over, by
+  the way.)
+
+Finally, Intents may also contain \emph{flags}, which modify how the
+Intent gets launched and how it will be processed by the recipient. 
+They don't affect which activity gets launched. Examples: {\tt FLAG\_ACTIVITY\_NO\_HISTORY} and 
+{\tt FLAG\_ACTIVITY\_RESET\_TASK\_IF\_NEEDED}.
+
+\subsection*{Intent Resolution}
+We've seen how to explicitly name which Activity we want to launch,
+and I've alluded to how we can implicitly launch an activity by
+describing what we're looking for. In either case, we use the {\tt
+  startActivity} method to launch the intent.
+
+In the case of implicit intent resolution, the system searches the
+available Activities on a system, using the Intent's action, data
+and category.
+
+\paragraph{Requesting Intent Resolution.} Let's first look at an example of requesting an image from any 
+suitable Activity on the
+system~\cite{vogella}:
+{\small 
+\begin{lstlisting}
+  private static final int REQUEST_CODE = 1;
+
+  public void pickImage(View View) {
+    Intent intent = new Intent();
+    intent.setType("image/*");
+    intent.setAction(Intent.ACTION_GET_CONTENT);
+    intent.addCategory(Intent.CATEGORY_OPENABLE);
+    startActivityForResult(intent, REQUEST_CODE);
+  }
+\end{lstlisting}
+}
+This specifies a requested type, action, and category, and asks that
+some other activity returns an image. We'll see how to process
+activity results below.
+
+\paragraph{Responding to Intent Resolution Requests.}
+In your application's manifest, there's an XML tag for each activity.
+That tag can take an \emph{intent filter} describing the Intents
+that the activity is prepared to handle. For example:
+{\small 
+\begin{lstlisting}
+<activity
+    android:name=".BrowserActivity"
+    android:label="@string/app_name" >
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+
+        <data android:scheme="http" />
+    </intent-filter>
+</activity>
+\end{lstlisting}
+}
+This activity is able to view any URI that begins with {\tt http}.
+
+\paragraph{Receiving Activity results.}
+When you launch a sub-Activity, sometimes you're hoping for a result
+back from that activity. For instance, you may be asking for the
+user to pick a contact from the contact list. Or you may be asking the
+user for a favourite colour. The sub-activity should
+create a new Intent and call its {\tt setResult} method:
+
+{\scriptsize 
+\begin{lstlisting}
+  Intent retval = new Intent();
+  retval.putExtra("color", "blue");
+  setResult(RESULT_OK, retval);
+\end{lstlisting}
+}
+
+Then in the caller, we provide a new callback, {\tt onActivityResult()}.
+
+{\scriptsize
+\begin{lstlisting}
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (resultCode == RESULT_OK && requestCode == YOUR_REQUEST_CODE) {
+      if (data.hasExtra("color")) {
+        String favouriteColor = data.getExtras().getString("color");
+      }
+   }
+  }
+\end{lstlisting}
+}
+
+The {\tt resultCode} is an {\tt int} you provided while starting the
+sub-activity. It allows you to distinguish different sub-activities you
+may have started.
+
+
+%% \section*{Android Life Cycle}
+
+\section*{Saving and Restoring State}
+Sometimes, Android kills your activity but brings it back later. You
+want the activity to have the same data when it comes back from the
+dead. This will happen by default for anything in a UI element, but
+not for any fields stored in the activity (like, say, step counts). In
+your activity, implement the callback {\tt onSaveInstanceState()} to
+save the data:
+
+{\scriptsize
+\begin{lstlisting}
+class MainActivity ... {
+  String color;
+
+  @Override
+  protected void onSaveInstanceState(Bundle b) {
+    super.onSaveInstanceState(b);
+    b.putString("color", color);
+  }
+}
+\end{lstlisting}
+}
+The Bundle {\tt b} is another key/value map. You can then restore whatever
+data you saved in the {\tt onCreate} method of the same Activity:
+{\scriptsize
+\begin{lstlisting}
+class MainActivity ... {
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    if (savedInstanceState != null)
+      color = b.getString("color");
+  }
+}
+\end{lstlisting}
+}
+
+\section*{More Android Concepts}
+Two additional concepts: when to use XML versus Java
+code for adding widgets to your layouts; and what ``inflate'' means
+in the code that you always auto-generate.
+
+\paragraph{XML versus Java.}
+Use the right tool for the job! Sometimes this is XML; other times,
+it's Java. Here's the tradeoff.
+
+XML = more safety:
+\begin{itemize}
+\item You can select and place items on your layouts at any point.
+\item You don't need to run your code under the emulator (or on a
+  phone) to see how things will look.
+\item You get more error checking: the compiler can tell you about
+what you're doing wrong and help you fix it ahead of time.
+\end{itemize}
+
+Java Code = more flexibility:
+\begin{itemize}
+\item You can choose widgets based on user input or your computations.
+\item You can use loops or other control flow to generate related items.
+\item You get less error checking of what you've written.
+\end{itemize}
+
+\paragraph{What ``inflate'' means.}
+These lines keep on showing up in our auto-generated {\tt Activity} code:
+{\tiny
+\begin{lstlisting}
+// Inflate the menu; this adds items to the action bar if it is present.
+getMenuInflater().inflate(R.menu.activity_main, menu);
+\end{lstlisting}
+}
+
+``Inflate'' means taking an XML tree and creating a tree of {\tt View}
+objects, based on the description in the XML.
+
+\newpage
+\section*{Android Graphics}
+Next, we'll see how to put graphics on the screen in Android. 
+There are, in general, two options:
+\begin{itemize}
+\item use a {\tt View} (easier; but suitable only for infrequent updates); or
+\item paint to a {\tt Canvas} (more complicated; but permits real-time updates).
+\end{itemize}
+Even though the {\tt Canvas} is more suitable for embedded systems, 
+the {\tt View} is easier, so we'll be talking about it in this class.
+
+\subsection*{Drawing to a {\tt View}.} 
+As always with Android, you can put things onto the {\tt View} either 
+by specifying XML, or programmatically. In either case, you will use
+a {\tt Drawable}, either explicitly or implicitly.
+
+\paragraph{The {\tt Drawable} class.}
+A {\tt Drawable} object represents, as its name suggests, 
+``something that can be drawn''. Examples include:
+\begin{itemize}
+\item BitmapDrawable: draw a bitmap onto the screen;
+\item ShapeDrawable: draw a shape;
+\item PictureDrawable: play back a sequence of drawing calls.
+\item etc.
+\end{itemize}
+All of the drawing techniques we're going to see are going
+to create a {\tt Drawable} of some sort.
+
+\paragraph{Drawing Bitmaps.} 
+The easiest way to get some graphics onto your screen is by
+drawing them in some other program and then including them:
+\begin{itemize}
+\item put a picture ({\tt PNG}, {\tt JPG} or {\tt GIF}) in {\tt res/drawables}; and
+\item use an {\tt ImageView} to include it on the screen.
+\end{itemize}
+
+Examples from~\cite{android:graphics}
+\begin{lstlisting}[basicstyle=\scriptsize]
+  // Instantiate an ImageView and define its properties programmatically
+  ImageView i = new ImageView(this);
+  i.setImageResource(R.drawable.my_image);
+   // set the ImageView bounds to match the Drawable's dimensions
+  i.setAdjustViewBounds(true);
+  i.setLayoutParams(new Gallery.LayoutParams
+      (LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+  // Add the ImageView to the layout and 
+  //  set the layout as the content view
+  mLinearLayout.addView(i);
+\end{lstlisting}
+
+Or, you can do it through XML. Again, you need the appropriate
+drawable in the {\tt res/drawables} directory. Note that since we're
+using XML, it's harder to go wrong.
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+  <ImageView
+    android:id="@+id/imageView1"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:src="@drawable/myImage" />
+\end{lstlisting}
+
+\paragraph{{\tt ShapeDrawable}.} Next, we'll see how to draw our own shapes.
+Primitive shapes include:
+\begin{itemize}
+\item PathShape---lines;
+\item RectShape---rectangles;
+\item OvalShape---ovals and rings;
+\end{itemize}
+Once again, we put these into an {\tt ImageView}.
+
+You can draw shapes in XML and put them into an {\tt ImageView}.
+Again, you need the appropriate drawable in the {\tt res/drawables}
+directory.  Add this snippet, which creates the {\tt ImageView} backed
+by the drawable to your Layout XML:
+\begin{lstlisting}[basicstyle=\scriptsize]
+  <ImageView android:id="@+id/imageView2"
+    android:src="@drawable/cyan_shape" ... />
+\end{lstlisting}
+Next, create a separate XML file for the drawable itself. This actually
+provides instructions for Android to put dots on the screen.
+\begin{lstlisting}[basicstyle=\scriptsize]
+  <shape android:shape="oval" ... >
+    <size android:width="160px" android:height="160px" />
+    <solid android:color="#7f00ffff" />
+  </shape>
+\end{lstlisting}
+
+Everything you can do in XML, you can do in code. Here, we
+specify the shape in Java.
+\begin{lstlisting}[basicstyle=\scriptsize]
+  private class MyDrawableView extends ImageView {
+    private ShapeDrawable mDrawable;
+    public MyDrawableView(Context context, int color) {
+      ...
+      mDrawable = new ShapeDrawable(new OvalShape());
+      mDrawable.getPaint().setColor(color);
+      mDrawable.setBounds(0, 0, size, size);
+      mDrawable.setAlpha(alpha);
+    }
+    protected void onDraw(Canvas canvas) {
+      mDrawable.draw(canvas);
+    }
+  }
+\end{lstlisting}
+Then, in the Activity's {\tt onCreate()}, we would instantiate
+this {\tt MyDrawableView} and add it to the parent view:
+\begin{lstlisting}[basicstyle=\scriptsize]
+  MyDrawableView magentaView = 
+    new MyDrawableView(this, Color.MAGENTA);
+  magentaView.setLayoutParams
+    (new LinearLayout.LayoutParams(160, 160));
+  addView(magentaView);
+\end{lstlisting}
+
+
+\input{bibliography.tex}
+
+\end{document}

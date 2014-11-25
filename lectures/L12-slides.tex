@@ -1,0 +1,381 @@
+\input{../configuration}
+
+\title{Lecture 12 --- Development Planning \& Computational Decision-Making}
+
+\author{Patrick Lam \\ \small \texttt{p.lam@ece.uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Design and Planning}
+
+\begin{changemargin}{1cm}
+
+Traditionally:
+
+\begin{itemize}
+\item solicit requirements;
+\item make a design;
+\item analyze the design (with calculus);
+\item stamp and sign the plan.
+\end{itemize}
+Someone else builds the plan.\\[1em]
+
+People tried this for software as well:
+\begin{itemize}
+\item solicit requirements;
+\item make UML diagrams; 
+\end{itemize}
+and hire code monkeys to implement the design.\\[1em]
+
+This works poorly.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Role of Prototyping}
+
+\begin{changemargin}{1cm}
+\begin{quote}
+The management question, therefore, is not {\em whether} to build a pilot system and throw it away. You {\em will} do that. [\ldots] Hence {\em plan to throw one away; you will, anyhow}.
+\end{quote}
+\hfill Frederick Brooks, \emph{The Mythical Man-Month}, 1975.
+~\\[1em]
+
+The biggest reason the waterfall is a straw-man: 
+\begin{itemize}
+\item You can never build a system without a prototype, because:
+\item You never really know what you need until you see it.
+\item Also, needs change over time.
+\end{itemize}
+~\\
+
+Solution: \structure{iteration}.\\Different models have different iteration strategies.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Agile Lifecycle Models}
+
+\begin{changemargin}{1cm}
+Key point: handling change on-demand.\\[1em]
+Incorporate change into fast iteration process.\\[1em]
+
+This requires suitable developers.
+\begin{itemize}
+\item Agile models are always collaborative.\\
+ Hence, allegedly better at dealing with:
+\begin{enumerate}
+\item changes to team over time; and
+\item differences between developer experience levels.
+\end{enumerate}
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Choosing a Lifecycle Model}
+
+\begin{changemargin}{1cm}
+As we've said, we need to control the pace of iteration:
+\begin{itemize}
+\item Large teams, diverse stakeholder groups: slower iterations;
+\item Small teams, uncertain requirements, complex technologies: faster iterations.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Questions to Think About}
+
+\large
+\begin{changemargin}{0.5cm}
+\begin{itemize}
+\item Do you understand customer requirements?\\[0.5em]
+\item Will you need to make major architectural changes?\\[0.5em]
+\item How reliable does the system need to be?\\[0.5em]
+\item How much future expansion and growth do you foresee?\\[0.5em]
+\item How risky is the project?
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{More Questions to Think About}
+
+\large
+\begin{changemargin}{0.5cm}
+\begin{itemize}
+\item Is the schedule heavily-constrained?\\[0.5em]
+\item What is going to change during development?\\[0.5em]
+\item How much do customers need visible progress?\\[0.5em]
+\item How much does management need visible progress?\\[0.5em]
+\item What experience does the design team bring?
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Software Process Improvement}
+
+\begin{changemargin}{1cm}
+Engineer the software development process:
+\begin{itemize}
+\item first, figure out what you mean to be doing---\\
+document your software process.
+\item next, figure out what you're actually doing---\\
+ensure that you're following existing process.
+\item finally, identify areas of potential improvement, and implement them.
+\end{itemize}
+~\\
+
+Continuous process improvement: constant review.\\[1em]
+Beyond the scope of an individual project, but rather across projects.\\[1em]
+Allegedly: yield dramatic increases in development capability.
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Systematic Decision-Making}
+
+\begin{changemargin}{2cm}
+General process for making decisions:
+
+\begin{enumerate}
+\item List all choices.
+\item List all evaluation attributes (criteria).
+\item Compare lists and remove impractical choices.
+\item Evaluate the advantages and disadvantages of each remaining choice
+according to all of the criteria.
+\end{enumerate}
+
+But how?
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+	
+	
+	\vspace{8em}
+	
+	\begin{block}
+	 {\huge Computational Decision Making}
+	\end{block}
+	
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Computational Decision Making}
+
+\begin{changemargin}{2cm}
+
+Goal: \structure{quantify} the decision-making process.\\[1em]
+
+Assign a \structure{weight} to each criterion \\ \qquad (according to importance); and\\
+assign a \structure{score} for each choice.\\[1em]
+
+Combining weights and scores,\\
+compute the \structure{value} of
+a payoff function for each choice.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{CDM: Assigning Weights and Scores}
+
+\begin{changemargin}{2cm}
+Assume that there are $m$ choices and $n$ criteria. 
+\begin{enumerate}
+\item Assign a weight
+  $w_j$ to each criterion. \\
+  Ensure $\sum_{j=1}^n w_j = 1$ (or
+  100\%). \\ Higher weights = more important.\\[1em]
+\item For each choice $i$ and criterion $j$, assign score $p_{ij}$,\\
+  which summarizes goodness of $i$ with respect to $j$.\\
+
+  \[ p_{ij} \in [0, 1] \]
+\end{enumerate}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{CDM: Computing Scores and Payoffs}
+
+\begin{changemargin}{2cm}
+[Assume that there are $m$ choices and $n$ criteria.]\\[1em]
+
+We can then compute scores $s_{ij}$ and a payoff $f_i$.\\
+
+Choose alternative with
+the largest expected payoff $f_i$:
+\[ s_{ij} = p_{ij} w_j; \qquad f_i = \sum_{j=1}^n s_{ij} = \sum_{j=1}^n p_{ij} w_j, \]
+(i.e. dot product of weights and scores).
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Normalizing Scores}
+
+\begin{changemargin}{2cm}
+
+ Rather than choosing scores
+$p_{ij} \in [0, 1]$, \\
+you can instead normalize the scores:
+\begin{enumerate}
+\item Assign $c_{ij} \in \mathbb{R}$ for each alternative $i$ and criterion $j$.
+Use \emph{same units} for all alternatives of a 
+ criterion. \\ You can use different units for different criteria.
+\item For each criterion, calculate
+\[ C_j = \max \{ |c_{1j}|, |c_{2j}|, \ldots, |c_{mj}| \}, \]
+so that
+\[ p_{ij} = \frac{c_{ij}}{C_j}. \]
+\item The payoff function is then given by:
+\[ f_i = \sum_{j=1}^n p_{ij} w_j = \sum_{j=1}^n \frac{c_{ij}}{C_j}  w_j. \]
+\end{enumerate}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{CDM: Worked Example}
+
+\begin{changemargin}{2cm}
+``How should I get to Montreal?''\\[1em]
+
+Done on the board to facilitate understanding.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{CDM: Potential Flaws in Example}
+
+\begin{changemargin}{1cm}
+
+Did we get an optimal decision? \\
+
+Let's look at threats to validity:
+
+\begin{itemize}
+\item (not an issue here) scores might be stuck in a
+small subrange of the possible range, affecting values.
+%\item The values for each criteria have different ranges: flexibility
+%is in $[0, 0.5]$ while cost is in $[0.5, 1.0]$ and time is in $[0.45, 1.0]$.
+\item values for flexibility are subjective:\\
+how you assign numbers to options changes  outcome.
+\item cost depends on what you include; \\
+for instance, gas alone would be \$72.50; \\
+but it would be less if you carpooled.
+\item weights are subjective.
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Sensitivity Analysis}
+
+\begin{changemargin}{1cm}
+Investigate impact of potential flaws.\\[1em]
+
+\structure{Sensitivity Analysis}: study of how variations
+influence outcome of a mathematical model.\\[1.5em]
+
+Poor person's sensitivity analysis: do what-if
+calculations.\\[1em]
+
+Replace the original value with some other value\\
+and repeat the analysis. \\
+
+(Possible issues if scores not independent.)
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Sensitivity Analysis: Examples}
+
+\begin{changemargin}{1.5cm}
+Train used to always be late, \\ so you might assign 9
+instead of 7.7. \\ \qquad (mostly on time recently.) \\[1em]
+
+Or, you
+might want to get to the airport slightly earlier than me, so you might also
+change the time for plane to 5.\\[1em]
+
+Or, you might be more cost-sensitive and less time-sensitive.\\[1em]
+
+Do these change the best decision?
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{CDM: Other References}
+
+\begin{changemargin}{1em}
+Previous notes contained an example (``Where should I go to
+University?'') and a reference to \emph{Introduction to
+  Professional Engineering in Canada}, Example 15.3
+(pp. 232--233). \\[1em]
+
+Another example: Waterloo Region's
+Rapid Transit alternatives \\ \qquad (no actual numbers). \\[1em]
+
+Another example: choosing which phones to buy for ECE155.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Discussion}
+
+\begin{changemargin}{2em}
+Computational decision-making systematically includes diverse factors
+to arrive at a ``best'' decision.\\[1em]
+
+Disadvantages:
+\begin{itemize}
+\item must numerically estimate weights and scores;
+\item estimating may be infeasible;
+\item estimates may reflect pre-conceived notions;
+\item does not generate new alternatives.
+\end{itemize}~\\
+
+Advantage:
+\begin{itemize}
+\item ensure that you give each alternative consideration.
+\end{itemize}~\\
+
+Note: you're not required to pick the highest-scoring alternative.
+
+\end{changemargin}
+\end{frame}
+
+
+
+\end{document}

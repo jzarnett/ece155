@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# Wrapper for figtex2eps so that it can produce
+# pdf output.
+#
+# Basically runs figtex2eps on the same fig file, but
+# then applies epstopdf to the result.
+#
+# $Id: figtex2pdf,v 1.3 2003/10/28 18:55:32 berland Exp $
+#
+
+function die
+{
+    echo "$1"
+    echo "Exiting..."
+    exit
+}
+
+# Check if gptex2eps exists in $PATH
+#which figtex2eps >/dev/null 2>&1 \
+#    || die " (Error) Could not find 'figtex2eps'. It must be installed for figtex2pdf to work."
+
+sh ./figtex2eps -pdf "$@"

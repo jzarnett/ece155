@@ -1,0 +1,469 @@
+\input{../configuration}
+\usepackage{alltt}
+
+\title{Lecture 19 --- Debugging}
+
+\author{Jeff Zarnett \& Patrick Lam \\ \small \texttt{jzarnett@uwaterloo.ca} \& \texttt{p.lam@ece.uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+
+  \vfill
+  \begin{center}
+    \CcGroupBySa{0.83}{0.95ex}\\
+                  {\tiny\CcNote{\CcLongnameByNcSa}}
+                  \vspace*{-2.5ex}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Debugging}
+\begin{changemargin}{1cm}
+After testing, it's time to look at debugging. 
+
+Programmers once believed it couldn't be done systematically.
+
+The ``Richard Feynman Method'':
+\begin{enumerate}
+	\item Write down the problem.
+	\item Think very hard.
+	\item Write down the answer.
+\end{enumerate}
+
+Not very realistic, especially for code someone else wrote.
+
+\mnote{This approach might happen sometimes, but it requires deep insight to the code and a sudden burst of brilliance to get it done. That's not very realistic, especially if you are debugging code you didn't write in the first place \cite{dgtd}.}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Two Kinds of Software}
+\begin{changemargin}{1cm}
+There are two kinds of software:
+
+Those that are so simple they obviously have no bugs.
+
+Those that are so complex they have no obvious bugs.
+
+\mnote{ The first category of programs is smaller than we might think. Look at our labs - the amount of code we write is small, and yet, I can say with certainty that every implementation, including mine, has bugs.}
+
+More simply stated: all software has bugs.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Systematic Approach}
+\begin{changemargin}{1cm}
+There are two kinds of software:
+
+Those that are so simple they obviously have no bugs.
+
+Those that are so complex they have no obvious bugs.
+
+\mnote{ The first category of programs is smaller than we might think. Look at our labs - the amount of code we write is small, and yet, I can say with certainty that every implementation, including mine, has bugs.}
+
+More simply stated: all software has bugs.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Debugging Strategy}
+
+\begin{changemargin}{1cm}
+\Large
+Based on the scientific method.
+\end{changemargin}
+
+\begin{changemargin}{2.3cm} \setlength{\itemsep}{1.5em}
+\large
+\begin{enumerate}
+\item Observe a failure.
+\item Invent a hypothesis.
+\item Make predictions.
+\item Test the predictions using experiments and observations.
+\begin{itemize}
+\item Correct? Refine the hypothesis.
+\item Wrong? Try again with a new hypothesis.
+\end{itemize}
+\item Repeat steps 3 and 4 as needed.
+\end{enumerate}
+
+~\\
+Note: be explicit!
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Observing a failure}
+
+\begin{changemargin}{1cm}
+\Large
+
+Basic problem: output is not as expected.\\[1em]
+
+Write down:
+\begin{itemize}
+\item the circumstances;
+\item expected output; and,
+\item actual output.
+\end{itemize}
+
+~\\
+\structure{Example}: When I enter a negative number like -5 (input) into my app (circumstances), it loops infinitely (output).
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Why is this happening?}
+
+\begin{changemargin}{1cm}
+\Large Make a hypothesis.\\[1em]
+
+Your hypothesis guesses at a cause of the failure, consistent with 
+the observations.\\[1em]
+
+\large
+\structure{Example}: The stopping condition in my program is when
+{\tt counter == 0}, which never occurs as I'm decrementing 
+{\tt counter} and it is negative.
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Make predictions}
+
+\begin{changemargin}{1cm}
+\Large
+What else would happen if your prediction was correct?\\[1em]
+
+\large
+\structure{Example}: My program would also loop infinitely on
+an input of 1.5, as decrementing 1.5 would also never hit 0.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Test and Refine/Discard}
+
+\begin{changemargin}{1cm}
+\Large
+Perform an experiment to see if your hypothesis is correct.
+
+\large
+\begin{itemize}
+\item Yes? OK, you can refine the hypothesis.
+\item No? Try something else.
+\end{itemize}
+~\\
+
+\structure{Example}: Yes, feeding 1.5 to my app loops 30-odd times
+before it crashes. Hypothesis seems correct.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Test and Refine/Discard}
+\begin{changemargin}{1cm}
+\Large
+When testing your hypothesis, also try something that would \emph{disprove} your theory.
+
+It's a natural human tendency (called confirmation bias).
+\end{changemargin}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Repeat as Needed}
+
+\begin{changemargin}{1cm}
+
+\Large
+Until you have an actionable hypothesis, continue to refine or
+discard it, conducting experiments along the way.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fix the problem}
+
+\begin{changemargin}{1cm}
+\Large
+Modify the code so that the failure can no longer occur.\\[1em]
+
+\large
+\structure{Example}: Instead of checking {\tt counter == 0},
+check {\tt counter > 0}.
+\end{changemargin}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bug Localization}
+
+\begin{changemargin}{1cm}
+
+\Large
+Key part of the hypothesis: \\
+~~~~\structure{where} is the problem?\\[1em]
+
+\large
+\structure{Example}: The failure was caused at an incorrect 
+test for {\tt counter == 0}.\\[1em]
+
+\Large
+Isolate the failure to
+a specific subsystem or module.\\[1em]
+
+Can swap out with known-good versions of modules as an experiment.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Debugging Tactics}
+
+\begin{changemargin}{1cm}
+\Large
+Four key tactics:
+\begin{itemize}
+\item Code review.
+\item Code instrumentation.
+\item Single-step execution.
+\item Take a Break.
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Take a Break}
+
+\begin{changemargin}{1cm}
+
+
+Take a break?!
+
+Sometimes when you're stumped, a break is what you need.
+
+Even taking 15 minutes to get coffee can help.\\
+\quad Other times, going home and getting a good night's sleep.
+
+
+Your subconscious continues to work on the problem.\\
+\quad The answer might come to you when you don't expect it.
+
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Code Review}
+
+\begin{changemargin}{1cm}
+\Large
+
+Just stare at the code.\\[1em]
+
+\begin{itemize}
+\item I find this most effective.
+\item You need to have a good idea of where the fault lies.
+\item Get a friend to help; rubber duck debugging?
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Code instrumentation}
+
+\begin{changemargin}{1cm}
+\Large
+
+Works very well with the strategy above.
+
+\begin{itemize}
+\item Use {\tt print} or {\tt Log.d} statements to get
+information on program state.
+\item Verify hypotheses based on this information.
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Single-step execution}
+
+\begin{changemargin}{1cm}
+\Large
+
+Use a debugger to manually inspect program state.
+
+\begin{itemize}
+\item Low-level view of variable contents.
+\item Easy to get bogged down.
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Tactics for Bug Localization}
+
+\begin{changemargin}{1cm}
+\Large
+
+\begin{itemize}\setlength{\itemsep}{1em}
+\item Supply different inputs;
+\item Instrument the program;
+\item Run the program;
+\item Set breakpoints;
+\item Examine internal state.
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Assertions}
+
+\begin{changemargin}{1cm}
+\Large
+
+\structure{A statement about the world.}
+
+\normalsize
+\begin{itemize}
+\item Should always be true.
+
+\item Not really for debugging; more for in-line documentation. 
+
+\item Aids debugging when it fails---something to fix.
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Assertion Examples}
+
+\begin{changemargin}{.5cm}
+
+\begin{verbatim}
+  /* example 1: i is odd */
+  if (i % 2 == 0) 
+  { 
+    ... 
+  } 
+  else 
+  { 
+    assert i % 2 == 1; 
+    ...
+  }
+
+  /* example 2: doubly-linked list */
+  assert this.next.prev == this : 
+    (this+" fails doubly-linked node invariant");
+\end{verbatim}
+
+\end{changemargin}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Assertion Gotcha}
+
+\Large
+\begin{center}
+\structure{An assertion should never have a side effect.}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Single-step execution}
+
+\begin{changemargin}{1cm}
+\Large
+Helps with both error localization and hypothesis testing.\\[1em]
+
+Interactively monitor and change program values as the
+program is executing.
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem with Single-step execution}
+
+\begin{changemargin}{1cm}
+\Large
+Too many steps!\\[1em]
+
+\uncover<2>{Solution: \alert{breakpoints}.}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Kinds of breakpoints}
+
+\begin{changemargin}{1cm}
+
+\Large
+\begin{itemize}
+\item Line breakpoints
+\item Exception breakpoints
+\item Watchpoints
+\item Method breakpoints
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Eclipse Demo}
+
+\begin{changemargin}{1cm}
+
+To close out I'll show you a bit of debugging in Eclipse.
+\end{changemargin}
+
+\end{frame}
+
+
+\end{document}

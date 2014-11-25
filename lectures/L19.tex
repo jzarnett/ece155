@@ -1,0 +1,162 @@
+\input{header.tex}
+
+\begin{document}
+
+\lecture{ 19 --- Debugging}{\term}{Patrick Lam and Jeff Zarnett}
+
+We've discussed testing, and now it's time to look at debugging. At one time, many programmers believed that debugging could not be done in a systematic way. It was expected that the only way to do it was the Richard Feynman method: \emph{write down the problem; think very hard; write down the answer}. This approach might happen sometimes, but it requires deep insight to the code and a sudden burst of brilliance to get it done. That's not very realistic, especially if you are debugging code you didn't write in the first place \cite{dgtd}.
+
+All software has bugs. Programs can be divided into two categories: those that are so simple they obviously have no bugs, and those that have no obvious bugs. The first category of programs is smaller than we might think. Look at our labs - the amount of code we write is small, and yet, I can say with certainty that every implementation, including mine, has bugs.
+
+Debugging is something you will do a lot of in co-op and even in other classes. So let's learn the systematic, scientific method.
+
+\section*{Debugging Strategy} 
+We can use the scientific method as a strategy for debugging.
+Here's an adaptation of the scientific method, from Zeller's book:
+\begin{enumerate}
+\item Observe a failure (i.e. as described in the problem description).
+\item Invent a \emph{hypothesis} as to the failure cause that
+is consistent with the observations.
+\item Use the hypothesis to make \emph{predictions}.
+\item Test the hypothesis by \emph{experiments} and further
+\emph{observations}:
+\begin{itemize}
+\item If the experiment satisfies the predictions, refine the hypothesis.
+\item If the experiment does not satisfy the predictions, create an alternate hypothesis.
+\end{itemize}
+\item Repeat steps 3 and 4 until the hypothesis can no longer be refined.
+\end{enumerate}
+Once you have a cause for the failure, then you can also fix the failure
+by modifying the program. 
+
+The more explicit you are about the various products (what's the failure?
+what's the hypothesis?), the easier you'll find it to fix the problem.
+
+\paragraph{Bug Localization.} A key part of the hypothesis underlying
+a bug is the location of the bug in the code.  This is especially true
+for larger software, and should be the first step in your debugging
+strategy.
+
+You should attempt to localize the bug to within a subsystem or a set
+of modules. You may have to do this iteratively, continuing to
+localize the bug to narrower and narrower sets of modules. Once you
+know \emph{where} the bug is, you'll find it to be easier to refine
+your hypothesis about \emph{what} the bug may be.
+
+But how to localize the bug? The best way to do this is to split the problem space. Suppose you created a program that should do ten things in a sequence. It crashes, so you have a bug that you need to remove. When you look at the output, you see that the first seven things worked fine, but the last three are not visible from the output. Now we have some idea about where the problem might be: it could have crashed on item eight, nine, or ten \cite{howToProgrammer}. And as a first guess, you might focus in on number eight. 
+
+When you start debugging, it might look like every possible line in the code is potentially the one going wrong. As you gain experience you will find some are more likely to cause problems than others: input/output, a complex block, interaction with third-party code. Finding roughly where the bug is will be a start, but we need to find which line the bug is on. 
+
+\section*{Debugging Tactics}
+You can combine the general strategy with the tactics I'll present
+here to debug programs. These tactics are applicable to many
+languages, but I'll tell you about Java implementations.  There are
+four general kinds of tactics that you can use to debug your code.
+
+\begin{itemize}
+\item \emph{Code review}: I find this to be the most effective
+  technique.  Stare at your code and think hard about what it's
+  supposed to be doing, compared to what it's actually doing.
+\item \emph{Code instrumentation}: Put {\tt print} statements (or
+  equivalent) into your code. Create hypotheses about what the program
+  is doing, insert code to get more observable outputs, and verify
+  your hypotheses by running the program.
+\item \emph{Single-step execution}: You can also step through your
+  code in a debugger line-by-line and manually inspect the program
+  state. This tactic is only effective once the bug is localized down to a small area.
+\item \emph{Take a Break:} Sometimes when you are stumped, taking a break will help. A 15-minute coffee break or a good night's sleep might be all your brain needs if you are stuck \cite{howToProgrammer}. If you take some time away from the code, your subconscious continues to work on the problem and may present you with a solution later on.
+\end{itemize}
+
+\paragraph{Tactics for bug localization.}
+To formulate a hypothesis about the location or identity of a bug, you
+must collect sufficient diagnostic information using the above
+tactics: you might supply different inputs, run the
+instrumented program, set breakpoints, and examine internal
+state. Note that doctors do this---they
+send a patient for tests so that there is sufficient diagnostic info
+to formulate a hypothesis about the underlying cause.
+
+\subsection*{Code instrumentation} 
+
+This is a popular choice when you cannot attach the debugger to the program - either because it runs on a server or at some client site. Logs can also provide some statistics and performance related data. The amount of data to output in a log naturally involves a tradeoff between brevity and information. If not enough information is output to the log, you will not have what you need to identify and fix the bug. If too much data is output to the log, the data you need will be lost in the noise \cite{howToProgrammer}.
+
+\paragraph{Logging for Android Development}
+\vspace*{-1em}
+{\tt System.out.println()} is great
+for debugging console applications, but doesn't work on Android. Instead, use:
+
+{\tt ~~~Log.d("tag", "i = "+i); }
+
+This writes out a debug (d) logging message, which appears e.g. in your Eclipse
+{\tt LogCat} window. Instead of {\tt d}, you can write {\tt Log.d},
+{\tt .i}, {\tt .v}, {\tt .w} or {\tt .wtf}. You can then filter out logging messages
+by level or tag, so that you only see the ones you're interested in.
+
+Beyond {\tt Log.d()} for getting information out of your program,
+you can rely on assertions. Recall what we learned about Assertions:
+
+
+\paragraph{Assertions.} An assertion is a statement about the world;
+for instance, I assert that PowerPoint is often harmful to education.
+In the context of code, assertions are logical expressions that should
+always be true. When the program executes an assertion, it verifies
+that the logical expression indeed evaluates to true.  If not, then it
+throws an {\tt AssertionError}, which will usually stop the
+program. You can also supply a second parameter to the assertion,
+containing a message to be reported with the error in the event of
+assertion failure.
+
+Two examples of assertions: 
+\begin{itemize} 
+\item \verb+if (i % 2 == 0) { ... } else { /* i is odd */ }+:
+we know that {\tt i} is odd, so use an assertion to document this, e.g
+
+\verb+ if (i % 2 == 0) { ... } else { assert i % 2 == 1; }+
+\item When implementing a doubly-linked list, you know that following
+{\tt next} and then {\tt prev} should get back to the original node.
+Include:
+
+\verb+ assert this.next.prev == this : "List fails doubly-linked node invariant";+
+\end{itemize}
+
+Assertions should never have side effects.
+
+\subsection*{Single-step execution}
+Single-step execution can help you both with localization and
+hypothesis testing.  Since programs can be huge, you don't want to run
+through the whole program every time. Hence \emph{breakpoints}. You
+can run the program until it hits the breakpoint and then
+single-step. 
+
+Sprinkle breakpoints throughout the program, before lines that you
+suspect to be faulty. Then single-step across the questionable lines, inspecting
+(and perhaps modifying) relevant program state both before and after
+the line. If the state is infected, then you've isolated the bug.
+
+\paragraph{Kinds of Breakpoints.} Eclipse supports a variety of different breakpoint
+types\cite{eclipse:bp}, 
+although most of the time a Line Breakpoint will suffice.
+
+\begin{itemize}
+\item \emph{Line breakpoints} halt program execution at a particular line. (You can also 
+make them conditional: only halt program execution when a particular condition is true;
+or when a particular value changes.)
+\item \emph{Exception breakpoints} halt program execution and load the debugger when
+the program throws a particular exception.
+\item \emph{Watchpoints} halt program execution when a particular memory location changes
+(or is accessed).
+\item \emph{Method breakpoints} halt program execution upon entry or exit from a particular
+method. (Entry is easy to simulate with line breakpoints, but exit is potentially hard for
+large methods.)
+\end{itemize}
+
+It's easy to waste a lot of time fiddling with the debugger. Debuggers
+work best if you know what you're looking for ahead of time, and 
+have a specific experiment in mind for a particular debugger invocation.
+Otherwise you're likely to just waste time. Single-stepping may be useful
+as you're gaining experience with software development, but tends to be
+generally less useful as you get better as debugging.
+
+\input{bibliography.tex}
+
+\end{document}

@@ -1,0 +1,420 @@
+\input{../configuration}
+
+\usepackage{alltt}
+
+\title{Lecture 2 --- Introduction to Java}
+
+\author{Patrick Lam \& Jeff Zarnett \\ \small \texttt{p.lam@ece.uwaterloo.ca} \& \texttt{jzarnett@uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Java for C\# Programmers}
+\begin{changemargin}{1cm}
+The labs this semester will require you to write Java
+code for the Android platform, yet you learned C\# in ECE~150.
+
+
+Fortunately, there are a lot of similarities between Java and C\#,
+so you should have a smooth transition. 
+
+As it says in the syllabus, please take some time at the beginning of the term to get caught up on Java. 
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Java: Object Oriented}
+\begin{changemargin}{1cm}
+
+Java is an object-oriented programming language: 
+\begin{itemize}
+\item Every piece of data is encapsulated in some object.
+\item Every executable statement is in some method.
+\item Every object is an instance of a class (or is an array).
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Java Types}
+\begin{changemargin}{1cm}
+
+Java has eight primitive (basic) types. Every variable will be one of the primitive types or a reference to a Java object.
+
+A reference may be \texttt{null} or contain the address of an instance of an object. 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Eight Basic Types}
+\begin{changemargin}{1cm}
+
+The eight basic types are:
+
+\begin{enumerate}
+\item \texttt{boolean}
+\item \texttt{char}
+\item \texttt{byte}
+\item \texttt{short}
+\item \texttt{int}
+\item \texttt{long}
+\item \texttt{float}
+\item \texttt{double}
+\end{enumerate}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Floating Point Special Values}
+\begin{changemargin}{1cm}
+
+Note that in addition to their normal values, the floating point types have some extra weird values: 
+
+\texttt{NEGATIVE\_INFINITY}, \texttt{POSITIVE\_INFINITY}, and \texttt{NaN}.
+
+These special values result from operations that go out of range or make no mathematical sense.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Java Types}
+\begin{changemargin}{1cm}
+
+he most common types you are likely to use are \texttt{boolean}, \texttt{int}, and \texttt{double} (in the labs, \texttt{float} gets a fair amount of use).
+
+You have no doubt noticed that \texttt{String} does not appear.
+
+It's not a simple type; it's a reference to an array of characters.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Strings}
+\begin{changemargin}{1cm}
+
+Declare a \texttt{String} as \texttt{null}, like this: \texttt{String s = null;}.
+
+Strings are immutable: once created, they don't change. 
+
+If you add to a String or replace characters in it, you get a new String back and not the old one. 
+
+Example: \texttt{string1.replaceAll('?', '.')}, $\rightarrow$ assign that result  (\texttt{string1 = string1.replaceAll('?', '.')}). 
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Strings}
+\begin{changemargin}{1cm}
+
+The equality operator \texttt{==} can behave strangely on Strings. 
+
+Use the \texttt{equals} method:\\
+\quad \texttt{if (string1.equals(string2) \{ \ldots~\} }.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Wrapper Classes}
+\begin{changemargin}{1cm}
+Java also provides wrapper classes for the primitive types.
+
+Work with them as if they were regular objects. 
+
+The wrapper class for \texttt{int}: \texttt{Integer} 
+
+(Mostly, just capitalize the first letter). 
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Complex Objects}
+\begin{changemargin}{1cm}
+Just like in C\# you create them in classes. 
+
+To create an instance of that class you use the \texttt{new} keyword. 
+
+Example: \texttt{Integer example = new Integer(20);}. 
+
+The \texttt{new} keyword invokes the class Constructor.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Java Semantics}
+\begin{changemargin}{1cm}
+
+Java does not have \texttt{struct}s; classes only. 
+
+Frequently asked questions: there are no pointers or delegates.
+
+Java uses \textit{Garbage Collection}. No freeing up or de-allocating objects that are no longer needed.
+
+This prevents the extremely common error of trying to use some object/memory that has been released.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Imperative Constructs}
+\begin{changemargin}{1cm}
+
+\begin{itemize}
+\item Assignment: {\tt x = y;}
+\item Math: {\tt i = j + k}. (This includes the operators like += etc.)
+\item Expressions: {\tt z > 10 || ((c == 0) \&\& (a == b))}
+\item If-Statements: {\tt if(cond) \{ \ldots~\} else if (cond2) \{ \ldots~\}  else  \{ \ldots~\} }
+\item For Loops: {\tt for (init; cond; expr2) \{ \ldots~\} }
+\item While Loops: {\tt while (cond) \{ \ldots~\} }
+\item Do-While Loops: {\tt do \{ \ldots~\} while (cond); }
+\item Switch-Case Statements: {\tt switch (v) \{ case N: \ldots; break; case M: \ldots; break; default: \ldots; break; \} }
+\end{itemize}
+However, C\#'s {\tt foreach (type t in c)} is instead {\tt for (Type t : c)} in Java.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Methods}
+\begin{changemargin}{1cm}
+
+Methods work the same way also:
+\begin{verbatim}
+modifiers returnType methodName(param-list) {
+  T1 t; returnType r;
+  ...
+  return r;
+}
+\end{verbatim}
+
+When you call a method on an object, you still use the \texttt{.} between the object and the method, such as \texttt{t.toString()}.
+
+In C\#, the method name convention is
+{\tt UppercaseFirstLetter()}, while in Java, it is {\tt lowercaseFirstLetter()}.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Simple Unit Converter: C\#}
+\begin{changemargin}{1cm}
+
+{\scriptsize
+\begin{verbatim}
+using System;
+
+class FootConverter {
+  static double ConvertFeetToMeters(double feet) {
+    return feet * 3.28;
+  }
+  static void Main(string[] s) {
+    Console.WriteLine("{0} ft is {1} m.", s[0], 
+      ConvertFeetToMeters(Convert.ToDouble(s[0])));
+  }
+}
+\end{verbatim}
+}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Simple Unit Converter: Java}
+\begin{changemargin}{1cm}
+
+{\scriptsize
+\begin{verbatim}
+class FootConverter {
+  static double convertFeetToMeters(double feet) {
+    return feet * 3.28;
+  }
+  public static void main(String[] s) {
+    System.out.printf("%s ft is %.2f m.\n", s[0],
+      convertFeetToMeters(Double.parseDouble(s[0])));
+  }
+}
+\end{verbatim}
+}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Arrays \& Collections}
+\begin{changemargin}{1cm}
+
+The simple array is created with the \texttt{[]} square brackets. 
+
+Example: \texttt{int[] numbers = new int[10];}
+
+You can have null elements in an array (say, of Strings) without this affecting the array length. 
+
+An array is technically an object so you can assign it where a generic \texttt{Object} is expected. 
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Arrays}
+\begin{changemargin}{1cm}
+
+Multidimensional arrays are also allowed, but only for primitive types \texttt{int[][][] coordinates = new int[5][10][2];}.  
+
+This is not a big restriction because you can just have an array of arrays. 
+
+Unlike C\# though, you can't specify a rectangular array.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Arrays}
+\begin{changemargin}{1cm}
+
+This is great and all, but like the String the explicit array is of fixed size.
+
+Create a new, bigger one if you needed it and copy all the data to the bigger one...? 
+
+Allocate an array of size 999 when we aren't sure how many we'll need?
+
+Wouldn't it be nice if we had a dynamic collection?
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Java Collections}
+\begin{changemargin}{1cm}
+
+In Java, we do, and they're called, \texttt{Collection}s. 
+
+The most common one: the \texttt{List}. 
+
+The type List takes a parameter in angle brackets to tell you what this is a list of. 
+
+Example: \texttt{List<String>}.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lists}
+\begin{changemargin}{1cm}
+
+Note that you can't call \texttt{new List<String>()} because no constructor exists for just plain \texttt{List}. 
+
+Be specific about what kind of list you want to have, such as \texttt{ArrayList} (a very common one) or \texttt{LinkedList}.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Three Basic Collections}
+\begin{changemargin}{1cm}
+
+Three basic collections exist:
+
+\begin{enumerate}
+	\item List
+	\item Map (in a later lecture)
+	\item Set (like a list, but no duplicates)
+\end{enumerate}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Your First Java Program: C\# Equivalent}
+\begin{changemargin}{1cm}
+
+\begin{verbatim}
+using System;
+
+class C {
+  static void Main() {
+    Console.WriteLine("Hello, world!");
+  }
+}
+\end{verbatim}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Your First Java Program}
+\begin{changemargin}{1cm}
+
+\begin{verbatim}
+class C {
+  public static void main(String[] argv) {s
+    System.out.println("Hello, world!");
+  }
+}
+\end{verbatim}
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Logging for Android}
+\begin{changemargin}{1cm}
+Android tip: {\tt System.out.println()} is great
+for debugging console applications, but doesn't work on Android.
+
+{\tt ~~~Log.d("tag", "i = "+i); }
+
+This writes out a debug (d) logging message, which appears e.g. in your Eclipse
+{\tt LogCat} window.
+
+
+You can then filter out logging messages
+by level or tag, so that you only see the ones you're interested in.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Eclipse Demo}
+\begin{changemargin}{1cm}
+
+Now we'll open up Eclipse and create some basic Java programs. We can take a look at the syntax of Java in simple situations.
+
+
+\end{changemargin}
+\end{frame}
+
+
+
+\end{document}
+

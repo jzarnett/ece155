@@ -1,0 +1,742 @@
+\input{../configuration}
+
+\title{Lecture 7 --- Android II}
+
+\author{Patrick Lam\\ \small \texttt{p.lam@ece.uwaterloo.ca} }
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\part{Programming Tips}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Programming Tips}
+\begin{changemargin}{1cm}
+
+First, a programming tip for object-oriented systems. 
+
+Sometimes, you have code
+in a class, say an {\tt EventListener}, which needs access to the object
+that created it, say the {\tt MainActivity}. 
+
+Add a field to the {\tt EventListener}
+with a reference to the {\tt MainActivity}, as follows:
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Programming Tips}
+\begin{changemargin}{0.5cm}
+
+{\scriptsize \begin{verbatim}
+    public class MainActivity extends Activity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+        // ...
+        LightSensorEventListener el = new LightSensorEventListener(this);
+      }
+    }
+
+    class LightSensorEventListener implements SensorEventListener {
+      MainActivity m;
+
+      public LightSensorEventListener(MainActivity m) {
+        this.m = m;
+      }
+
+      // ...
+    }
+\end{verbatim}
+}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Programming Tips}
+\begin{changemargin}{1cm}
+
+Don't put your app in the {\tt com.example} namespace. 
+
+Put it in {\tt ca.uwaterloo}.
+\end{changemargin}
+\end{frame}
+
+\part{Android Intents}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Intents}
+\begin{changemargin}{1cm}
+
+So far we only examined an Activity in isolation.
+
+For the labs, you won't need anything more.
+
+In real apps, there's usually multiple activities.
+
+We link them with Intents.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Intents}
+\begin{changemargin}{1cm}
+
+An \emph{Intent} specifies a request or describes an event.
+
+The simplest possible Intent
+explicitly names the Activity it would like to start.
+
+{\small 
+\begin{lstlisting}
+  Intent intent = new Intent(this, OtherActivity.class);
+  startActivity(intent);
+\end{lstlisting}
+}
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Intent: Request Example}
+\begin{changemargin}{1cm}
+
+
+The Map activity puts up links to webpages 
+\& phone numbers. 
+
+Upon click, the Map broadcasts either the web browser
+Intent or the call Intent.
+
+The Map trusts that some other application will handle the Intent.
+\end{changemargin}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Intent: Event Example}
+\begin{changemargin}{1cm}
+
+The system broadcasts an Intent when the phone
+goes into airplane mode.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{How Intents Work}
+\begin{changemargin}{1cm}
+ One component broadcasts an Intent. 
+
+Then, 0 or more components receive the Intent. 
+
+Android may pick a component
+to act upon the Intent.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Choosing the Handler}
+\begin{changemargin}{1cm}
+\begin{center}
+\includegraphics[height=.5\textheight]{images/completeaction.png}
+\end{center}
+(Image from stackoverflow.com)
+
+In this case, the user is asked to choose.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Parts of an Intent}
+\begin{changemargin}{1cm}
+
+Each intent contains an \emph{action} which represents the requested
+action, along with optional data. For instance:
+
+\hspace*{2em} \begin{tabular}{ll}
+ACTION\_MAIN & Launch an activity \\
+ACTION\_DIAL & Dial a phone number \\
+ACTION\_SEARCH & Perform a search
+\end{tabular}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Parts of an Intent}
+\begin{changemargin}{1cm}
+
+The two following code fragments yield identical Intents with an action (but no data):
+
+\end{changemargin}
+{\scriptsize
+\begin{verbatim}
+new Intent(Intent.ACTION_EDIT);   |  Intent intent = new Intent();
+                                  |  intent.setAction(Intent.ACTION_EDIT);
+\end{verbatim}
+}
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Parts of an Intent}
+\begin{changemargin}{1cm}
+
+The \emph{data} is the payload of the event. 
+
+Android intent data is in
+URI (Universal Resource Identifier) format\footnote{What's a URI? It's
+  like a URL. The exact distinction is unimportant for ECE155.}. 
+  
+  The
+obvious thing to put into data is a web address, but other data formats
+are possible as well:
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Parts of an Intent}
+{\scriptsize
+\begin{verbatim}
+new Intent(Intent.ACTION_DIAL,           | Intent intent = 
+                                         |   new Intent(Intent.ACTION_DIAL);
+           Uri.parse("tel:6175551212")); | intent.setData(
+                                         |   Uri.parse("tel:6175551212"));
+\end{verbatim}
+}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Parts of an Intent}
+\begin{changemargin}{1cm}
+
+You can also tell Android what type of data to expects.
+
+Use the {\tt setType} method. Example: {\tt
+  intent.setType("audio/mp3");}
+
+This is optional. 
+
+
+\end{changemargin}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Intent Extras}
+\begin{changemargin}{1cm}
+
+Beyond the data, Intents may also contain \emph{extras}. 
+
+Extras
+consist of key-value pairs. 
+
+They contain more information than what you
+can easily put into a URI.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Intent Extras Example}
+\begin{changemargin}{1cm}
+
+{\small 
+\begin{lstlisting}
+Intent intent = new Intent(Intent.ACTION_SEND);
+intent.putExtra(android.content.Intent.EXTRA_EMAIL,
+  new String[] {
+    "p.lam@ece.uwaterloo.ca", "root@uwaterloo.ca"
+  });
+\end{lstlisting}
+}
+
+
+\end{changemargin}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Intent Flags}
+\begin{changemargin}{1cm}
+
+Finally, Intents may also contain \emph{flags}.
+
+These modify how the
+Intent gets launched and how it will be processed by the recipient. 
+
+
+They don't affect which activity gets launched. 
+
+Examples: {\tt FLAG\_ACTIVITY\_NO\_HISTORY} and 
+{\tt FLAG\_ACTIVITY\_RESET\_TASK\_IF\_NEEDED}.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Intent Resolution}
+\begin{changemargin}{1cm}
+We've can explicitly name which Activity we want to launch.
+
+We can implicitly launch an activity by
+describing what we want. 
+
+In either case, use {\tt
+  startActivity}  to launch the intent.
+
+Implicit intent resolution: system searches the
+available Activities, using the Intent's action, data
+and category.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Requesting Intent Resolution}
+\begin{changemargin}{1cm}
+
+{\small 
+\begin{lstlisting}
+  private static final int REQUEST_CODE = 1;
+
+  public void pickImage(View View) {
+    Intent intent = new Intent();
+    intent.setType("image/*");
+    intent.setAction(Intent.ACTION_GET_CONTENT);
+    intent.addCategory(Intent.CATEGORY_OPENABLE);
+    startActivityForResult(intent, REQUEST_CODE);
+  }
+\end{lstlisting}
+}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Responding to Intent Resolution Requests}
+\begin{changemargin}{1cm}
+
+In your application's manifest, there's an XML tag for each activity.
+That tag can take an \emph{intent filter} describing the Intents
+that the activity is prepared to handle. For example:
+{\scriptsize 
+\begin{verbatim}
+<activity
+    android:name=".BrowserActivity"
+    android:label="@string/app_name" >
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+
+        <data android:scheme="http" />
+    </intent-filter>
+</activity>
+\end{verbatim}
+}
+This activity is able to view any URI that begins with {\tt http}.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Receiving Activity Results}
+\begin{changemargin}{1cm}
+
+When you launch a sub-Activity, sometimes you're hoping for a result
+back from that activity. 
+
+For instance, you may be asking for the
+user to pick a contact from the contact list. 
+
+Or you may be asking the
+user for a favourite colour. 
+
+The sub-activity should
+create a new Intent and call its {\tt setResult} method:
+
+{\scriptsize 
+\begin{lstlisting}
+  Intent retval = new Intent();
+  retval.putExtra("color", "blue");
+  setResult(RESULT_OK, retval);
+\end{lstlisting}
+}
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Receiving Activity Results}
+\begin{changemargin}{1cm}
+
+Then in the caller, we provide a new callback, {\tt onActivityResult()}.
+
+{\scriptsize
+\begin{verbatim}
+  @Override
+  protected void onActivityResult(int requestCode, 
+                           int resultCode, Intent data) {
+    if (resultCode == RESULT_OK && requestCode == YOUR_REQUEST_CODE) {
+      if (data.hasExtra("color")) {
+        String favouriteColor = data.getExtras().getString("color");
+      }
+   }
+  }
+\end{verbatim}
+}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Receiving Activity Results}
+\begin{changemargin}{1cm}
+
+
+The {\tt resultCode} is an {\tt int} you provided while starting the
+sub-activity. 
+
+It allows you to distinguish different sub-activities you
+may have started.
+
+
+
+\end{changemargin}
+\end{frame}
+
+
+
+\part{Saving \& Restoring State}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Saving and Restoring State}
+\begin{changemargin}{1cm}
+Sometimes, Android kills your activity but brings it back later.
+
+You want the activity to have the same data when it comes back from the
+dead.
+
+This will happen by default for anything in a UI element, but
+not for any fields stored in the activity (like, say, step counts).
+
+In your activity, implement the callback {\tt onSaveInstanceState()}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Saving State}
+
+\begin{changemargin}{1cm}
+ To save state:
+ 
+(The Bundle {\tt b} is another key/value map.)
+ 
+\end{changemargin}
+
+{\scriptsize
+\begin{lstlisting}
+class MainActivity ... {
+  String color;
+
+  @Override
+  protected void onSaveInstanceState(Bundle b) {
+    super.onSaveInstanceState(b);
+    b.putString("color", color);
+  }
+}
+\end{lstlisting}
+}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Restoring State}
+
+\begin{changemargin}{1cm}
+ You can then restore whatever data you saved in the {\tt onCreate} method of the same Activity:
+ 
+\end{changemargin}
+
+{\scriptsize
+\begin{lstlisting}
+class MainActivity ... {
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    if (savedInstanceState != null)
+      color = b.getString("color");
+  }
+}
+\end{lstlisting}
+}
+\end{frame}
+
+
+\part{Graphics on Android}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{XML versus Programmatic Construction}
+
+\begin{changemargin}{1cm}
+Use the right tool for the job!\\[1em]
+
+XML = more safety:
+\begin{itemize}
+\item Select and place items ahead of time.
+\item Don't need the emulator to see how things will look.
+\item More error checking.
+\end{itemize}
+~\\
+
+Java Code = more flexibility:
+\begin{itemize}
+\item Can choose widgets based on user input or computations.
+\item Can use loops, etc to generate related items.
+\item Less error checking.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{What ``inflate'' means}
+
+\begin{changemargin}{1cm}
+These lines keep on showing up in our code:
+{\tiny
+\begin{lstlisting}
+// Inflate the menu; this adds items to the 
+// action bar if it is present.
+getMenuInflater().inflate(R.menu.activity_main, menu);
+\end{lstlisting}
+}
+
+``Inflate'' = taking an XML and\\
+ creating {\tt View} objects, based
+on the description in the XML.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Putting Graphics on the Screen}
+\begin{changemargin}{1cm}
+Two choices:
+\begin{itemize}
+\item use a {\tt View} (easier; infrequent updates); or
+\item paint to a {\tt Canvas} (more complicated, many updates).
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Main class: {\tt Drawable}}
+\begin{changemargin}{1cm}
+Represents ``something that can be drawn'', e.g.
+\begin{itemize}
+\item BitmapDrawable
+\item ShapeDrawable
+\item PictureDrawable
+\item etc.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Drawing to a View}
+\begin{changemargin}{1cm}
+As always with Android, either:
+\begin{itemize}
+\item through XML; or
+\item programmatically.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Bitmaps through ImageView}
+
+\begin{changemargin}{1cm}
+Easiest way\footnote{Thanks to \scriptsize \url{http://www.cs.umd.edu/class/fall2010/CMSC498G/CMSC498G/Slides_files/Graphics.pptx}}: 
+\begin{itemize}
+\item put a picture ({\tt PNG}, {\tt JPG} or {\tt GIF}) in {\tt res/drawables}.
+\item use an {\tt ImageView} to include it on the screen.
+\end{itemize}
+\end{changemargin}
+
+{\tiny from: \url{http://developer.android.com/guide/topics/graphics/2d-graphics.html}}
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+  // Instantiate an ImageView and define its properties programmatically
+  ImageView i = new ImageView(this);
+  i.setImageResource(R.drawable.my_image);
+   // set the ImageView bounds to match the Drawable's dimensions
+  i.setAdjustViewBounds(true);
+  i.setLayoutParams(new Gallery.LayoutParams
+      (LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+  // Add the ImageView to the layout and 
+  //  set the layout as the content view
+  mLinearLayout.addView(i);
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Bitmaps through ImageView XML}
+
+\begin{changemargin}{1cm}
+Again, you need the appropriate drawable in the {\tt res/drawables} directory.\\[1em]
+Note: harder to go wrong here.
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+  <ImageView
+    android:id="@+id/imageView1"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:src="@drawable/myImage" />
+\end{lstlisting}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Drawing on a ShapeDrawable}
+\begin{changemargin}{1cm}
+Primitive shapes: 
+\begin{itemize}
+\item PathShape---lines;
+\item RectShape---rectangles;
+\item OvalShape---ovals and rings;
+\end{itemize}
+Once again, we put these into an {\tt ImageView}.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Shapes from XML}
+
+\begin{changemargin}{1cm}
+Again, you need the appropriate drawable in the {\tt res/drawables} directory.\\[1em]
+Note: harder to go wrong here.
+
+In the Layout XML:
+\begin{lstlisting}[basicstyle=\scriptsize]
+  <ImageView android:id="@+id/imageView2"
+    android:src="@drawable/cyan_shape" ... />
+\end{lstlisting}
+
+Next, we create an XML for the drawable itself:
+\begin{lstlisting}[basicstyle=\scriptsize]
+  <shape android:shape="oval" ... >
+    <size android:width="160px" android:height="160px" />
+    <solid android:color="#7f00ffff" />
+  </shape>
+\end{lstlisting}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Shapes, programmatically}
+\begin{changemargin}{1cm}
+Everything you can do in XML, you can do in code.
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+  private class MyDrawableView extends ImageView {
+    private ShapeDrawable mDrawable;
+    public MyDrawableView(Context context, int color) {
+      ...
+      mDrawable = new ShapeDrawable(new OvalShape());
+      mDrawable.getPaint().setColor(color);
+      mDrawable.setBounds(0, 0, size, size);
+      mDrawable.setAlpha(alpha);
+    }
+    protected void onDraw(Canvas canvas) {
+      mDrawable.draw(canvas);
+    }
+  }
+\end{lstlisting}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Shapes, programmatically}
+\begin{changemargin}{1cm}
+In the Activity's {\tt onCreate()}:
+\begin{lstlisting}[basicstyle=\scriptsize]
+  MyDrawableView magentaView = 
+    new MyDrawableView(this, Color.MAGENTA);
+  magentaView.setLayoutParams
+    (new LinearLayout.LayoutParams(160, 160));
+  addView(magentaView);
+\end{lstlisting}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{9-patches}
+
+\begin{changemargin}{1cm}
+
+\includegraphics[height=.7\textheight]{images/concurrent-engineering.png}
+
+I manually stretched the boxes using a graphics editor.\\[1em]
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{9-patches: automatic stretching}
+
+\begin{changemargin}{1cm}
+{\tt NinePatchDrawable} can stretch your images automatically!
+
+\includegraphics[height=.7\textheight]{images/ninepatch_raw}\\
+
+Just use a {\tt .9.png} file.  Edit using {\tt tools/draw9patch}.
+\end{changemargin}
+\end{frame}
+
+
+
+
+
+\end{document}

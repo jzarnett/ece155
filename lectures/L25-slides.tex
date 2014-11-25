@@ -1,0 +1,494 @@
+\input{../configuration}
+
+\title{Lecture 25 --- Reviews}
+
+\author{Patrick Lam \& Jeff Zarnett \\ \small \texttt{p.lam@ece.uwaterloo.ca} \& \texttt{jzarnett@uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+
+  \vfill
+  \begin{center}
+    \CcGroupBySa{0.83}{0.95ex}\\
+                  {\tiny\CcNote{\CcLongnameByNcSa}}
+                  \vspace*{-2.5ex}
+  \end{center}
+
+\end{frame}
+
+\part{Reviews}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{On Reviews}
+
+\begin{changemargin}{1cm}
+
+\structure{Review}: \\activity where reviewers examine a work product
+to provide feedback.\\[1em]
+
+Advantage: \\
+reveal defects early---defects less costly to fix.  \\[1em]
+
+What to review:\\
+requirements specifications; schedules; bug reports; \\design documents;
+\structure{code}; test plans; test cases.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Informal vs Formal}
+
+\large
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item \emph{informal review}: written or verbal review
+  requested by a developer of a work product.\\[1em]
+\item \emph{formal review}: written review conducted by a team
+  leader or a moderator to identify, document,
+  and fix defects in a work product.  
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Types of Reviews}
+
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item \structure{desk check}: informal review; \\ \qquad author distributes
+work to peers for reviews and comments.
+\item \structure{walkthrough}: informal review meeting; \\ \qquad moderated by the author.
+\item \structure{inspection}: formal review meeting; \\ \qquad guided by a moderator.\\
+Produces a log of identified defects in a work product.
+\item \structure{code review}: software inspection \\ \qquad identifying, logging, and perhaps correcting bugs.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Desk Checks}
+
+\begin{changemargin}{1cm}
+\structure{Desk check}: first line of defence against defects.  
+
+\begin{itemize}
+\item can speed up formal inspections \\ by taking care of simple defects in
+desk checks first. 
+\item for many work products, desk checks suffice; \\ often don't need a formal inspection.
+\end{itemize}
+
+But:
+\begin{itemize}
+\item only effective if taken seriously. 
+\item easy
+to just say ``LGTM'' (Looks Good To Me)\\ without actually checking the
+product. \\[1em]
+
+It's important to spend enough time on desk checks, and
+managers must allocate time for them. 
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Walkthroughs}
+
+\begin{changemargin}{1cm}
+\structure{Walkthrough}: guided review of a work
+product.
+
+\begin{itemize}
+\item allow people with less expertise to review a work
+product;
+\item users of the work product often invited to
+walkthroughs.  
+\item New points-of-view often help identify defects.
+\end{itemize}~\\
+
+
+Author of the work product presents the design and
+ensures that the attendees understand its design.\\[1em]
+
+How a walkthrough works:
+\begin{itemize}
+\item Before: distribute presentation materials.
+\item During: solicit feedback from the audience.
+\item After: follow up with attendees who have helped out by giving comments.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Inspection}
+
+\begin{changemargin}{1.5cm}
+\structure{Inspection}: formal review meeting where participants\\
+identify and document defects or possible improvements. \\[1em]
+
+Participants identify, and propose
+solutions to, defects. \\[1em]
+
+A good mix  of participants (but not too many!) helps\\
+find previously-overlooked defects (subtle, complex bugs).
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Steps in a formal inspection}
+
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item \structure{Preparation}: Before the meeting, distribute the work project to each member of the inspection team, 
+plus a checklist indicating what to review.\\[0.5em]
+\item \structure{Overview}: Moderator
+provides an overview of the item.\\[0.5em]
+\item \structure{Page-by-page Review}: Moderator walks the inspection team
+through the work product and logs defects.\\[0.5em]
+\item \structure{Rework}: Afterwards, the author
+goes through the list of defects and fixes them.\\[0.5em]
+\item \structure{Follow-up}: Inspection team members verify that
+the author has fixed the defects.\\[0.5em]
+\item \structure{Approval}: Inspection team approves the work.\\[0.5em]
+\end{itemize}
+We do something similar for master's and PhD theses.
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Code Review}
+
+\begin{changemargin}{1cm}
+
+\structure{Code review}: examines source code (usually a patch)\\
+to identify defects or possible improvements.\\[1em]
+
+Coverage options:
+\begin{itemize}
+\item review everything (Mozilla); or,
+\item review a representative sample.
+\end{itemize}
+
+Representative sample: \\ \qquad developers tend to repeat the same mistakes.\\
+If you find one bug, look for similar ones nearby.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Code Review (sampling)}
+
+\begin{changemargin}{1cm}
+When sampling, here are some places to look:
+\begin{itemize}
+\item source code that only one person has the expertise to maintain;
+\item tricky algorithms that are susceptible to defects;
+\item source code that calls difficult-to-use libraries;
+\item code written by inexperienced developers; and
+\item functions that could fail catastrophically if a defect is present.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Code Review (who? what?)}
+
+\begin{changemargin}{1cm}
+In industry: by team?\\[1em]
+
+Open-source world: 1 or 2 experienced developers, independently.\\[1em]
+
+What to look for:
+\begin{itemize}
+\item clarity, maintainability, accuracy, reliability,
+\item robustness, security, scalability, reusability, efficiency.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Pair Programming}
+
+\begin{changemargin}{1cm}
+\Large 
+Part of Extreme Programming.\\[1em]
+
+Can also serve as instant code review.
+\end{changemargin}
+
+\end{frame}
+
+\part{Reviews at University}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Reviews at University}
+
+\begin{changemargin}{1cm}
+We have the students do a lot of programming assignments...\\
+\quad but we do not review student code.
+
+We do not give feedback on variable names, comments, etc.
+
+Irrelevant to the compiler \& execution,\\
+\quad but important when someone (else) will need to read it.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Reviews at University}
+
+\begin{changemargin}{1cm}
+UW projects are, at most, 4 months long.\\
+\quad Possible exception: 4$^{th}$ year design project.
+
+There are no consequences for writing throwaway code.
+
+Maybe on co-op terms, but how much does it happen?
+
+Trying to ask TAs to do code reviews in ECE~155 labs.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem Decomposition}
+
+\begin{changemargin}{1cm}
+Key thing to look for in code reviews: problem decomposition.
+
+Take a big, complex problem, break it down into a number of smaller problems that are easier to solve. 
+
+Each subproblem can be broken down further if necessary.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem Decomposition}
+
+\begin{changemargin}{1cm}
+
+If your starting problem is ``write ATM software'':
+
+Subproblems: Withdraw cash, deposit cash, check balance. 
+
+Each of those will need to be broken down into some series of other subproblems (like verify card and PIN). 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Reviewing Problem Decomposition}
+\begin{changemargin}{1cm}
+Good programmers decompose the problems well into subproblems that can be:
+\begin{itemize}
+ \item clearly described, 
+ \item independently implemented, and 
+ \item easily tested. 
+\end{itemize}
+Documentation is often written in advance, but writing the documentation is simple because of the good structure.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Reviewing Problem Decomposition}
+\begin{changemargin}{1cm}
+Adequate programmers decompose problems reasonably. 
+
+They tend to have some awkward data structures which result in a lot of special-case code. 
+
+The code seems to be ``debugged'' into existence.
+
+Documentation written all at the end once things are finished.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Reviewing Problem Decomposition}
+\begin{changemargin}{1cm}
+Poor programmers decompose problems seemingly randomly. 
+
+Unhelpful variable and method names like \texttt{x}, \texttt{foo}, or \texttt{doIt()}. 
+
+Code is often poorly tested and fails on boundary conditions. 
+
+It sometimes appears that the code is ``evolved'' into existence: make random changes and see if that improves the output. 
+
+Documentation, if it exists, is difficult to read or misleading.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Reviewing Problem Decomposition}
+\begin{changemargin}{1cm}
+Problem decomposition is a skill; improve by practicing.
+
+Define your subproblems well, choose appropriate variable names, and write an outline of documentation early on. 
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Reviewing Problem Decomposition}
+\begin{changemargin}{1cm}
+Proper decomposing of the problems is valuable at UW: \\
+\quad you can complete assignments quicker and with fewer errors. 
+
+Variable names might not make a difference in assignments. 
+
+It will get you into the correct habits for later\\
+\quad and just might impress your employer!
+
+\end{changemargin}
+\end{frame}
+
+
+
+\part{Reviews for Open-Source Projects}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{How Open-Source Projects Work}
+
+\begin{changemargin}{1cm}
+Typically: 
+
+\begin{itemize}
+\item an official repository. (SVN, Git, Mercurial)\\[1em]
+\item a set of committers, who may commit changes.\\[1em]
+\end{itemize}
+
+Outside contributors: may send patches \\ \qquad (bug fixes, new features).
+\begin{itemize}
+\item a committer reviews the patch before committing it.
+\end{itemize}
+
+Committers may/must also seek review for their patches.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Case Study: Reviews at Mozilla}
+
+\begin{changemargin}{1cm}
+Mozilla Foundation: develops the Firefox web browser \\
+(and other
+projects). 
+\end{changemargin}
+
+\begin{center}
+\includegraphics[width=.5\textwidth]{images/firefox-512-noshadow.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Case Study: Reviews at Mozilla}
+
+\begin{changemargin}{1cm}
+Huge codebase $\Rightarrow$ elaborate
+reviewing
+policy\footnote{\url{http://www.mozilla.org/hacking/reviewers.html}, 
+\url{https://developer.mozilla.org/en/Code_Review_FAQ}}.
+
+\begin{itemize}
+\item require at least one review (``owner/peer review'') for all
+patches, plus
+\item second review (``super-review'') for many 
+patches.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Case Study: Peer review at Mozilla}
+\begin{changemargin}{1cm}
+\structure{Owner/peer review}: by a domain expert who understands the code
+being modified and the implications of the change.  
+
+\begin{quote} 
+A
+review is focused on a patch's design, implementation, usefulness in
+fixing a stated problem, and fit within its module.
+\end{quote}
+
+Reviews check for: 
+\begin{itemize}
+\item whether the patch fixes a problem; 
+\item API/design; 
+\item maintainability; 
+\item security; 
+\item integration; 
+\item testing; and
+\item license compliance.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Case Study: Super-reviews at Mozilla}
+
+\begin{changemargin}{1cm}
+Super-reviews by ``strong hackers''.
+\begin{itemize}
+\item understand the way
+Mozilla code is supposed to look,
+\item need not have domain expertise.
+\end{itemize}
+~\\[1em]
+
+They look out
+for: 
+\begin{itemize}
+\item proper use of APIs; 
+\item adherence to Mozilla's portability
+guidelines; 
+\item cross-module effects; and 
+\item respect of Mozilla coding
+practices.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Other organizations}
+
+\begin{center}
+\includegraphics[width=.4\textwidth]{images/Googlelogo.png} \quad
+\includegraphics[width=.4\textwidth]{images/Tux.png}
+\end{center}
+\begin{changemargin}{1cm}
+Many organizations, including Google and Linux kernel hackers,
+review extensively.\\
+
+Gerrit\footnote{\url{http://lwn.net/Articles/359489/}}: a tool out of
+Google for code reviews.
+
+\end{changemargin}
+
+\end{frame}
+
+
+\end{document}

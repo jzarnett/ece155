@@ -1,0 +1,576 @@
+\input{../configuration}
+
+\title{Lecture 21 --- Planning}
+
+\author{Patrick Lam \\ \small \texttt{p.lam@ece.uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Planning, scheduling, and estimation}
+
+\begin{changemargin}{1cm}
+Planning and scheduling are notoriously difficult, because estimates
+are often wrong.
+
+\begin{itemize}
+\item {\bf Planning.} Given a project, figure out \alert{how} to do the
+project. Figure out subtasks.\\[1em]
+\item {\bf Scheduling.} Assign \alert{start} and \alert{end times} to subtasks. More mechanical. \\[1em]
+\item {\bf Estimation.} Informed guess (based on facts) about \alert{resources
+needed} to accomplish a task. \\ Used in scheduling.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\part{Planning}
+\frame{\partpage}
+
+
+\begin{frame}
+\frametitle{Documents}
+
+\Large
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item {\bf Vision and Scope Document}: \\ \qquad preliminary document.
+\item {\bf Project Plan}: \\ \qquad  contains all the details.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Vision and Scope Document}
+
+\begin{changemargin}{1cm}
+
+Preliminary requirements gathering: \\
+make sure that all stakeholders
+are on board. \\[1em]
+
+A {\bf vision and scope document} summarizes the design problem, the
+stakeholders, the users, the risks, the assumptions, and the desired
+features of a solution. 
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Goals of a Vision and Scope Document}
+
+\large
+\begin{changemargin}{1cm}
+A vision and scope document:
+\begin{itemize}
+\item identifies \alert{included} features;
+\item discusses features that are \alert{out-of-scope};
+\item \alert{summarizes} agreed-upon expectations about scope.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Vision and Scope Document Outline}
+
+\begin{changemargin}{1cm}
+Mousetrap Example
+\begin{itemize}
+\item Problem Statement \mnote{The project will develop a research prototype for a
+better mousetrap.}
+\item Project Background \mnote{[Some paragraphs briefly discussing the
+  current state of the art in mousetrap design.]}
+\item Stakeholders \mnote{The ACME Corporation eventually aims to sell these
+  mousetraps to end users.}
+\item Users \mnote{ End users will deploy the mousetraps in mouse-infested
+  locations.}
+\item Risks \mnote{Mousetrap technology is a mature area, and many inventors
+  have already attempted to develop better mousetraps, so this project
+  may not successfully invent a better mousetrap.}
+\item Assumptions \mnote{The engineers have access to modern CAD software, a
+  machine shop, and commonplace electronic components, for building
+  their better mousetrap. The engineers' toy mice accurately represent
+  the behaviour of actual real-world mice.}
+\item Vision of the Solution \mnote{The better mousetrap will use modern
+  embedded systems technology, including sensors and actuators, to 
+  effectively detect and trap mice without harming them.}
+\item List of features \mnote{The mousetrap will be able to detect and capture
+  mice. Users will be able to calibrate the mousetrap for their intended
+  deployment area. The mousetrap will include a provision for including 
+  mousebait.}
+\item Scope of phased release \mnote{The first version of the mousetrap will
+  detect mice, but will not capture the mice. The second version will
+  detect and capture mice.}
+\item Features not to be developed \mnote{It remains the responsibility of the
+  end-user to relocate the mice that this mousetrap catches.}
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Project Plan}
+
+\begin{changemargin}{1cm}
+The project plan breaks down\\ \alert{what} to do and
+\alert{who} is to do it.
+
+\begin{itemize}
+\item Statement of Work: what to do and who will do it.
+\item Resource List: who can do it, and with what.
+\item Work Breakdown Structure: what to do (more detail).
+\item Project Schedule: when to do it.
+\item Risk Plan: what might go wrong.
+\end{itemize}
+
+We'll look at each part of the project plan.
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Statement of Work}
+
+\begin{changemargin}{1cm}
+A {\bf statement of work} (SOW) describes all work products to be
+produced and identifies who will do the work, including:
+
+\begin{itemize}
+\item a list of \alert{all project features} that will be developed;
+\item a \alert{description} of each deliverable that will be developed \\ (at
+  this stage, one paragraph per deliverable); and
+\item the \alert{estimated effort} required for each deliverable, if known.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Resource List}
+
+\begin{changemargin}{1cm}
+
+\begin{itemize}
+\item {\bf Resource List}: enumerates all resources required for the
+project and summarizes the availability of the resources.
+
+\item {\bf Resource}: person, hardware component, software
+licence, room, or anything else necessary for the project
+but limited in availability.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Components of Resource List}
+
+\begin{changemargin}{1cm}
+
+The resource list has the following components:
+\begin{itemize}
+\item resource name;
+\item brief (one-line) description of the resource; 
+\item resource availability (e.g. start dates, end dates);
+\item cost of the resource (if applicable).
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Work Breakdown Structure (WBS)}
+
+\begin{changemargin}{1cm}
+A {\bf work breakdown structure} (WBS) describes all project
+activities:
+
+\begin{itemize}
+\item comprehensively lists all project activities
+required to complete the project;\\
+
+(includes intermediate deliverables.)
+
+\item must evolve with your understanding of the project;
+
+\item should be kept in a revision control repository.
+\end{itemize}
+
+\emph{Applied Software Project Management} describes the
+``Wideband Delphi Process'' for estimating the time required for each
+activity in a WBS.
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Project Schedule}
+
+\begin{changemargin}{1cm}
+
+A {\bf project schedule} estimates start \& end times for project
+activities. 
+
+One way of getting estimates: run a meeting.
+\begin{enumerate}
+\item Each participant writes down an initial estimate \\ plus assumptions.
+\item Moderator collects all estimates and summarizes them.
+\item Participants discuss the estimates.
+\item Repeat as needed.
+\end{enumerate}
+
+~\\
+
+Documenting assumptions helps refine estimates and\\  reduce variance in
+estimates. 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Risk Plan}
+
+\begin{changemargin}{1cm}
+
+
+A {\bf risk} is a potential threat to the successful completion
+of your project. \\[1em]
+
+A {\bf risk plan} describes:
+\begin{itemize}
+\item anticipated risks;
+\item the likelihood of their occurrence; and
+\item how to mitigate these risks.
+\end{itemize}
+
+Good risk plans are comprehensive and include potential ways to
+mitigate significant risks.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Developing a Risk Plan}
+
+\begin{changemargin}{1cm}
+
+The risk plan is usually developed in a risk assessment and planning session.
+Team members:
+\begin{itemize}
+\item \alert{brainstorm} to list potential risks;
+\item \alert{estimate} likelihood of each risk and its impact;
+\item \alert{develop} a plan for mitigating likely and severe risks.
+\end{itemize}
+
+~\\
+
+\end{changemargin}
+
+\end{frame}
+
+\part{Estimation}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Estimates}
+
+\begin{changemargin}{1cm}
+
+\emph{Plans} include \emph{schedules}, which rely on \alert{estimates}.\\[1em]
+
+Estimates often get overrun\\ (why? because you make best-case assumptions).\\[1em]
+
+Prerequisites for good estimates:
+\begin{itemize}
+\item an accurate work breakdown structure;
+\item an effort estimate for each task in the WBS;
+\item a list of assumptions behind the estimates; and
+\item consensus that estimates are reasonable.
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Assumptions in Estimates}
+
+\begin{changemargin}{1cm}
+
+Do assumptions make estimates less accurate? \\
+\hspace*{3em}\alert{Not necessarily!}\\
+Unstated assumptions, however, are troublesome.\\[1em]
+
+If an assumption is well-documented and properly communicated, it can
+improve the quality of an estimate, by:
+\begin{itemize}
+\item revealing an inobvious problem or detail; or,
+\item revealing a simplification that some, but not all, members of the estimation team were relying on.
+\end{itemize}
+
+
+Finding out that an assumption is untrue is a good time to revisit an estimate.\\[1em]
+
+Agreeing on assumptions allows estimators to
+move beyond the assumptions and come up with good estimates.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Padding Estimates}
+
+\begin{center}
+\includegraphics[width=.75\textwidth]{images/scotty.jpg}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Padding Estimates}
+
+\begin{changemargin}{1cm}
+
+(``Scotty Time\footnote{\url{http://tvtropes.org/pmwiki/pmwiki.php/Main/ScottyTime}}''). Padding an estimate seems like all win: underpromise and overdeliver, etc. \\[1em]
+
+% 14:55 at http://www.youtube.com/watch?v=LdShpVwQr9s
+
+Pros:
+\begin{itemize}
+\item Look like a hero.
+\item Less time pressure.
+\end{itemize}
+
+Cons:
+\begin{itemize}
+\item Managers aren't dumb.
+\item Clients/managers may decide to not proceed based on padded estimate.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Estimation Techniques}
+
+\large
+\begin{changemargin}{1cm}
+
+Some estimation techniques:
+
+\begin{itemize}
+\item Wideband Delphi
+\item PROBE
+\item COCOMO II
+\item The Planning Game
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Steps in Wideband Delphi Process}
+
+\begin{changemargin}{1cm}
+
+Straightforward steps:
+\begin{itemize}
+\item Choose team and moderator.
+\item Kickoff meeting: WBS, assumptions, unit of estimation.
+\item Team members independently prepare estimates and more assumptions.
+\item Estimation session: the moderator
+\begin{enumerate}
+\item requests estimates;
+\item attempts to achieve consensus by having members explain their estimates.
+\end{enumerate}
+\item Assemble the final list of tasks and estimates.
+\item Review results with project manager and team.
+\end{itemize}
+Estimation sessions are key to the Wideband Delphi Process.
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Running an Estimation Session}
+
+\begin{changemargin}{1cm}
+
+\begin{enumerate}
+\item Team members share effort estimates for each WBS task.
+\item Moderator records estimates and plots
+them on a graph or records them in a table. 
+\end{enumerate}
+
+Estimates can range widely, because team members may make different
+assumptions. 
+\end{changemargin}
+
+\includegraphics[width=\textwidth]{images/effort-estimates.png}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Achieving Consensus}
+
+\begin{changemargin}{1cm}
+
+Point of working in a team: do better than individuals would.\\[1em]
+
+Wideband Delphi: multiple rounds of discussion.\\[1em]
+
+In each round, team members discuss assumptions,\\ clarify
+project details, and revise estimates. \\[1em]
+
+Here's an example of convergence
+in estimates:
+\end{changemargin}
+\includegraphics[width=\textwidth]{images/converging-effort-estimates.png}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Other Estimation Techniques: PROBE}
+
+\begin{changemargin}{.75cm}
+
+Idea: Doing something again should take\\ about as long as it did last time.\\[1em]
+
+Obsessively track how long it took to do things in the past, then
+use linear regression to estimate how long it'll take in the future.\\[1em]
+
+There are some problems with this approach, though.
+% killer overhead, doesn't necessarily generalize, 
+% doesn't work well for newbies.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Other Estimation Techniques: COCOMO II}
+
+\begin{changemargin}{1cm}
+
+Idea: Feed in guesses about project's scope, apply a formula, get
+estimate of size and effort.\\[1em]
+
+The formula is full of fudge factors (from empirical data).\\[1em]
+
+Examples of inputs: 
+\begin{itemize}
+\item Memory constraints
+\item Analyst capability
+\item Product complexity
+\end{itemize}
+
+~\\
+
+COCOMO stands for
+\emph{COnstructive COst MOdel}.
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Other Estimation Techniques: The Planning Game}
+
+\begin{changemargin}{1cm}
+
+Not this kind of game:
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{images/killzone3.jpg}
+\end{center}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{The Planning Game: Description}
+
+\begin{changemargin}{1cm}
+Instead: an estimation technique developed by \\ Kent Beck (inventor of
+extreme programming) \\ while working at Chrysler in the 1990's.\\[1em]
+
+The Planning Game is a full planning process that:
+\begin{enumerate}
+\item identifies the scope of the project;
+\item identifies tasks required to complete the project; and
+\item estimates the effort required for these tasks.
+\end{enumerate}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+
+\frametitle{The Planning Game: Phases}
+
+\begin{changemargin}{1cm}
+
+Two phases: 
+\begin{itemize}
+\item Release planning---plans the scope of the project.
+\item Iteration planning---plans the activities and tasks of the developers.
+\end{itemize}
+
+The Planning Game requires a team consisting of customers and developers.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+
+\frametitle{The Planning Game: Phases}
+
+\begin{changemargin}{1cm}
+
+Each week, \\team meets to plan the immediate future of the project:
+
+\begin{itemize}
+\item writes user stories\\ describing project requirements on index cards;
+\item assigns effort estimates for the stories \\ (e.g., 1, 2, or 3 weeks); and
+\item prioritizes the requirements.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+
+\frametitle{The Planning Game: Iteration Planning}
+
+\begin{changemargin}{1cm}
+
+Occasionally, the team:
+
+\begin{itemize}
+\item divides requirements into sets of tasks to be completed;
+\item assigns these tasks to developers; and,
+\item estimates effort for these tasks.
+\end{itemize}
+
+Developers complete tasks and\\ match them with the user
+stories.
+\end{changemargin}
+
+\end{frame}
+
+\end{document}

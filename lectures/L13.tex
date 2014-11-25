@@ -1,0 +1,370 @@
+\input{header.tex}
+
+\begin{document}
+
+\lecture{ 13 --- Android III}{\term}{Patrick Lam}
+
+\section*{Android Persistent Storage}
+So far, we haven't seen any ways to store data so that you can re-load
+it across different instances of your application (for instance, when
+the phone is powered off and then back on). Here are four and
+a half ways to persist data, from simplest to most complicated:
+\begin{itemize}
+\item shared preferences;
+\item files (internal and external storage);
+\item SQLite; and
+\item the Internet.
+\end{itemize}
+We'll discuss the first two of these in this lecture. The Internet needs no explanation: you just save an load data remotely. A quick description of SQLite is: ``SQLite is a software library that implements a self-contained, serverless, zero-configuration, transactional SQL [structured query language] database engine''~\cite{sqlite}. If you need a database rather than some simple storage, SQLite is the way to do it. For the programming you will need to do in the labs, this is overkill; shared preferences and file storage will be enough.
+
+\subsection*{Shared Preferences}
+The simplest way to store persistent state is using 
+\emph{shared preferences} in Android. This is just a set of key-value
+pairs. Unlike the key-value pairs that you can store in the {\tt Bundle}
+when you are implementing {\tt onSaveInstanceState()}, these pairs persist
+across different invocations of your app. 
+
+Shared preferences can be private to your application or shared across
+applications; I'll only talk about private shared preferences.
+
+You'll find source code for this demo in the SVN repository at
+\url{https://ecesvn.uwaterloo.ca/courses/ece155/s14/materials/lecture/SharedPreferenceDemo}. (By
+the way, I had to go to Project Properties $\mid$ Android $\mid$
+Project Build Targets, deselect ``EDK'', and select ``Android 2.3.3''
+to get the project to work after I imported the code from an existing
+directory.)
+
+There are two important points: putting data into the shared preferences
+and getting it from the shared preferences. But first, how do we get our
+hands on the shared preferences? Here's how.
+\begin{lstlisting}
+  SharedPreferences settings = getPreferences(0);
+\end{lstlisting}
+Or, call {\tt getSharedPreferences()} and pass it a preferences file
+name as the first parameter.
+
+\paragraph{Reading data from shared preferences.}
+Now that you have a {\tt SharedPreferences} object, you can get data from it, 
+mostly like you get data from a {\tt Bundle}:
+\begin{lstlisting}
+  v = settings.getString("textFieldValue", "");
+\end{lstlisting}
+This retrieves the value of the {\tt String} preference {\tt
+  textFieldValue}; if no value is present, the {\tt getString} call
+returns the default value {\tt ""}.
+
+\paragraph{Writing data to shared preferences.}
+It's a bit more complicated to write to the {\tt SharedPreferences}
+object.  You have to first get a {\tt SharedPreferences.Editor} and
+then commit it once you're done with the changes.
+
+\begin{lstlisting}
+  SharedPreferences settings = getPreferences(0);
+  SharedPreferences.Editor editor = settings.edit();
+  editor.putString("textFieldValue", newFieldValue);
+  editor.commit();
+\end{lstlisting}
+
+\subsection*{Files: Internal and External Storage}
+Android allows your app to read and write to internal storage; and
+also to external storage, if it has the appropriate permissions. You
+basically use the same calls to access internal and external storage,
+with a minor change. File I/O we have already examined in an earlier lecture.
+
+All Android devices have internal storage, which is generally
+invisible to the user, other apps, and when the phone is mounted as
+USB Mass Storage. When you remove an app, Android automatically
+erases its internal storage. (It is in the {\tt /data} directory of the phone
+under DDMS).
+
+External storage may be on an SD card (as on many phones) or it may be
+enclosed in the device (as on the Google Nexus 7 tablet); it is not
+required to correspond to the SD card slot. Applications may access
+their own external storage space, shared storage space, or even other
+apps' storage space. However, external storage may go away anytime, since
+the user could just pull out the SD card from the slot.
+
+\paragraph{Checking External Storage availability.} The following
+code determines whether or not external storage is accessible and
+writable at the moment. Of course, that can change anytime.
+\begin{lstlisting}[basicstyle=\scriptsize]
+    String state = Environment.getExternalStorageState();
+
+    if (Environment.MEDIA_MOUNTED.equals(state)) {
+        // We can read and write the media
+    } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+        // We can only read the media
+    } else {
+        // Something else is wrong. 
+        // It may be one of many other states, but all we need
+        //  to know is we can neither read nor write
+    }
+\end{lstlisting}
+
+\paragraph{External Storage Example: MapLoader.} Our provided 
+Lab 4 code reads from external storage. We'll see what it does.
+\begin{lstlisting}[basicstyle=\scriptsize]
+    NavigationalMap map = 
+       MapLoader.loadMap(getExternalFilesDir(null), 
+                         "Lab-room-peninsula.svg");
+    mapView.setMap(map);
+\end{lstlisting}
+
+Our {\tt MapLoader} contains this line:
+\begin{lstlisting}[basicstyle=\scriptsize]
+  File map = new File(dir, filename);
+\end{lstlisting} 
+and then it builds a parser using the library call:
+\begin{lstlisting}[basicstyle=\scriptsize]
+  doc = docBuilder.parse(map);
+\end{lstlisting}
+which we call to get specific information about the map. It is
+actually the {\tt docBuilder} that does all the I/O.
+
+\paragraph{Shared External Storage Directories.}
+The {\tt getExternalFilesDir()} call takes a parameter.
+{\tt null} means that we're asking for the app's external
+storage directory. Android also provides a number of shared directories:
+\begin{itemize}
+\item DIRECTORY\_MUSIC
+\item DIRECTORY\_PICTURES
+\item DIRECTORY\_RINGTONES
+\end{itemize}
+which all apps on the system can access.
+
+%\paragraph{File Demo} You'll find source code for this demo in the SVN repository at 
+%\url{https://ecesvn.uwaterloo.ca/courses/ece155/s14/materials/lecture/FileDemo}.
+
+\paragraph{Reading from Files} The following code will read a line of text
+into the {\tt String} variable {\tt i}. It currently reads from internal
+storage, but if you comment out the {\tt openFileInput} line and uncomment
+the {\tt new FileInputStream} line, it'll read from external storage instead.
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+try {
+    // internal storage: 
+    FileInputStream os = openFileInput("internal.txt");
+    //InputStream os = new FileInputStream(new File(getExternalFilesDir(null), "external.txt"));
+    BufferedReader br = new BufferedReader(new InputStreamReader(os));
+    String i = br.readLine();
+    // --> i contains the line you just read.
+    os.close();
+} catch (IOException e) {}
+\end{lstlisting}
+
+\paragraph{Writing to Files.} You can use the following code to write to
+the filesystem. Again, the external storage code will work if you
+comment out the {\tt openFileOutput} call for internal storage and uncomment the 
+{\tt new FileOutputStream} call for external storage.
+\begin{lstlisting}[basicstyle=\scriptsize]
+try {
+    // internal storage:
+    FileOutputStream os = openFileOutput("internal.txt", Context.MODE_PRIVATE);
+    //FileOutputStream os = new FileOutputStream(new File(getExternalFilesDir(null), "external.txt"));
+    PrintWriter osw = new PrintWriter(new OutputStreamWriter(os));
+    // --> write out the contents of string i.
+    osw.println(i);
+    osw.close();
+} catch (IOException e) {}
+\end{lstlisting}
+
+
+\paragraph{Digression: About the Lab.} First, a quick preview of 
+the next lab (which you are free to start working on). Since this
+course is ``Engineering Design \emph{with Embedded Systems},'' we'd
+better actually learn something practical about embedded systems.
+
+This lab is about interpreting sensor data. In particular, you are going to
+read the accelerometer data and count the number of steps taken by the holder
+of the phone. There are two main problems: 1) sensor data is noisy; and 2) you need
+to recognize when a step occurs.
+
+To deal with sensor noise, you will probably benefit from smoothing the data.
+Below is a very simple low-pass filter:
+
+\begin{lstlisting}
+  smoothedAccel += (newValue - smoothedAccel) / C;
+\end{lstlisting}
+
+To recognize a step, you'll need to identify a change in the value of the $y$-axis
+acceleration. Identifying a change means that you'll need the previous value along
+with the current value. You could do that using a finite state machine (as described
+in the lab manual), or you could do that by doing tests both on the previous value 
+and the current value. Can you think of any pattern that might describe a step?
+
+\section*{Toast, Broadcast Receivers, and Lists}
+
+Let us now continue with some more Android material.
+
+\paragraph{Toast.} Sometimes you want to display a short message to the user.
+Use {\tt Toast} to do that. Just include the following code:
+\begin{lstlisting}
+  Toast.makeText(getApplicationContext(), "A Toast!", 
+                 Toast.LENGTH_LONG).show();
+\end{lstlisting}
+It's also OK to use in your onClick event listener:
+\begin{lstlisting}
+  Toast.makeText(MainActivity.this, "A Toast!", 
+                 Toast.LENGTH_LONG).show();
+\end{lstlisting}
+
+You can store all of these parameters, as well as the {\tt Toast} object itself,
+in local variables.
+
+\subsection*{Broadcast Receivers}
+We talked in an earlier lecture about the subject of Android Intents.
+
+Android also uses Intents to broadcast information about what's
+happening on the system between applications. Applications want to
+know about events such as the phone being plugged into a power source;
+or, screen rotation.  One
+tutorial~\cite{broadcastreceiver}  proposes an analogy of a ``party line''
+for Android Broadcast Receivers: many different applications can
+register an event listener, and they all get notified whenever
+something happens.
+
+\paragraph{Example: rotation listener.} We can create a simple {\tt Activity} which uses an inner
+class to define a {\tt BroadcastReceiver}:
+
+{\small
+\begin{lstlisting}
+public class MainActivity extends Activity {
+  BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context c, Intent i) {
+      int orientation = c.getResources().getConfiguration().orientation;
+      if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        Toast.makeText(c, "Portrait", Toast.LENGTH_SHORT).show();
+      } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        Toast.makeText(c, "Landscape", Toast.LENGTH_SHORT).show();
+      } else {
+        Toast.makeText(c, "???", Toast.LENGTH_SHORT).show();
+      }
+    }
+  };
+  IntentFilter intentFilter = new IntentFilter
+                               (Intent.ACTION_CONFIGURATION_CHANGED);
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    registerReceiver(broadcastReceiver, intentFilter);
+  }
+}
+\end{lstlisting}
+}
+In principle, you should also unregister the {\tt BroadcastReceiver}:
+\begin{lstlisting}
+  @Override
+  protected void onDestroy() {
+    unregisterReceiver(broadcastReceiver);
+    super.onDestroy();
+  }
+\end{lstlisting}
+Unfortunately, by default Android destroys your app on a screen rotate event, so 
+that doesn't work unless you ask Android to not destroy your app on rotation. 
+
+\paragraph{Example: phone ring listener}
+We'll see another example of setting up a broadcast receiver, this time to listen
+for phone calls. First, you need to modify the {\tt manifest.xml} file to permit
+the app to listen for phone calls:
+
+\begin{lstlisting}
+<uses-permission android:name="android.permission.READ_PHONE_STATE">
+</uses-permission>
+\end{lstlisting}
+
+This time, we'll also choose to register the listener statically in
+the manifest. Include inside the \verb+<application>+ tag:
+
+\begin{lstlisting}
+<receiver android:name="ca.patricklam.ece155demo.MyPhoneReceiver" >
+    <intent-filter>
+        <action android:name="android.intent.action.PHONE_STATE" />
+    </intent-filter>
+</receiver>
+\end{lstlisting}
+This means that we have to create a separate class {\tt MyPhoneReceiver}:
+{\small \begin{lstlisting}
+package ca.patricklam.ece155demo;
+
+public class MyPhoneReceiver extends BroadcastReceiver {
+  @Override
+  public void onReceive(Context context, Intent intent) {
+    Bundle extras = intent.getExtras();
+    if (extras != null) {
+      String state = extras.getString(TelephonyManager.EXTRA_STATE);
+      Log.w("PHONE", state);
+      if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+        String phoneNumber = extras.getString
+                               (TelephonyManager.EXTRA_INCOMING_NUMBER);
+        Log.w("PHONE", phoneNumber);
+      }
+    }
+  }
+}
+\end{lstlisting}}
+Note the use of the extras on the incoming Intent object.
+
+
+\subsection*{Lists}
+Another useful UI element is the {\tt ListView}. We can use it to show 
+a list of items to the user (for instance, so that the user can choose
+one of the list elements). There are a couple of caveats with using the
+{\tt ListView}. Let's see how to use it.
+
+\paragraph{Creating and populating a ListView} 
+First, create a {\tt ListView} object by dragging it onto the Activity's
+XML file.
+\begin{itemize}
+\item Note: you have to manually edit the {\tt android:id} attribute so
+that its value is \verb+@android:id/list+.
+\end{itemize}
+Next, change your Activity to be a ListActivity. This will allow us to
+set the items of the ListView. Also, you need to add a field {\tt
+  listAdapter} of type \verb+ArrayAdapter<String>+ to your Activity.
+(The error in class was that I added an object of type {\tt ListAdapter}.)
+
+We then want to actually populate the list with entries. In the 
+{\tt onCreate} method, add:
+\begin{lstlisting}
+  List<String> data = new ArrayList<String>();
+  data.add("ECE155");
+  data.add("ECE106");
+  data.add("ECE124");
+  listAdapter = new ArrayAdapter<String>(this,
+                           android.R.layout.simple_list_item_1,
+                           data);
+  setListAdapter(listAdapter);
+\end{lstlisting}
+
+Finally, we want something to happen when we click on a list item.
+Create a new method in the ListActivity:
+\begin{lstlisting}
+  @Override
+  protected void onListItemClick(ListView l, View v, int position, long id) {
+    super.onListItemClick(l, v, position, id);
+    String s = (String) getListAdapter().getItem(position);
+    Toast.makeText(this, "Aha: "+s, Toast.LENGTH_SHORT).show();
+  }
+\end{lstlisting}
+This will cause the phone to display a toast when the user chooses a list item.
+
+\paragraph{Dynamically updating the ListView.} Of course, we can also
+add items to the {\tt ListView} programmatically. In a click listener (or
+anywhere else), you can write:
+\begin{lstlisting}
+  String now = String.valueOf(System.currentTimeMillis());
+  listAdapter.add(now);
+\end{lstlisting}
+
+\paragraph{Some notes.} Note that adding elements to the ArrayAdapter also adds them to the ListActivity.
+
+Also, we currently store the ArrayAdapter as a field.
+That means it'll go away whenever the Activity is destroyed (e.g.
+rotation). We'll want to do something about that.
+
+\input{bibliography.tex}
+
+\end{document}

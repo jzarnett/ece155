@@ -1,0 +1,545 @@
+\input{../configuration}
+
+\title{Lecture 31 --- Android IV}
+
+\author{Jeff Zarnett \\ \small \texttt{jzarnett@uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\part{Networking Basics}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Android Networking}
+
+\begin{changemargin}{1cm}
+One more lecture on advanced Android topics: networking.
+
+Not necessary for the labs, but still examinable.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Network Permissions}
+
+\begin{changemargin}{1cm}
+To access the network, permissions need to be assigned:
+\end{changemargin}
+{\scriptsize
+\begin{verbatim}
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+\end{verbatim}
+}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Network Availability}
+
+\begin{changemargin}{1cm}
+Good practice: check availability
+{\scriptsize
+\begin{verbatim}
+ConnectivityManager connMgr = (ConnectivityManager) 
+        getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+    if (networkInfo != null && networkInfo.isConnected()) {
+    ... // Do useful work
+    }
+\end{verbatim}
+}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Networking}
+
+\begin{changemargin}{1cm}
+Networks are inherently unreliable.
+
+They have unknown latency / bandwidth.
+
+If we do network operations in the UI thread, we might get...
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Not Responding}
+\begin{changemargin}{3cm}
+\includegraphics[width=0.45\textwidth]{images/anr.png}\\
+(From linuxtopia.org)
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Background Task}
+
+\begin{changemargin}{1cm}
+The not responding dialog doesn't appear because the program is hung.
+
+It is doing a network operation and not redrawing the screen.
+
+Solution: do work in the background with an \texttt{AsyncTask}.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{AsyncTask}
+
+
+{\scriptsize
+\begin{verbatim}
+private class DownloadWebpageTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+              
+            // params comes from the execute() call: params[0] is the url.
+            try {
+                return downloadUrl(urls[0]);
+            } catch (IOException e) {
+                return "Unable to retrieve web page. URL may be invalid.";
+            }
+        }
+        
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            textView.setText(result);
+       }
+    }
+\end{verbatim}
+}
+\end{frame}
+
+\begin{frame}
+\frametitle{URL Downloader Task}
+
+\begin{changemargin}{1cm}
+This is a private class inside a \texttt{MainActivity} but it could be defined as an inner class.
+
+Like a collection, such as \texttt{List}, the \texttt{AsyncTask} takes parameter types inside angle brackets for:\\
+\quad \texttt{doInBackground}\\
+\quad \texttt{onProgressUpdate}\\
+\quad \texttt{onPostExecute}.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{URL Downloader Task}
+
+\begin{changemargin}{1cm}
+AsyncTask execution goes through four stages:
+
+\begin{enumerate}
+\item \texttt{onPreExecute()}
+\item \texttt{doInBackground(Params...)}
+\item \texttt{onProgressUpdate(Progress...)}
+\item \texttt{onPostExecute(Result)}
+\end{enumerate}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Starting Tasks}
+
+\begin{changemargin}{1cm}
+To actually execute the Download Webpage task, use \texttt{new DownloadWebpageTask().execute(url);}
+
+A task can be executed only once; to do something again, create another instance.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cancelling Tasks}
+
+\begin{changemargin}{1cm}
+A task can be cancelled while it is running by calling \texttt{cancel(boolean)}.
+
+This only makes \texttt{isCancelled()} return true.
+
+The \texttt{doInBackground} method should check and see if the task has been cancelled.
+
+Instead of \texttt{onPostExecute}, \texttt{onCancelled} runs.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Excerpt from Networking Code}
+
+
+{\scriptsize
+\begin{verbatim}
+HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+conn.setReadTimeout(10000 /* milliseconds */);
+conn.setConnectTimeout(15000 /* milliseconds */);
+conn.setRequestMethod("GET");
+conn.setDoInput(true);
+// Starts the query
+conn.connect();
+int response = conn.getResponseCode();
+\end{verbatim}
+}
+
+Full code in the lecture notes.
+\end{frame}
+
+\begin{frame}
+\frametitle{Using the Network}
+
+\begin{changemargin}{1cm}
+
+\texttt{HttpURLConnection} is the key to making the connection. 
+
+Data can be of any type. 
+
+Not necessary to know in advance the length of the data. 
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{HttpsURLConnection}
+
+\begin{changemargin}{1cm}
+
+Uses of this class follow a pattern:
+\begin{enumerate}
+\item Obtain a new \texttt{HttpURLConnection}.
+\item Prepare the request. 
+\item Optionally upload a request body.
+\item Read the response.
+\item Disconnect.
+\end{enumerate}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{HttpsURLConnection + SSL}
+
+\begin{changemargin}{1cm}
+
+Calling \texttt{openConnection()} on a URL with the "https" (HTTP with SSL, security) scheme will return an \texttt{HttpsURLConnection}. 
+
+We are not going to cover this. 
+
+For more detail and including things like posting content and authentication, take a look at the Android guidelines.
+
+\end{changemargin}
+\end{frame}
+
+\part{Battery Life}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Battery Usage}
+
+\begin{changemargin}{1cm}
+
+Other than the screen, the next biggest user of battery is likely the wireless radio. 
+
+The radio for a typical 3G divide has three states:
+
+\begin{enumerate}
+	\item Full Power
+	\item Low Power
+	\item Standby
+\end{enumerate}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Radio State Transitions}
+
+\begin{changemargin}{1cm}
+Transition from one state to another is not instant. 
+\end{changemargin}
+\includegraphics[width=\textwidth]{images/mobile_radio_state_machine.png}\\
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Battery Usage}
+
+\begin{changemargin}{1cm}
+
+Creating a new network connection puts the radio in the full power state.
+
+A 1-second transfer is followed by:\\
+\quad 5 seconds of ``tail time'' in the high power state\\
+\quad 12 seconds in the low power state;
+
+Then the radio returns to a standby state.
+
+Total ``on'' time: 18 seconds.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Unbundled Data}
+
+\begin{changemargin}{1cm}
+
+Transfer data for 1 second every 18 seconds.
+
+Radio never goes into standby $\rightarrow$ battery drain.
+
+Out of every 60 seconds:\\
+\quad 18 will be in the high power state;\\
+\quad 42 will be in the low power state.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Bundled Data}
+
+\begin{changemargin}{1cm}
+
+Idea: bundle data (do transfers in bulk)
+
+3 consecutive seconds of transfer means:\\
+\quad 8 seconds in the high power state\\
+\quad 12 seconds in the low power state.
+
+40 seconds in the idle state!
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Bundled vs. Unbundled}
+
+\includegraphics[width=\textwidth]{images/batteryusage.png}\\
+
+\end{frame}
+
+\part{Cloud Sync}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Cloud Sync}
+
+\begin{changemargin}{1cm}
+
+Sync your app with the cloud so data is not lost.
+
+Even if the user reinstalls the app or changes device.
+
+Google provides backup API for storing a small amount of data.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Cloud Sync}
+
+\begin{changemargin}{1cm}
+
+Register for the service with Google.
+
+Then implement Backup Agent:
+{\scriptsize
+\begin{verbatim}
+<application android:label="MyApp"
+             android:backupAgent="TheBackupAgent">
+    ...
+    <meta-data android:name="com.google.android.backup.api_key"
+    android:value="ABcDe1FGHij2KlmN3oPQRs4TUvW5xYZ" />
+    ...
+</application>
+\end{verbatim}
+}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Backup Agent}
+
+{\scriptsize
+\begin{verbatim}
+ import android.app.backup.BackupAgentHelper;
+ import android.app.backup.FileBackupHelper;
+
+
+ public class TheBackupAgent extends BackupAgentHelper {
+    // The name of the SharedPreferences file
+    static final String HIGH_SCORES_FILENAME = "scores";
+
+    // A key to uniquely identify the set of backup data
+    static final String FILES_BACKUP_KEY = "myfiles";
+
+    // Allocate a helper and add it to the backup agent
+    @Override
+    void onCreate() {
+        FileBackupHelper helper = new FileBackupHelper(
+              this, HIGH_SCORES_FILENAME);
+        addHelper(FILES_BACKUP_KEY, helper);
+    }
+}
+\end{verbatim}
+}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Cloud Sync}
+\begin{changemargin}{1cm}
+This \texttt{BackupAgentHelper} takes backups of the user's high scores file.
+
+What if we used \texttt{SharedPreferences} instead of a file?
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Backup Agent}
+
+{\scriptsize
+\begin{verbatim}
+ import android.app.backup.BackupAgentHelper;
+ import android.app.backup.SharedPreferencesBackupHelper;
+
+ public class TheBackupAgent extends BackupAgentHelper {
+     static final String PREFS_DISPLAY = "displayprefs";
+     static final String PREFS_SCORES = "highscores";
+
+     // An arbitrary string used within the BackupAgentHelper implementation to
+     // identify the SharedPreferencesBackupHelper's data.
+     static final String MY_PREFS_BACKUP_KEY = "myprefs";
+
+     // Simply allocate a helper and install it
+     void onCreate() {
+         SharedPreferencesBackupHelper helper =
+                 new SharedPreferencesBackupHelper(
+                     this, PREFS_DISPLAY, PREFS_SCORES);
+         addHelper(MY_PREFS_BACKUP_KEY, helper);
+     }
+ }
+\end{verbatim}
+}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Backup Semantics}
+\begin{changemargin}{1cm}
+To request a backup, create an instance of the \texttt{BackupManager}.
+
+Call its \texttt{dataChanged()} method.
+
+If you call \texttt{dataChanged()} more than once before the backup actually takes place, the backup will occur only once.
+
+Restoring from backup happens automatically when the user reinstalls the application.
+
+Can force it with \texttt{requestRestore()}. 
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Sync Conflicts}
+\begin{changemargin}{1cm}
+It's possible that when you save data to the cloud you end up with conflicts. 
+
+Some simple approaches to fixing it:
+
+\begin{itemize}
+\item Strategy 1: Newer is better.
+\item Strategy 2: Value Judgement.
+\item Strategy 3: Merge.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Sync Conflicts}
+\begin{changemargin}{1cm}
+These strategies work if the conflict and data are simple, but we might also have some more complex situations. 
+
+If we are tracking something important like money, choosing the higher of the two values is an incorrect solution. 
+
+Consider the following scenario where we just store the total:
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Sync Conflicts}
+\begin{changemargin}{1cm}
+
+\begin{enumerate}
+	\item Starting condition: the user has 0 coins on Device A, 0 on Device B.
+	\item Player collects 10 coins on A.
+	\item Player collects 15 coins on B.
+	\item Device B saves.
+	\item Device A saves - conflict detected.
+	\item Conflict resolution: choose the largest of the two.
+\end{enumerate}
+Error occurred: player collected 25 coins but the value of 15 was chosen, so the user has ``lost'' 10 coins.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Sync Conflicts}
+\begin{changemargin}{1cm}
+
+Idea: send the delta instead of the values (e.g. ``+10'')
+
+Android will send only the most recent update if network connectivity is not available. 
+
+Imagine that the user collected 5 coins on A while on an airplane (network off).
+
+Then in another session, collected another 5 coins. 
+
+When the synchronization occurs, only the second update will be sent, so only 5 coins will be added to the user's total. 
+
+Still incorrect.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Sync Conflicts}
+\begin{changemargin}{1cm}
+
+Solution: store sub-totals per device. 
+
+Have a separate ``account'' for each device.
+
+When the user collects 10 coins on device A, write it into a value for coins collected on A. 
+
+Total: simply sum up the coins collected on A and B.
+
+
+\end{changemargin}
+\end{frame}
+
+
+
+\end{document}

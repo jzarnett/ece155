@@ -1,0 +1,446 @@
+\input{../configuration}
+
+\usepackage{alltt}
+
+\title{Lecture 5 --- XML, Android, IDEs}
+
+\author{Patrick Lam \& Jeff Zarnett \\ \small \texttt{p.lam@ece.uwaterloo.ca} \& \texttt{jzarnett@uwaterloo.ca}}
+\institute{Department of Electrical and Computer Engineering \\[-1ex]
+  University of Waterloo}
+\date{\today}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+
+\end{frame}
+
+\part{XML}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{eXtensible Markup Language}
+\begin{changemargin}{1cm}
+You need to know a bit about
+XML (e\textbf{X}tensible \textbf{M}arkup \textbf{L}anguage)  to build Android applications 
+
+By
+the way, this is examinable material.
+
+For further reading, you can consult many resources on the Web.
+Here's one:
+\begin{center}
+\url{http://www.w3schools.com/xml/default.asp}
+\end{center}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{XML in one Line}
+\begin{changemargin}{1cm}
+\begin{center}
+{\Large XML is a \emph{structured document format}.}
+\end{center}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Structured Document Format}
+\begin{changemargin}{1cm}
+All XML documents therefore have the same format. 
+
+XML has no intrinsic meaning. 
+
+It just separates content from structure. 
+
+It is meant to be human-readable/writable.
+
+If you are familiar with HTML, there are a number of similarities, but XML is more general. 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{XML Document Terminology}
+\begin{changemargin}{1cm}
+
+Every XML document begins with \verb+<?xml version="1.0" encoding="utf-8"?>+
+
+Documents have \alert{tags}, which appear between angle brackets:\\
+\quad \texttt{<example>}
+
+Tags are opened and closed, so that tag must be followed by \texttt{</example>}, which closes the \texttt{example} tag. 
+
+We can also have ``self-closing'' tabs, (notational convenience) such as \texttt{<approval/>}.
+
+A tag may also have attributes, like colour in this example: \texttt{<square colour=``red''/>}.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{XML Parsing}
+\begin{changemargin}{1cm}
+
+XML is intended to be human-readable and human writeable. 
+
+Computers can read and comprehend XML by ``parsing'' the document. 
+
+There are a number of well-known XML parsers.
+
+Use one of them if you need to programmatically examine some XML and do not write your own.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Android Manifest}
+\begin{changemargin}{1cm}
+Example XML Document: Android Manifest.
+
+
+(Shown from the notes because it's too large for slides).
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{XML Tree Structure}
+\begin{changemargin}{1cm}
+
+XML is tree-structured: at the top level, there is a \emph{root} element. We can convert the textual form into a tree.
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{images/XML-Structure.png}
+\end{center}
+
+\end{changemargin}
+\end{frame}
+
+\part{Android Programming}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Android: Introduction}
+\begin{changemargin}{1cm}
+
+By now you have no doubt taken a look at the labs.
+
+You need to implement them using Android, either on your own phone or one of the devices we provide in the labs. 
+
+We will take some time to introduce you to Android programming.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Android: Activity}
+\begin{changemargin}{1cm}
+
+``An activity is a single, focused thing that the user can do.''
+
+Usually, an Activity corresponds to a full-screen window which 
+the user may interact with. For instance, the user may:
+\begin{itemize}
+\item set up a timer; 
+\item read off sensor values; or
+\item make a phone call.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Android: Activity}
+\begin{changemargin}{1cm}
+
+Applications may contain multiple activities, each of which
+corresponds to a thing that the user wants to do.  
+
+Android organizes
+activities into tasks.  
+
+A task consists of a last-in, first-out stack
+of activities, possibly from different applications.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{The Back Button}
+\begin{changemargin}{1cm}
+
+The Back button pops the topmost activity off the stack and gets rid of it.
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{images/diagram_backstack.png}
+\end{center}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Multitasking}
+\begin{changemargin}{1cm}
+
+It is also possible to switch between tasks.
+
+Switching tasks puts a different activity and its stack
+in the foreground, and puts the old activity in the background.
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{images/diagram_multitasking}
+\end{center}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Doing Something in the Activity}
+\begin{changemargin}{1cm}
+
+You'll be writing a lot of code in \texttt{onCreate()}. 
+
+It gets executed when the activity 
+starts. 
+
+Typically, it will set up the user interface, namely:
+\begin{itemize}
+\item creating widgets;
+\item setting up event listeners;
+\end{itemize}
+
+Note that you must call {\texttt{\textbf{super.onCreate()}}}. \\
+\quad This is done for you in the autogenerated boilerplate code.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Retrieving Widgets}
+\begin{changemargin}{1cm}
+
+If you've declared widgets in the
+XML file, you can use the {\texttt{\textbf{findViewById()}}} method
+to get a hold of them. 
+
+Note:
+\begin{itemize}
+\item you need to cast the return value, e.g. \\
+\texttt{\textbf{tv = (TextView) findViewById(R.id.t);}}
+\item you must save the XML file to get the right ids on the {\tt R} object.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Programmatically Adding Widgets}
+\begin{changemargin}{1cm}
+
+We ask you to
+add widgets programmatically in Lab 1. There are two steps:
+\begin{enumerate}
+\item Create the widget: 
+\texttt{\textbf{~tv = new TextView(getApplicationContext());}} 
+\item Add it to the Activity:
+\texttt{\textbf{~addView(tv);}}
+\end{enumerate}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Activity Lifecycle}
+\begin{changemargin}{1cm}
+
+Although we've only talked about {\tt onCreate()}, there are numerous
+other methods on {\tt Activity} which Android calls at various times.
+
+\begin{center}
+\includegraphics[width=.9\textwidth]{images/basic-lifecycle}
+\end{center}
+
+
+\end{changemargin}
+\end{frame}
+
+
+\part{Integrated Development Environments}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{In the Dark Ages}
+\begin{changemargin}{1cm}
+
+Write code in editor (\texttt{vi}, \texttt{emacs}, \texttt{notepad.exe})
+
+Invoke command-line compiler
+
+Can we make better tools? Yes: IDE! \mnote{The IDE concept has been around for over 25 years.}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{What is an IDE?}
+
+\begin{changemargin}{1cm}
+\Large
+Contains:
+\begin{itemize}
+\item editor, plus
+\item compiler, plus
+\item debugger
+\end{itemize}
+
+Integrated into a single environment.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The Eclipse IDE}
+
+\begin{changemargin}{1cm}
+\large
+Eclipse is a fully-featured modern IDE.\\[1em]
+
+Notes:
+\begin{itemize}
+\item runs on Linux, Mac, Windows;
+\item it is free software: you can extend and modify it;
+\item initially developed by IBM Ottawa.
+\end{itemize}
+
+\mnote{By now you have worked with Eclipse in the labs and presumably you used Microsoft Visual Studio when programming in C\# for ECE~150.}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Beyond Core IDE Components}
+
+\begin{changemargin}{1cm}
+\large
+Eclipse (and other IDEs) also support:
+
+\begin{itemize}
+\item revision control systems (you've used this); 
+\item documentation and modelling (e.g. UML);
+\item autocomplete and refactoring.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Syntax Highlighting}
+\begin{changemargin}{1cm}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{images/highlight.png}
+\end{center}
+
+\mnote{The IDE highlights different syntax of the program, by making them different colours. It makes it easier to see and understand different parts of the code, and makes it possible to detect errors.} 
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Syntax Highlighting}
+\begin{changemargin}{1cm}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{images/highlight2.png}
+\end{center}
+
+
+\mnote{For example, if you forgot a '' (close-quote) character at the end of a string, then subsequent code after where you expect will be string-coloured, revealing the error. Similarly, comments are often coloured so you can see at a glance if half a line is commented out.}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Templates}
+\begin{changemargin}{1cm}
+
+IDEs often allow you to start your
+project from a template; easier than starting from scratch
+
+\begin{itemize}
+\item Android Test Project (you'll use these);
+\item Java Project
+\item Java Class
+\item Java Interface
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Continuous Compiling}
+\begin{changemargin}{1cm}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{images/highlight2.png}
+\end{center}
+
+Notice the red squiggle under the error.\mnote{ Instead of manually invoking the compiler manually, modern IDEs are constantly running the compiler when a file is changed. So as you're working, you'll see errors and warnings right away.
+
+When you get a red (or yellow) squiggle underneath your code (see the figure below) there's an error (or warning). Eclipse and other very clever IDEs can sometimes suggest a solution, in a feature known as quick fix}
+
+\end{changemargin}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Project Development Workflow}
+
+\begin{changemargin}{1cm}
+\Large
+\begin{enumerate}
+\setcounter{enumi}{-1}
+\item Figure out what you'll need to do.
+\item Start a new project from a template or, more realistically,
+  check it out from a version control repository.
+\item Make the edits that you need. 
+\item Test your edits by running the application.
+\item Debug your edits.
+\item Commit your files to the version control repository.
+\end{enumerate}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Eclipse demo}
+
+\begin{changemargin}{1cm}
+We'll show a little demo of Eclipse (time permitting):
+\begin{enumerate}
+	\item Create a new Android project from a \structure{template}.
+	\item Go over syntax highlighting.
+	\item Show you content assist.
+	\item Demonstrate the ``Quick Fix'' feature.
+\end{enumerate}
+\end{changemargin}
+
+\end{frame}
+
+
+\end{document}
+
