@@ -127,10 +127,10 @@ The Map trusts that some other application will handle the Intent.
 
 \begin{frame}
 \frametitle{Intent: Event Example}
-\begin{changemargin}{1cm}
+\begin{changemargin}{.8cm}
 
 The system broadcasts an Intent when the phone
-goes into airplane mode.
+enters flight mode.
 
 \end{changemargin}
 \end{frame}
@@ -255,8 +255,8 @@ Beyond the data, Intents may also contain \emph{extras}.
 Extras
 consist of key-value pairs. 
 
-They contain more information than what you
-can easily put into a URI.
+They contain more information than what
+can easily be put in a URI.
 
 \end{changemargin}
 \end{frame}
@@ -467,7 +467,7 @@ In your activity, implement the callback {\tt onSaveInstanceState()}
  
 (The Bundle {\tt b} is another key/value map.)
  
-\end{changemargin}
+
 
 {\scriptsize
 \begin{verbatim}
@@ -482,6 +482,7 @@ class MainActivity ... {
 }
 \end{verbatim}
 }
+\end{changemargin}
 \end{frame}
 
 
@@ -490,8 +491,6 @@ class MainActivity ... {
 
 \begin{changemargin}{1cm}
  You can then restore whatever data you saved in the {\tt onCreate} method of the same Activity:
- 
-\end{changemargin}
 
 {\scriptsize
 \begin{verbatim}
@@ -504,6 +503,7 @@ class MainActivity ... {
 }
 \end{verbatim}
 }
+\end{changemargin}
 \end{frame}
 
 
@@ -539,7 +539,7 @@ Java Code = more flexibility:
 
 \begin{changemargin}{1cm}
 These lines keep on showing up in our code:
-{\tiny
+{\scriptsize
 \begin{verbatim}
 // Inflate the menu; this adds items to the 
 // action bar if it is present.
@@ -598,11 +598,12 @@ Easiest way\footnote{Thanks to \scriptsize \url{http://www.cs.umd.edu/class/fall
 \item put a picture ({\tt PNG}, {\tt JPG} or {\tt GIF}) in {\tt res/drawables}.
 \item use an {\tt ImageView} to include it on the screen.
 \end{itemize}
-\end{changemargin}
+
 
 {\tiny from: \url{http://developer.android.com/guide/topics/graphics/2d-graphics.html}}
 
-\begin{verbatim}[basicstyle=\scriptsize]
+{\scriptsize
+\begin{verbatim}
   // Instantiate an ImageView and define its properties programmatically
   ImageView i = new ImageView(this);
   i.setImageResource(R.drawable.my_image);
@@ -615,6 +616,8 @@ Easiest way\footnote{Thanks to \scriptsize \url{http://www.cs.umd.edu/class/fall
   //  set the layout as the content view
   mLinearLayout.addView(i);
 \end{verbatim}
+}
+\end{changemargin}
 \end{frame}
 
 
@@ -625,13 +628,14 @@ Easiest way\footnote{Thanks to \scriptsize \url{http://www.cs.umd.edu/class/fall
 Again, you need the appropriate drawable in the {\tt res/drawables} directory.\\[1em]
 Note: harder to go wrong here.
 
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   <ImageView
     android:id="@+id/imageView1"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
     android:src="@drawable/myImage" />
 \end{verbatim}
+
 \end{changemargin}
 
 \end{frame}
@@ -657,15 +661,16 @@ Again, you need the appropriate drawable in the {\tt res/drawables} directory.\\
 Note: harder to go wrong here.
 
 In the Layout XML:
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   <ImageView android:id="@+id/imageView2"
     android:src="@drawable/cyan_shape" ... />
 \end{verbatim}
 
 Next, we create an XML for the drawable itself:
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   <shape android:shape="oval" ... >
-    <size android:width="160px" android:height="160px" />
+    <size android:width="160px" 
+    	android:height="160px" />
     <solid android:color="#7f00ffff" />
   </shape>
 \end{verbatim}
@@ -678,7 +683,8 @@ Next, we create an XML for the drawable itself:
 \begin{changemargin}{1cm}
 Everything you can do in XML, you can do in code.
 
-\begin{verbatim}[basicstyle=\scriptsize]
+{\scriptsize
+\begin{verbatim}
   private class MyDrawableView extends ImageView {
     private ShapeDrawable mDrawable;
     public MyDrawableView(Context context, int color) {
@@ -693,6 +699,7 @@ Everything you can do in XML, you can do in code.
     }
   }
 \end{verbatim}
+}
 
 \end{changemargin}
 \end{frame}
@@ -701,7 +708,7 @@ Everything you can do in XML, you can do in code.
 \frametitle{Shapes, programmatically}
 \begin{changemargin}{1cm}
 In the Activity's {\tt onCreate()}:
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   MyDrawableView magentaView = 
     new MyDrawableView(this, Color.MAGENTA);
   magentaView.setLayoutParams

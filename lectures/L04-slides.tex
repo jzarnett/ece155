@@ -23,7 +23,7 @@
 \frametitle{Exceptions}
 \begin{changemargin}{1cm}
 
-\texttt{Exception}s are used to signal an error during the execution of a program.
+\texttt{Exception}s are used to signal an error (something unusual) during the execution of a program.
 
 This disrupts the normal flow of the program's instructions.
 
@@ -38,7 +38,7 @@ The keyword is \texttt{throw}.
 \frametitle{Exceptions}
 \begin{changemargin}{1cm}
 
-Exceptions can be generated automatically or put explicitly in the program.
+Exceptions are generated automatically or explicitly in a program.
 
 Write: \texttt{throw new RuntimeException(...)}
 
@@ -188,7 +188,7 @@ public boolean tryFinally() {
 \begin{frame}[fragile]
 \frametitle{Exceptions: Putting it Together}
 \begin{changemargin}{1cm}
-{\tiny
+{\scriptsize
 \begin{verbatim}
 public void writeList() {
     PrintWriter out = null;
@@ -430,7 +430,7 @@ For example, to read from a file, use a \texttt{FileInputStream}.
 \begin{frame}[fragile]
 \frametitle{Reading a File and Writing it Again}
 \begin{changemargin}{1cm}
-{\tiny
+{\scriptsize
 \begin{verbatim}
 public class CopyFile {
     public static void main(String[] args) throws IOException {
@@ -481,7 +481,7 @@ What we'd often like to do is read a whole line at once.
 \begin{frame}[fragile]
 \frametitle{Reading a Line at a Time}
 \begin{changemargin}{1cm}
-{\tiny
+{\scriptsize
 \begin{verbatim}
 public class CopyFile {
     public static void main(String[] args) throws IOException {

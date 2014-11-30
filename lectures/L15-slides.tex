@@ -232,7 +232,7 @@ This usually stops the program. \mnote{Assertions are usually not left in the co
 \begin{frame}
 \frametitle{Objective: Unit Tests}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 Learn how to write simple JUnit 
 tests for Java code.\\[1em]
@@ -303,8 +303,9 @@ You'll never run tests that are annoying to run.
 
 \begin{frame}[fragile]
 \frametitle{Account Example}
-
-\begin{verbatim}[language={Java},basicstyle=\scriptsize]
+\begin{changemargin}{1cm}
+{\scriptsize
+\begin{verbatim}
 public class Account
 {
   private float balance;
@@ -318,14 +319,17 @@ public class Account
   public float getBalance() { return balance; }
 }
 \end{verbatim}
-
+}
+\end{changemargin}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{JUnit Test for Account}
+\begin{changemargin}{1cm}
 Let's write a unit test for this class:
 
-\begin{verbatim}[language={Java},basicstyle=\scriptsize]
+{\scriptsize
+\begin{verbatim}
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -345,21 +349,25 @@ public class AccountTest {
   }
 }
 \end{verbatim}
+}
+\end{changemargin}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Test Results}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 If we run this test, we'd get a red bar; {\tt transferFunds} doesn't
 do anything. Adding this code:
 
-\begin{verbatim}[language={Java},basicstyle=\scriptsize]
+{\scriptsize
+\begin{verbatim}
 public void transferFunds(Account destination, float amount) {
     destination.deposit(amount);
     withdraw(amount);
 }
 \end{verbatim}
+}
 makes the bar green, since the test now passes.
 \end{changemargin}
 \end{frame}
@@ -374,7 +382,7 @@ Repeatedly allocating these objects is terrible.\\[1em]
 
 Solution: test fixtures.
 
-\begin{verbatim}[language={Java},basicstyle=\scriptsize]
+\begin{verbatim}
 public class AccountTest {
   private Account account1;
 
@@ -417,7 +425,7 @@ public void empty() {
 \begin{frame}
 \frametitle{JUnit 4 versus JUnit 3}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 So far, we saw the (better) JUnit 4 syntax.\\[1em]
 
 Android uses JUnit 3 syntax. Key differences:
@@ -437,7 +445,7 @@ Android uses JUnit 3 syntax. Key differences:
 \begin{frame}[fragile]
 \frametitle{Useful Concept (not just for Testing)}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 Imagine a JUnit test for a piece of code that is used for data retrieval. 
 
@@ -458,7 +466,7 @@ private ArrayList<String> studentNames = {''John Doe'', ''Jane Doe'', ''Max Must
 
 \begin{frame}
 \frametitle{Useful Concept (not just for Testing)}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 Check: index in the array of Student IDs is the same as the array of Student Names and that the two arrays line up. 
 
@@ -474,7 +482,7 @@ Can we have a relation between the student IDs and names without \texttt{i}?
 
 \begin{frame}[fragile]
 \frametitle{``Key'' Idea}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 A \alert{Key-Value Pair}. 
 
@@ -493,7 +501,7 @@ Key on the left; value on the right.
 
 \begin{frame}
 \frametitle{HashMap}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 The Java data structure to represent this is a \texttt{HashMap}.
 
@@ -508,7 +516,7 @@ Keys must be unique. A key corresponds to exactly 1 value.
 
 \begin{frame}
 \frametitle{HashMap vs. List}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 A list definition has a type: \texttt{ArrayList<String>}. 
 
@@ -527,7 +535,7 @@ The types of the key and value can be anything, e.g., \texttt{Student} and \text
 
 \begin{frame}
 \frametitle{HashMap vs. List}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 An \texttt{List} of type \texttt{T} is effectively a \texttt{HashMap<int, T>}. 
 
@@ -545,7 +553,7 @@ Their internal representations may be different.
 
 \begin{frame}
 \frametitle{How to Use a HashMap}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 To retrieve some data from the \texttt{HashMap}:
 
@@ -558,7 +566,7 @@ To retrieve some data from the \texttt{HashMap}:
 
 \begin{frame}
 \frametitle{How to Use a HashMap}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 
 To add something to the \texttt{HashMap}, use the \texttt{put()} method, with the key and the value.
@@ -575,7 +583,7 @@ Already a value for the key? replaces the value:
 
 \begin{frame}
 \frametitle{How to Use a HashMap}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 
 To remove something from the map, use the \texttt{remove()} method with the key of the item to remove: 
@@ -588,7 +596,7 @@ To remove something from the map, use the \texttt{remove()} method with the key 
 
 \begin{frame}
 \frametitle{How to Use a HashMap}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 To get a list of all the keys: \texttt{keySet()}.
 
@@ -600,7 +608,7 @@ To get a list of all the keys: \texttt{keySet()}.
 
 \begin{frame}[fragile]
 \frametitle{Testing with the HashMap}
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 Test our \texttt{getName(String studentID)} function using a \texttt{HashMap} called \texttt{hm}.
 

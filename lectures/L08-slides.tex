@@ -97,6 +97,7 @@ Solution: \texttt{UserFactory} that creates a new \texttt{User}, populates its d
 \begin{changemargin}{1cm}
 Further examples:
 
+{\scriptsize
 \begin{verbatim}
 public Rectangle createRectangle() {
   return new RectangleImpl();
@@ -109,6 +110,7 @@ public FileExample createFileExample() {
 }
 
 \end{verbatim}
+}
 \end{changemargin}
 \end{frame}
 
@@ -120,16 +122,7 @@ Only one instance of a class. Global point of access.
 
 Access controlled through the single point of access.
 
-Use when: only one instance of the class may ever exist.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Creation Patterns: Singleton}
-\begin{changemargin}{1cm}
-
-Use when: only one instance of the class should ever exist in the system.
+Use when: only 1 instance of the class may ever exist.
 
 \end{changemargin}
 \end{frame}

@@ -23,7 +23,7 @@
 
 \Large
 
-\begin{changemargin}{2.5cm}
+\begin{changemargin}{1cm}
 Be able to program for systems which use event-based models (eg Android).
 \end{changemargin}
 
@@ -33,7 +33,7 @@ Be able to program for systems which use event-based models (eg Android).
 \begin{frame}
 \frametitle{Random Request}
 
-\begin{changemargin}{2.5cm}
+\begin{changemargin}{1cm}
 In 10 minutes, please remind me that I'm supposed to do something.
 \end{changemargin}
 
@@ -42,7 +42,7 @@ In 10 minutes, please remind me that I'm supposed to do something.
 \begin{frame}
 \frametitle{Relevance of OO to Android: Events}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 What happens when you press this?
 
 \begin{center}
@@ -56,7 +56,7 @@ What happens when you press this?
 \begin{frame}
 \frametitle{Events}
 
-\begin{changemargin}{2.5cm}
+\begin{changemargin}{1cm}
 \Large
 An \emph{event} is a notification of a change to the state of your system.
 \end{changemargin}
@@ -66,7 +66,7 @@ An \emph{event} is a notification of a change to the state of your system.
 \begin{frame}
 \frametitle{About event-based programming}
 
-\begin{changemargin}{2.5cm}
+\begin{changemargin}{1cm}
 \begin{itemize}
 \Large Reactive, not proactive.
 \end{itemize}
@@ -77,7 +77,7 @@ An \emph{event} is a notification of a change to the state of your system.
 \begin{frame}
 \frametitle{Event Listeners}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 \begin{itemize}
 \item To receive click events: \\
 \begin{changemargin}{1em}
@@ -98,7 +98,7 @@ the system executes the click event listener.
 \begin{frame}[fragile]
 \frametitle{Implementing Event Listeners (painfully)}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 We need to pass something to {\tt setOnClickListener()}. What?\\[1em]
 
 This method takes a {\tt View.OnClickListener} object.\\[1em]
@@ -126,7 +126,7 @@ go.setOnClickListener(new MyClickListener());
 \begin{frame}[fragile]
 \frametitle{A Better Way}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 
 {\small
 \begin{verbatim}
@@ -165,7 +165,7 @@ class MainActivity {
 \end{verbatim}
 }
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 \begin{itemize}
 \item They don't litter your code with one-time-use classes.
 \item They can access fields and (final) local variables.
@@ -191,7 +191,7 @@ You have another option. From the Android documentation\footnote{\tiny \url{http
 Then, in your activity, you must include the method:
 \begin{verbatim}
   public void selfDestruct(View view) {
-     // Kabloey
+     // Kaboom
   }
 \end{verbatim}
 \end{changemargin}
@@ -201,7 +201,7 @@ Then, in your activity, you must include the method:
 \begin{frame}
 \frametitle{Callback methods}
 
-\begin{changemargin}{2.5cm}
+\begin{changemargin}{1cm}
 We've been programming with \alert{callback methods}.\vfill
 This is also known as ``inversion of control''.\vfill
 Key idea: system (user) decides what happens when.
@@ -212,7 +212,7 @@ Key idea: system (user) decides what happens when.
 \begin{frame}
 \frametitle{Leveraging callback methods}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 You can also structure your program with callback methods.
 Say you have a time-consuming task (TCT).\vfill
 \begin{enumerate}
@@ -422,7 +422,7 @@ It depends:
 \begin{frame}[fragile]
 \frametitle{Port-mapped I/O: Special CPU Instructions}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 The Intel ia32 processors provide special I/O instructions:\\[1em]
 \begin{verbatim}
     outb   ax, 0x3f8
@@ -476,7 +476,7 @@ CPU just reads and writes to ``memory''.\\[1em]
 \end{alltt}
 \end{changemargin}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 This is a \emph{tight polling loop}.\\[1em]
 \begin{itemize}
 \item Expect the hardware specification to promise that statusRegister eventually changes 

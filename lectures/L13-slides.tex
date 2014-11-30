@@ -173,9 +173,10 @@ Warning: these files may go away anytime.
 \begin{frame}[fragile]
 \frametitle{Files: Checking External Storage Availability}
 
-\begin{changemargin}{0.1cm}
+\begin{changemargin}{1cm}
 Sometimes the media is not there, or not writable.
-\begin{verbatim}[basicstyle=\scriptsize]
+{\scriptsize
+\begin{verbatim}
 String state = Environment.getExternalStorageState();
 
 if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -188,6 +189,7 @@ if (Environment.MEDIA_MOUNTED.equals(state)) {
     //  to know is we can neither read nor write
 }
 \end{verbatim}
+}
 \end{changemargin}
 \end{frame}
 
@@ -197,7 +199,7 @@ if (Environment.MEDIA_MOUNTED.equals(state)) {
 It actually delegates to an XML parsing library. 
 
 Recall that you call:
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
     NavigationalMap map = 
        MapLoader.loadMap(getExternalFilesDir(null), 
                          "Lab-room-peninsula.svg");
@@ -239,7 +241,7 @@ which all apps on the system can access.
 \begin{changemargin}{1cm}
 
 The following code will read a line of text
-into the {\tt String} variable {\tt i}.
+into the {\tt String} variable~{\tt i}.
 
 It currently reads from internal storage.
 
@@ -251,9 +253,10 @@ To read from external storage: \\
 
 \begin{frame}[fragile]
 \frametitle{Reading from Files}
-\begin{changemargin}{0.1cm}
+\begin{changemargin}{1cm}
 
-\begin{verbatim}[basicstyle=\scriptsize]
+{\scriptsize
+\begin{verbatim}
 try {
     // internal storage: 
     FileInputStream os = openFileInput("internal.txt");
@@ -266,8 +269,11 @@ try {
     String i = br.readLine();
     // --> i contains the line you just read.
     os.close();
-} catch (IOException e) {}
+} catch (IOException e) {
+   // Handle Exception...
+}
 \end{verbatim}
+}
 
 \end{changemargin}
 \end{frame}
@@ -277,7 +283,8 @@ try {
 \frametitle{Writing to Files}
 \begin{changemargin}{1cm}
 
-\begin{verbatim}[basicstyle=\scriptsize]
+{\scriptsize
+\begin{verbatim}
 try {
     // internal storage:
     FileOutputStream os = openFileOutput("internal.txt", 
@@ -292,8 +299,11 @@ try {
     // --> write out the contents of string i.
     osw.println(i);
     osw.close();
-} catch (IOException e) {}
+} catch (IOException e) {
+    // Handle Exception
+}
 \end{verbatim}
+}
 
 
 \end{changemargin}
@@ -392,7 +402,8 @@ Can you think of any pattern that might describe a step?
  Sometimes you want to display a short message to the user.
 Use {\tt Toast} to do that. Just include the following code:
 \begin{verbatim}
-  Toast.makeText(getApplicationContext(), "A Toast!", 
+  Toast.makeText(getApplicationContext(), 
+                 "A Toast!", 
                  Toast.LENGTH_LONG).show();
 \end{verbatim}
 It's also OK to use in your onClick event listener:

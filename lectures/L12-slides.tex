@@ -27,14 +27,14 @@ Traditionally:
 \item analyze the design (with calculus);
 \item stamp and sign the plan.
 \end{itemize}
-Someone else builds the plan.\\[1em]
+Someone else builds the plan.
 
 People tried this for software as well:
 \begin{itemize}
 \item solicit requirements;
 \item make UML diagrams; 
 \end{itemize}
-and hire code monkeys to implement the design.\\[1em]
+and hire code monkeys to implement the design.
 
 This works poorly.
 
@@ -49,7 +49,7 @@ This works poorly.
 The management question, therefore, is not {\em whether} to build a pilot system and throw it away. You {\em will} do that. [\ldots] Hence {\em plan to throw one away; you will, anyhow}.
 \end{quote}
 \hfill Frederick Brooks, \emph{The Mythical Man-Month}, 1975.
-~\\[1em]
+~
 
 The biggest reason the waterfall is a straw-man: 
 \begin{itemize}
@@ -68,8 +68,8 @@ Solution: \structure{iteration}.\\Different models have different iteration stra
 \frametitle{Agile Lifecycle Models}
 
 \begin{changemargin}{1cm}
-Key point: handling change on-demand.\\[1em]
-Incorporate change into fast iteration process.\\[1em]
+Key point: handling change on-demand.
+Incorporate change into fast iteration process.
 
 This requires suitable developers.
 \begin{itemize}
@@ -143,8 +143,8 @@ ensure that you're following existing process.
 \end{itemize}
 ~\\
 
-Continuous process improvement: constant review.\\[1em]
-Beyond the scope of an individual project, but rather across projects.\\[1em]
+Continuous process improvement: constant review.
+Beyond the scope of an individual project, but rather across projects.
 Allegedly: yield dramatic increases in development capability.
 \end{changemargin}
 
@@ -153,7 +153,7 @@ Allegedly: yield dramatic increases in development capability.
 \begin{frame}
 \frametitle{Systematic Decision-Making}
 
-\begin{changemargin}{2cm}
+\begin{changemargin}{1cm}
 General process for making decisions:
 
 \begin{enumerate}
@@ -184,12 +184,12 @@ But how?
 \begin{frame}
 \frametitle{Computational Decision Making}
 
-\begin{changemargin}{2cm}
+\begin{changemargin}{1cm}
 
-Goal: \structure{quantify} the decision-making process.\\[1em]
+Goal: \structure{quantify} the decision-making process.
 
 Assign a \structure{weight} to each criterion \\ \qquad (according to importance); and\\
-assign a \structure{score} for each choice.\\[1em]
+assign a \structure{score} for each choice.
 
 Combining weights and scores,\\
 compute the \structure{value} of
@@ -202,13 +202,13 @@ a payoff function for each choice.
 \begin{frame}
 \frametitle{CDM: Assigning Weights and Scores}
 
-\begin{changemargin}{2cm}
+\begin{changemargin}{1cm}
 Assume that there are $m$ choices and $n$ criteria. 
 \begin{enumerate}
 \item Assign a weight
   $w_j$ to each criterion. \\
   Ensure $\sum_{j=1}^n w_j = 1$ (or
-  100\%). \\ Higher weights = more important.\\[1em]
+  100\%). \\ Higher weights = more important.
 \item For each choice $i$ and criterion $j$, assign score $p_{ij}$,\\
   which summarizes goodness of $i$ with respect to $j$.\\
 
@@ -220,8 +220,8 @@ Assume that there are $m$ choices and $n$ criteria.
 \begin{frame}
 \frametitle{CDM: Computing Scores and Payoffs}
 
-\begin{changemargin}{2cm}
-[Assume that there are $m$ choices and $n$ criteria.]\\[1em]
+\begin{changemargin}{1cm}
+[Assume that there are $m$ choices and $n$ criteria.]
 
 We can then compute scores $s_{ij}$ and a payoff $f_i$.\\
 
@@ -238,7 +238,7 @@ the largest expected payoff $f_i$:
 
 \frametitle{Normalizing Scores}
 
-\begin{changemargin}{2cm}
+\begin{changemargin}{1cm}
 
  Rather than choosing scores
 $p_{ij} \in [0, 1]$, \\
@@ -262,8 +262,8 @@ so that
 \begin{frame}
 \frametitle{CDM: Worked Example}
 
-\begin{changemargin}{2cm}
-``How should I get to Montreal?''\\[1em]
+\begin{changemargin}{1cm}
+``How should I get to Montreal?''
 
 Done on the board to facilitate understanding.
 
@@ -301,13 +301,13 @@ but it would be less if you carpooled.
 \frametitle{Sensitivity Analysis}
 
 \begin{changemargin}{1cm}
-Investigate impact of potential flaws.\\[1em]
+Investigate impact of potential flaws.
 
 \structure{Sensitivity Analysis}: study of how variations
 influence outcome of a mathematical model.\\[1.5em]
 
 Poor person's sensitivity analysis: do what-if
-calculations.\\[1em]
+calculations.
 
 Replace the original value with some other value\\
 and repeat the analysis. \\
@@ -321,15 +321,15 @@ and repeat the analysis. \\
 \begin{frame}
 \frametitle{Sensitivity Analysis: Examples}
 
-\begin{changemargin}{1.5cm}
+\begin{changemargin}{1cm}
 Train used to always be late, \\ so you might assign 9
-instead of 7.7. \\ \qquad (mostly on time recently.) \\[1em]
+instead of 7.7. \\ \qquad (mostly on time recently.) 
 
 Or, you
 might want to get to the airport slightly earlier than me, so you might also
-change the time for plane to 5.\\[1em]
+change the time for plane to 5.
 
-Or, you might be more cost-sensitive and less time-sensitive.\\[1em]
+Or, you might be more cost-sensitive and less time-sensitive.
 
 Do these change the best decision?
 \end{changemargin}
@@ -342,10 +342,10 @@ Do these change the best decision?
 Previous notes contained an example (``Where should I go to
 University?'') and a reference to \emph{Introduction to
   Professional Engineering in Canada}, Example 15.3
-(pp. 232--233). \\[1em]
+(pp. 232--233). 
 
 Another example: Waterloo Region's
-Rapid Transit alternatives \\ \qquad (no actual numbers). \\[1em]
+Rapid Transit alternatives \\ \qquad (no actual numbers). 
 
 Another example: choosing which phones to buy for ECE155.
 \end{changemargin}
@@ -356,7 +356,7 @@ Another example: choosing which phones to buy for ECE155.
 
 \begin{changemargin}{2em}
 Computational decision-making systematically includes diverse factors
-to arrive at a ``best'' decision.\\[1em]
+to arrive at a ``best'' decision.
 
 Disadvantages:
 \begin{itemize}
