@@ -11,7 +11,7 @@ in a class, say an {\tt EventListener}, which needs access to the object
 that created it, say the {\tt MainActivity}. Add a field to the {\tt EventListener}
 with a reference to the {\tt MainActivity}, as follows:
 
-{\scriptsize \begin{verbatim}[escapechar=!]
+{ \begin{verbatim}
     public class MainActivity extends Activity {
       @Override
       protected void onCreate(Bundle savedInstanceState) {
@@ -21,11 +21,11 @@ with a reference to the {\tt MainActivity}, as follows:
     }
 
     class LightSensorEventListener implements SensorEventListener {
-      !{\bf MainActivity m;}!
+      MainActivity m;
 
-      !{\bf public LightSensorEventListener(MainActivity m) \{}!
-        !{\bf this.m = m;}!
-      !{\bf \} }!
+      public LightSensorEventListener(MainActivity m) {
+          this.m = m;
+      }
 
       // ...
     }
@@ -47,7 +47,7 @@ An \emph{Intent} specifies a request or describes an event.
 \paragraph{Examples: Starting another Activity.} The simplest possible Intent
 explicitly names the Activity it would like to start.
 
-{\small 
+{ 
 \begin{verbatim}
   Intent intent = new Intent(this, OtherActivity.class);
   startActivity(intent);
@@ -76,7 +76,7 @@ ACTION\_SEARCH & Perform a search
 \end{tabular}
 
 The two following code fragments yield identical Intents with an action (but no data):
-{\small
+{
 \begin{verbatim}
 new Intent(Intent.ACTION_EDIT);   |  Intent intent = new Intent();
                                   |  intent.setAction(Intent.ACTION_EDIT);
@@ -89,7 +89,7 @@ URI (Universal Resource Identifier) format\footnote{What's a URI? It's
 obvious thing to put into data is a web address, but other data formats
 are possible as well:
 
-{\scriptsize
+{
 \begin{verbatim}
 new Intent(Intent.ACTION_DIAL,           | Intent intent = 
                                          |   new Intent(Intent.ACTION_DIAL);
@@ -111,7 +111,7 @@ Beyond the data, Intents may also contain \emph{extras}. The extras
 consist of key-value pairs: they contain more information than what you
 can easily put into a URI. Here's an example.
 
-{\small 
+{ 
 \begin{verbatim}
 Intent intent = new Intent(Intent.ACTION_SEND);
 intent.putExtra(android.content.Intent.EXTRA_EMAIL,
@@ -142,7 +142,7 @@ and category.
 \paragraph{Requesting Intent Resolution.} Let's first look at an example of requesting an image from any 
 suitable Activity on the
 system~\cite{vogella}:
-{\small 
+{ 
 \begin{verbatim}
   private static final int REQUEST_CODE = 1;
 
@@ -163,7 +163,7 @@ activity results below.
 In your application's manifest, there's an XML tag for each activity.
 That tag can take an \emph{intent filter} describing the Intents
 that the activity is prepared to handle. For example:
-{\small 
+{ 
 \begin{verbatim}
 <activity
     android:name=".BrowserActivity"
@@ -187,7 +187,7 @@ user to pick a contact from the contact list. Or you may be asking the
 user for a favourite colour. The sub-activity should
 create a new Intent and call its {\tt setResult} method:
 
-{\scriptsize 
+{ 
 \begin{verbatim}
   Intent retval = new Intent();
   retval.putExtra("color", "blue");
@@ -197,7 +197,7 @@ create a new Intent and call its {\tt setResult} method:
 
 Then in the caller, we provide a new callback, {\tt onActivityResult()}.
 
-{\scriptsize
+{
 \begin{verbatim}
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -225,7 +225,7 @@ not for any fields stored in the activity (like, say, step counts). In
 your activity, implement the callback {\tt onSaveInstanceState()} to
 save the data:
 
-{\scriptsize
+{
 \begin{verbatim}
 class MainActivity ... {
   String color;
@@ -240,7 +240,7 @@ class MainActivity ... {
 }
 The Bundle {\tt b} is another key/value map. You can then restore whatever
 data you saved in the {\tt onCreate} method of the same Activity:
-{\scriptsize
+{
 \begin{verbatim}
 class MainActivity ... {
   @Override
@@ -279,7 +279,7 @@ Java Code = more flexibility:
 
 \paragraph{What ``inflate'' means.}
 These lines keep on showing up in our auto-generated {\tt Activity} code:
-{\tiny
+{
 \begin{verbatim}
 // Inflate the menu; this adds items to the action bar if it is present.
 getMenuInflater().inflate(R.menu.activity_main, menu);
@@ -289,7 +289,6 @@ getMenuInflater().inflate(R.menu.activity_main, menu);
 ``Inflate'' means taking an XML tree and creating a tree of {\tt View}
 objects, based on the description in the XML.
 
-\newpage
 \section*{Android Graphics}
 Next, we'll see how to put graphics on the screen in Android. 
 There are, in general, two options:
@@ -326,7 +325,7 @@ drawing them in some other program and then including them:
 \end{itemize}
 
 Examples from~\cite{android:graphics}
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   // Instantiate an ImageView and define its properties programmatically
   ImageView i = new ImageView(this);
   i.setImageResource(R.drawable.my_image);
@@ -344,7 +343,7 @@ Or, you can do it through XML. Again, you need the appropriate
 drawable in the {\tt res/drawables} directory. Note that since we're
 using XML, it's harder to go wrong.
 
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   <ImageView
     android:id="@+id/imageView1"
     android:layout_height="wrap_content"
@@ -365,13 +364,13 @@ You can draw shapes in XML and put them into an {\tt ImageView}.
 Again, you need the appropriate drawable in the {\tt res/drawables}
 directory.  Add this snippet, which creates the {\tt ImageView} backed
 by the drawable to your Layout XML:
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   <ImageView android:id="@+id/imageView2"
     android:src="@drawable/cyan_shape" ... />
 \end{verbatim}
 Next, create a separate XML file for the drawable itself. This actually
 provides instructions for Android to put dots on the screen.
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   <shape android:shape="oval" ... >
     <size android:width="160px" android:height="160px" />
     <solid android:color="#7f00ffff" />
@@ -380,7 +379,7 @@ provides instructions for Android to put dots on the screen.
 
 Everything you can do in XML, you can do in code. Here, we
 specify the shape in Java.
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   private class MyDrawableView extends ImageView {
     private ShapeDrawable mDrawable;
     public MyDrawableView(Context context, int color) {
@@ -397,7 +396,7 @@ specify the shape in Java.
 \end{verbatim}
 Then, in the Activity's {\tt onCreate()}, we would instantiate
 this {\tt MyDrawableView} and add it to the parent view:
-\begin{verbatim}[basicstyle=\scriptsize]
+\begin{verbatim}
   MyDrawableView magentaView = 
     new MyDrawableView(this, Color.MAGENTA);
   magentaView.setLayoutParams

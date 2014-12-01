@@ -28,18 +28,10 @@ traditionally, events come to you. This represents an
 inversion of control. (You may, however, schedule an event to be delivered
 at some point in the future, which includes ``right now''.)
 
+Why would you use an event-driven programming model? It can help you better structure your code, and it's more efficient when you have diverse event handlers rather than
+looping through each possible event and checking to see if it happened.
 
-
-{\sf Why would you use an event-driven programming model?} \\[4em]
-% can help you better structure your code
-% more efficient when you have diverse event handlers rather than
-%   looping through each possible event and checking to see if it happened
-
-{\sf What are some real-life analogies to event-driven programming?}
-~\\[4em]
-
-%Analogy: you pay your bills only once the mail carrier brings them to 
-%your door.
+Event driven programming analogy: you pay your bills only once the mail carrier brings them to your door.
 
 Here's how to do event-driven programming for the click event, then.
 \begin{itemize}
@@ -192,10 +184,6 @@ Which would you do first?
 What about events with similar priorities? How would you choose?
 Do you always need to choose?
 
-Last time, I mentioned that we could put events into dispatcher queues.
-Using the \emph{priority queue} data structure, the dispatcher
-can efficiently pick out the highest-priority event and handle it first.
-
 \paragraph{Events and finite-state machines.}
 One way of implementing functionality in  event-driven software is via finite-state
 machines (FSMs), containing an infinite loop between states. You'll
@@ -308,7 +296,7 @@ doing before.
 % real-life analogy: phone calls
 
 \section*{Inversion of Control}
-As we talked about last time, Android programming is event-driven programming,
+Android programming is event-driven programming,
 which changes the basic structure of a program from what you saw in ECE150.
 
 Here's a representation of how a program works, as you saw it in ECE150:
