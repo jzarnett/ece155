@@ -132,23 +132,9 @@ Embedded systems differ from general-purpose computers in that their
 interaction with the outside world is much more important than in a
 general-purpose computer.
 
-{\sf What are some examples of phenomena that embedded systems care about?}
-
-~\\[1em]
-
-% force, light, time, heat, voltage.
 
 \subsection*{Sensors} Sensors convert input from the external environment
 into a form suitable for use by a computer system.
-{\sf What are examples of sensors?}
-
-% switches
-% force sensors/load cells, light sensor/photovoltaic cell/CCD/IR sensor
-% clock crystal, thermometer, voltmeter
-% speedometers, accelerometers
-% GPS
-
-~\\
 
 Most phenomena in the outside world are analog and continuous-time,
 while the computer is digital and discrete-time, so something has to
@@ -188,11 +174,6 @@ sensing and actuating in a single device. Some devices automatically
 do this, like piezoelectric sensors. Any relatively modern game
 controller also combines sensors and actuators, particularly the Wii
 Remote. Phones also combine sensors and actuators.
-What sensors and actuators did we see in class?
-
-~\\[1em]
-
-We also saw quite a bit of special-purpose hardware on the phone. What did we see?
 
 
 \section*{Programming the Embedded System}
@@ -220,11 +201,6 @@ An \emph{embedded operating system} is a special type of operating system design
 \item favours portability.
 \end{itemize}
 
-{\sf What are some examples of embedded operating systems?}
-% QNX, Win XP Embedded, MicroC/OS-II, VXWorks, Android, iPhone OS, Win 7 Phone, 
-\vspace{5em}
-% up to slide 45, event-driven approach to embedded software.
-
 \subsection*{Therac-25}
 The Therac-25 cancer radiation therapy machine is one of the most famous cases of engineering failure. It's referenced in practically every book about software failures, engineering books, and so on. This is especially the case where the authors or intended audience are Canadian, because the machine was developed by Atomic Energy of Canada Limited. Three patients died as a result of the many problems with the system \cite{spos}:
 
@@ -238,6 +214,10 @@ The Therac-25 cancer radiation therapy machine is one of the most famous cases o
 
 Someone has to build these embedded systems, and lives, including yours, will depend on them.
 
+\subsection*{Collaborative Course}
+The source material for the ECE~155 notes and slides is now open-sourced via Github (\url{http://www.github.com}), an online collaboration tool. Later on we will learn about \texttt{git}, but if you're already familiar with it, so much the better. Whether or not you know how to use \texttt{git}, if you find an error in the notes/slides, or have an idea on how to improve them, go to \url{https://github.com/jzarnett/ece155} and open an issue. 
+
+If you know how to use \texttt{git} and \LaTeX, then you can go to the URL and submit a pull request (changes) for me to look at and incorporate!
 
 \input{bibliography.tex}
 
