@@ -3,102 +3,7 @@
 
 \begin{document}
 
-\lecture{ 12 --- Dev Planning \& Computational Decision-Making}{\term}{Patrick Lam}
-
-\section*{Design and Planning}
-We'll start by comparing design and planning for traditional engineering
-projects versus software projects.
-Traditionally, you would:\\[-2.5em]
-\begin{itemize}
-\item solicit requirements;
-\item make a design;
-\item analyze the design (with calculus);
-\item stamp and sign the plan.
-\end{itemize}~\\[-2.5em]
-Then, someone else implements/builds the plan.
-
-People tried this for software as well:\\[-2.5em]
-\begin{itemize}
-\item solicit requirements;
-\item make UML diagrams; 
-\end{itemize}~\\[-2.5em]
-and hire code monkeys to implement the design.
-
-\noindent However, this works poorly.
-
-\paragraph{The Role of Prototyping.} Requirements are always difficult to 
-formalize; this is a problem for all types of engineering, and
-definitely for software. Prototyping is one way to mitigate the risk
-of building the wrong thing.
-
-\begin{quote}
-The management question, therefore, is not {\em whether} to build a pilot system and throw it away. You {\em will} do that. [\ldots] Hence {\em plan to throw one away; you will, anyhow}.
-\end{quote}
-\hfill Frederick Brooks~\cite{mmm}.
-
-The waterfall model is a straw-man for many reasons, but the
-biggest one is because it pretends that prototypes aren't necessary.
-You can never build a system without a prototype, because you never
-really know what you need until you see it.  What's more, needs change
-over time.
-
-Another solution to the problem of shifting and unknown requirements,
-along with prototypes, is the concept of \emph{iteration}. Different
-models have different iteration strategies.
-
-\paragraph{Agile Lifecycle Models.} The key point is to recognize
-that change is inevitable, and to deal with it on-demand. Agile
-models, such as extreme programming, advocate dealing with change
-on-demand. In principle, they can handle changing requirements much
-more smoothly.
-
-However, agile models require suing developers, who must be good at
-communicating with each other---these models are always highly
-collaborative. Due to collaboration, agile methods are
-supposedly resistant to 1) changes to the team over time and
-2) differences between experience levels of the developers.
-
-\subsection*{Choosing a Lifecycle Model}
-Recall that the main difference between models is the pace of iteration.
-\begin{itemize}
-\item With large teams, diverse stakeholder groups: slower iterations;
-\item With small teams, uncertain requirements, complex technologies: faster iterations.
-\end{itemize}
-
-\subsection*{Questions to Think About}
-The answers to these questions will affect the pace of iteration and
-hence the lifecycle model which you'll want to select.\\[-2em]
-\begin{itemize}
-\item Do you understand the customer requirements?
-\item Will you need to make major architectural changes?
-\item How reliable does the system need to be?
-\item How much future expansion and growth do you foresee?
-\item How risky is the project?
-\item Is the schedule heavily-constrained?\footnote{Note: wishing for faster progress won't make it so.}
-\item What is going to change during development?
-\item How much do customers need visible progress?
-\item How much does management need visible progress?
-\item What experience does the design team bring?
-\end{itemize}
-
-\subsection*{Software Process Improvement}
-One of the things you can
-design is the design process itself. Here's what you can do to try to 
-improve your software lifecycle model:\\[-2.5em]
-
-\begin{itemize}
-\item first, figure out what you mean to be doing: document your organization's software process;
-\item next, figure out what you're actually doing: ensure that you're following the existing process; 
-\item finally, identify areas of potential improvement and implement them.
-\end{itemize}
-
-In continuous process improvement, you constantly review the software
-development process and its effect upon development. Continuous improvement 
-also implies identifying and fixing issues that are
-beyond the scope of individual projects: you can find and apply best
-practices to all projects. Changes can allegedly yield dramatic
-increases in development capability.
-
+\lecture{ 12 ---Computational Decision-Making}{\term}{Patrick Lam}
 
 \section*{Decision-Making}
 Let's start with a general process for 
@@ -201,7 +106,6 @@ Schedule Flexibility & 0.5 & 1.0 & 0.9 & Car
 
 The cost for driving is estimated at \$206 by the calculation of 642km at \$0.321/km, per \url{http://www.caa.ca/documents/DrivingCostsBrochure-jan09-eng-v3.pdf}. Plane and train costs are based on the ticket purchase prices.
 
-\newpage
 {\sf What factors do these data not capture?}\\[2em]
 
 Now we can build a decision matrix:
