@@ -3,7 +3,7 @@
 
 \begin{document}
 
-\lecture{ 12 ---Computational Decision-Making}{\term}{Patrick Lam}
+\lecture{ 12 ---Computational Decision-Making}{\term}{Patrick Lam \& Jeff Zarnett}
 
 \section*{Decision-Making}
 Let's start with a general process for 
@@ -217,6 +217,58 @@ pick the alternative with the highest number, because your scores or
 coefficients might have been imprecise.
 
 \paragraph{Work Term Report Pro Tip.} Computational decision-making charts are valuable in your work reports. They provide a consistent way of evaluating alternatives and justifying why you have chosen a particular option as the best.
+
+\subsection*{Further Example}
+This example came from the Spring 2014 midterm exam. You are a conscientious student who works hard, but you are also a fan of heavy metal bands whose names begin with the letter \textit{M}. You think that you can manage to go to one concert this summer without having a negative impact on your studies. There are three concerts scheduled in your general area, and you have researched the subject and composed the following raw data.
+
+\begin{table}[h]
+\begin{center}
+	\begin{tabular}{c|c|c|c}
+	\textbf{Criterion} & \textbf{Manowar} & \textbf{Megadeth} & \textbf{Metallica}\\
+		\hline
+		Ticket Cost (\$) & 100 & 125 & 75\\
+		Travel Time (h) & 1.5 & 3 & 3 \\
+		Show Reviews & 8/10 & 10/10 & 6/10 \\
+	\end{tabular}
+\end{center}
+\end{table}
+
+You also estimate the following weights:
+
+\begin{table}[h]
+\begin{center}
+	\begin{tabular}{c|c}
+	\textbf{Criterion} & Weight (\%)\\
+		\hline
+		Ticket Cost & 50\\
+		Travel Time & 20\\
+		Show Reviews & 30
+	\end{tabular}
+\end{center}
+\end{table}
+
+Complete a computational decision-making chart, and indicate which of the three concerts you plan to attend.
+
+
+\paragraph{Solution.}
+Show reviews is the only criterion where higher is better, so it must be inverted. Also acceptable is inverting both ticket code and travel time (although not shown here).
+
+{\Large
+\begin{center}
+\begin{tabular}{l|c|r|r|r|r|r|r|r|r|r|}
+Criterion & Weight & \multicolumn{9}{c}{Alternatives} \\
+$(n=3)$ & $w_i$ (\%) & \multicolumn{3}{c|}{Manowar} & \multicolumn{3}{c|}{Megadeth} & \multicolumn{3}{c}{Metallica} \\
+&& $c_{i1}$ & $p_{i1}$& $s_{i1}$ & $c_{i2}$ & $p_{i2}$ & $s_{i2}$ & $c_{i3}$ & $p_{i3}$ & $s_{i3}$ \\  \hline
+Ticket Cost & 50 & 100 & 0.8 & 40 & 125 & 1 & 50 & 75 & 0.6 & 30 \\
+Travel Time & 20 & 1.5 & 0.5 & 10 & 3   & 1 & 20 & 3  & 1   & 20 \\
+Reviews     & 30 & 2 & 0.2 & 6    & 0   & 0 & 0  & 4  & 0.4 & 12\\ 
+\hline
+\multicolumn{2}{c|}{Totals $f_j$} & \multicolumn{3}{r}{56} & \multicolumn{3}{r}{70} & \multicolumn{3}{r}{62}
+\end{tabular}
+\end{center}
+}
+
+
 
 \input{bibliography.tex}
 

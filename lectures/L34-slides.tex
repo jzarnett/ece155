@@ -231,6 +231,233 @@ Reasoning is a lot of math beyond the scope of this course.
 
 
 \begin{frame}
+\frametitle{Cryptography}
+\begin{changemargin}{1cm}
+
+Let us take a look now at a common encryption scheme: RSA.
+
+In the RSA scheme, a user, say Alice, is associated with the
+triple $\tuple{e, d, n}$ with the following properties:
+
+\begin{itemize}
+    \item Each of $e, d, n$ is a bit-string that is interpreted as an integer.
+    \item For any bit-string $m$, $\left(m^e\right)^d \equiv m~(\text{mod } n)$.
+    \item Given $m^e~(\text{mod }~ n)$, it is difficult to discover $m$.
+    \item From knowledge of only $\tuple{e, n}$, it is difficult to discover $d$.
+\end{itemize}
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Cryptography}
+\begin{changemargin}{1cm}
+
+Alice publicizes $\tuple{e, n}$ and keeps $d$ secret to herself.
+
+Suppose Bob wants to send Alice a message in a manner that it is confidential
+to her. How can be use Alice's pair $\tuple{e, n}$ to do so?
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cryptography}
+\begin{changemargin}{1cm}
+
+An option is, if Bob wants to send a message $m$, he can simply compute
+$m^e~(\text{mod } n)$ and send that over a public channel to Alice.
+
+
+Is this a ``good'' approach?
+
+That is, does this achieve what we think of as confidentiality?
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cryptography}
+\begin{changemargin}{1cm}
+
+A similar question arises in the use of RSA as a signature scheme.
+
+A sender uses a \alert{signature} to indicate that a message is authentic.
+
+Assume that the RSA scheme has the additional properties:
+\begin{itemize}
+    \item For any $m$, it is difficult to generate $m^d~(\text{mod } n)$ without
+	knowledge of $d$.
+    \item $\left(m^d\right)^e \equiv m~(\text{mod } n)$.
+\end{itemize}
+
+Use $S(m)$ to denote Alice's signature on message $m$.
+
+Is $S(m) = m^d~(\text{mod } n)$ a good signature scheme for Alice to use?
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cryptography}
+\begin{changemargin}{1cm}
+
+The answer to both these questions is generally thought to be ``no.'' 
+
+Problem: $E(m) = m^e~(\text{mod } n)$ is a function.\\
+\quad That is, given the same $m$, it produces the same output. 
+
+If the same message is sent 2x, it looks the same in encrypted form.\\
+\quad An eavesdropper observes the same message was sent twice!
+
+This can be seen as a violation of confidentiality.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cryptography}
+\begin{changemargin}{1cm}
+
+What about signatures? They are vulnerable to \alert{existential forgery}.
+
+Specifically, suppose Alice signs and sends out signatures on two messages
+$m_1$ and $m_2$. 
+
+Then, a passive eavesdropper can exploit the property that
+$S(m_1) \cdot S(m_2) = S(m_1 \cdot m_2)$, where ``$\cdot$'' is arithmetic
+multiplication.
+
+Thus, even though Alice never signed the message $m_1 \cdot m_2$, the attacker
+can generate her legitimate signature for that message. 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cryptography}
+\begin{changemargin}{1cm}
+
+This same issue underlies the use of Electronic Code Book (ECB) mode of
+encryption with a symmetric key scheme such as AES.
+
+AES, like RSA, is a block cipher. That is, AES requires that we encrypt
+exactly 128 bits at a time. 
+
+Given a long message that we want
+to encrypt, we simply break that message up into 128-bit pieces, and encrypt
+each in turn. 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cryptography: Solutions}
+\begin{changemargin}{1cm}
+
+Somehow we need to randomize every instance of encryption. 
+
+For every message $m$ that we want to encrypt, we generate a random Initialization Vector (IV). 
+
+This IV is xor-ed with the first 128-bit block. 
+
+The encryption of the 1$^{st}$ block is used as the IV for the 2$^{nd}$ block.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Cryptography: IV}
+\begin{changemargin}{1cm}
+
+A question that arises then is: how is the IV communicated to the receiver so she
+can meaningfully decrypt the message? 
+
+It turns out that communicating the IV
+even in plaintext is okay.
+
+Why? Let's look at an example...
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Password Salting}
+\begin{changemargin}{1cm}
+
+In old UNIX systems, encrypted passwords were stored in a file \texttt{/etc/passwd}. 
+
+Imagine you opened this file and you saw the following:
+
+\begin{verbatim}
+donna:25hg57A\%53H
+edgar:96ugabfAWo95
+frank:25hg57A\%53H
+\end{verbatim}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Password Salting}
+\begin{changemargin}{1cm}
+
+It is immediately obvious from even the encrypted passwords that users Donna and Frank have the same password. 
+
+If Frank is looking at this file, given that he knows his password, he knows Donna's password and can log in under her account.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Password Salting}
+\begin{changemargin}{1cm}
+
+If we apply the IV technique here, what we get is a password \alert{salt}. 
+
+This is some randomly generated data that we append to the user's password before running it through the encryption function. 
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Password Salting}
+\begin{changemargin}{1cm}
+
+Suppose Donna's password is the ever-so-secure ``password''.
+
+The random salt generated for her is ``8z80ppEth\$2''. 
+
+The input to the password encryption function is ``password8z80ppEth\$2''. 
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Password Salting}
+\begin{changemargin}{1cm}
+
+The salt (random data) is stored in plaintext in the \texttt{/etc/passwd} file alongside the username and encrypted data.
+
+Frank might the same password, but he has no way of knowing that, even if he looks in the enhanced \texttt{/etc/passwd} file:
+
+\begin{verbatim}
+donna:8z80ppEth$2:YPlk63KifQ
+edgar:6fPuXqdRdI:2h9u7e4KO3
+frank:VYlp7Whjth:Rxt!d7u6k9
+\end{verbatim}
+
+Thus security is enhanced even though the salt is not hidden.
+
+\end{changemargin}
+\end{frame}
+
+
+
+
+\begin{frame}
 \frametitle{Defeating DoS Attacks}
 \begin{changemargin}{1cm}
 
