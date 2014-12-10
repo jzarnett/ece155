@@ -118,6 +118,7 @@ applying a low-pass filter will eliminate the carrier wave and leave
 us with the data.
 Figure~\ref{fig:Filters} shows what happens when you apply a high-pass and a low-pass filter to some input data. In this case, the data series `x' is a sum of the function $f(x)=10$ and some random noise. After a few samples, the data series `high-x' closely follows the noise, while the data series `low-x' more closely approximates the constant value 10.
 
+\newpage
 \subsection{High-pass filter algorithm}
 \lstset{language=java, 
 	keywordstyle=\color{Blue},          % keyword style
@@ -240,8 +241,7 @@ Once you are satisfied that your design and implementation are working correctly
 
 We will measure your pedometer on 5 walks, each about 20. We'll throw out the worst result. The first four walks will each be at different speeds. The last walk will be at the same speed as the trial in which you had the greatest error. This procedure is intended to protect you from random bugs and user error, but to expose systemic flaws in your implementation.
 
-\paragraph{Bonus}
-There is a bonus mark available for this lab. During testing, you will notice that your pedometer responds to step-like events that are not actually steps. Examples include standing up, rotating the phone, or shaking the phone. If you can eliminate or significantly reduce one of these kinds of false positives, you will earn a bonus mark on this lab:
+During testing, you will notice that your pedometer responds to step-like events that are not actually steps. Examples include standing up, rotating the phone, or shaking the phone. You will need to eliminate or significantly reduce at least one of these kinds of false positives:
 
 \begin{itemize}
 \item Shaking the phone should not cause steps.
@@ -250,14 +250,14 @@ There is a bonus mark available for this lab. During testing, you will notice th
 \item Standing up and sitting down should not trigger a step.
 \end{itemize}
 
-The evaluation of the bonus aspect of the lab will be more subjective than the core lab. You will need to explain how you are accounting for these false positives, and your solution should be noticeably less prone to these false positives than a solution that does not implement your improvements.
+The evaluation of this aspect of the lab will be more subjective than the rest of the lab. You will need to explain how you are accounting for these false positives, and your solution should be noticeably less prone to these false positives than a solution that does not implement your improvements.
 
-If you want to go for the bonus marks, start by writing an implementation which satisfies the requirements of the lab but is prone to false positives. Then, improve your solution. To help convince your teaching assistant that you have made significant improvements in accuracy, you should keep your original implementation and display the number of steps it is reporting for comparison. You might want to display both numbers at the same time.
+Recommendation: start by writing an implementation which satisfies all other requirements of the lab but is prone to false positives. Then, improve your solution. To help convince your teaching assistant that you have made significant improvements in accuracy, you should keep your first implementation and display the number of steps it is reporting for comparison. You might want to display both numbers at the same time.
 
 \section{Submission of project files}
 
 Upload the version of your code used in the demo to your subversion repository and commit it. The address is:
-\url{https://ecesvn.uwaterloo.ca/courses/ece155/s14/groups/group-NNN-MM}
+\url{https://ecesvn.uwaterloo.ca/courses/ece155/w15/groups/group-NNN-MM}
 
 Email Sanjay Singh if you can't commit to that address.
 
