@@ -1,0 +1,148 @@
+\documentclass[10pt]{article}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{multicol}
+\usepackage{xspace}
+\usepackage{pstricks}
+\usepackage{wrapfig}
+\usepackage[section]{placeins}
+\usepackage{wrapfig}
+\usepackage{amssymb}
+\usepackage[default]{droidserif}
+\usepackage[T1]{fontenc}
+
+\usepackage{listings}
+
+%\usepackage{algorithm2e}
+\usetikzlibrary{arrows,automata,shapes}
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=2.5em, text centered, rounded corners, minimum height=2em]
+\tikzstyle{bw} = [rectangle, draw, fill=blue!20, 
+    text width=4em, text centered, rounded corners, minimum height=2em]
+
+\newcommand{\handout}[5]{
+  \noindent
+  \begin{center}
+  \framebox{
+    \vbox{
+      \hbox to 5.78in { {\bf ECE155: Engineering Design with Embedded Systems } \hfill #2 }
+      \vspace{4mm}
+      \hbox to 5.78in { {\Large \hfill #5  \hfill} }
+      \vspace{2mm}
+      \hbox to 5.78in { {\em #3 \hfill #4} }
+    }
+  }
+  \end{center}
+  \vspace*{4mm}
+}
+
+\newcommand{\lecture}[4]{\handout{#1}{#2}{#3}{#4}{Lab #1}}
+\topmargin 0pt
+\advance \topmargin by -\headheight
+\advance \topmargin by -\headsep
+\textheight 8.9in
+\oddsidemargin 0pt
+\evensidemargin \oddsidemargin
+\marginparwidth 0.5in
+\textwidth 6.5in
+
+\parindent 0in
+\parskip 1.5ex
+%\renewcommand{\baselinestretch}{1.25}
+
+\newcommand{\todo}[1]{{\red\textbf{TODO: }#1}\xspace}
+
+\lstset{language=java, 
+        basicstyle=\ttfamily,columns=fullflexible,
+%	keywordstyle=\color{Blue},          % keyword style
+%	commentstyle=\color{OliveGreen}\textit,       % comment style
+%	identifierstyle=\color{Black},
+%	stringstyle=\color{BrickRed},
+	mathescape=true,
+	tabsize=3,
+	showstringspaces=false}
+
+\begin{document}
+
+\lecture{4 (Navigation) --- Assessment}{Spring 2014}{Patrick Lam}{version 1.1}
+
+You are responsible for conforming to ``University of Waterloo Policy 71: Student Academic Discipline.''  Students complete Part I of this form.  The TA conducting the demo completes the rest after the demo. We are entering marks based on this form, so if no form exists, you get no marks.
+
+\vspace{-1em}
+
+\section*{Part I: Student Comments}
+The design (check one of the following): 
+\begin{itemize}
+\renewcommand{\labelitemi}{$\Box$}
+\item Does not incorporate others' work with the exception of the university-provided materials.
+\item Incorporates the work of others as indicated in the notes below. 
+\end{itemize}
+By signing below, I confirm that we wrote the submitted lab code and that it has not been previously submitted for academic credit at this or any other academic institution, except as noted below.
+
+\begin{tabular*}{1\textwidth}{@{\extracolsep{\fill} }c|c|c|c|}
+\hline
+&Student Name & UW Student ID \# & Signature \\
+\hline
+Student 1&&&\\[1em]
+\hline
+Student 2&&&\\[1em]
+\hline
+Student 3 &&&\\[1em]
+\hline
+\end{tabular*}
+
+\paragraph{Notes:}
+
+
+\newpage
+\section*{Part II: Demonstration Checklist}
+\paragraph{Software Functionality Checklist (0.5 pt per checkbox)}
+\begin{itemize}
+\renewcommand{\labelitemi}{$\Box$}
+\item Deductions only: Solution was committed to SVN and compiles without errors. \\
+(This item can only reduce your mark---you get a 0 for broken or uncommitted solutions, but no points for having it.)
+\renewcommand{\labelitemi}{$\Box\Box$}
+\item Deductions only: Your design and implementation follow good engineering design. Examples: not over-using global variables, avoiding unnecessary code duplication, and giving variables descriptive names.
+\item Your solution shows the direction of travel accurately.
+\renewcommand{\labelitemi}{$\Box\Box\Box\Box\Box$}
+\item Your solution updates position on the map following steps.
+\item Your solution finds and presents a route to a destination when there are no obstacles between the origin and the destination.
+\renewcommand{\labelitemi}{$\Box$}
+\item Your solution indicates when the user has reached the destination.
+\renewcommand{\labelitemi}{$\Box\Box$}
+\item Your solution does not instruct the user to walk through walls head-on.
+\item Your solution finds and presents an indirect route to a destination, when there is one obstacle between the origin and the destination (-0.5 per failed corner).
+\renewcommand{\labelitemi}{$\Box\Box\Box$}
+\item Your solution compensates for user errors while walking on an indirect route. (The TA will walk at 90 degrees from the correct direction and see if your solution constantly corrects its directions.)
+
+\end{itemize}
+\paragraph{Bonus}
+\begin{itemize}
+\renewcommand{\labelitemi}{$\Box\Box$}
+
+\item Your solution handles the complex map and does not get stuck in corners.
+\end{itemize}
+
+General marking notes: your solution should get about 5/10 for the basic linear path; 6/10 for complex path for no other functionality.
+
+\newpage
+
+\section*{Part III: TA Comments}
+
+\paragraph{Lab \#:}
+\paragraph{Group \#:}
+\paragraph{Date and Time:}
+
+\paragraph{TA Name:}
+\paragraph{Signature:}
+
+\paragraph{Mark:}
+
+\paragraph{Direct Route:}~\\[3em]
+
+\paragraph{Indirect Route:}~\\[3em]
+
+\paragraph{Notes:}
+\end{document}
+
