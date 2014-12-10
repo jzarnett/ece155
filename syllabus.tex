@@ -1,0 +1,329 @@
+\documentclass[letterpaper,10pt]{article}
+
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{subfig}
+\usepackage{sectsty}
+\usepackage{pdfpages}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{relsize}
+\usepackage{amsmath}
+\usepackage[compact]{titlesec}
+\usepackage[default]{droidserif}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,shapes,matrix,chains,scopes,positioning,calc}
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=2.5em, text centered, rounded corners, minimum height=2em]
+\tikzstyle{bw} = [rectangle, draw, fill=blue!20, 
+    text width=4em, text centered, rounded corners, minimum height=2em]
+
+\definecolor{namerow}{cmyk}{.40,.40,.40,.40}
+\definecolor{namecol}{cmyk}{.40,.40,.40,.40}
+
+\let\LaTeXtitle\title
+\renewcommand{\title}[1]{\LaTeXtitle{\textsf{#1}}}
+
+
+\addtolength{\oddsidemargin}{-1.000in}
+\addtolength{\evensidemargin}{-0.500in}
+\addtolength{\textwidth}{2.0in}
+\addtolength{\topmargin}{-1.000in}
+\addtolength{\textheight}{1.75in}
+\addtolength{\parskip}{\baselineskip}
+\setlength{\parindent}{0in}
+\renewcommand{\baselinestretch}{1.5}
+
+\singlespace
+
+\date{}
+\title{\bf\LARGE ECE~155: Engineering Design with Embedded Systems (Winter~2015)}
+\author{Department of Electrical \& Computer Engineering \\
+                University of Waterloo}
+
+
+\begin{document}
+
+\maketitle
+\vspace{-0.5in}
+
+\section*{About the Course}
+
+This course focuses on three areas: software development, embedded systems, and project management. Programming for embedded systems means we will learn about event-driven programming, debugging, and timers. We also discuss project management, such as planning, specifications, modelling, and scheduling. Generally, this class contains a lot of things that students of the old curriculum found were taught very late in the program when they needed to be up front. This class has a lab component, and in the labs we will be developing applications for Android phones/tablets and using the sensors.
+
+\paragraph{Undergraduate Calendar Description} ``Introduction to embedded systems, review of engineering design and analysis principles, software development life cycle, integrated development environments, use of software requirements and specifications, unified modelling language and documentation, event handling, simulation, project management, project scheduling, testing, verification, and maintenance considerations.''
+
+ECE~150, Fundamentals of Programming, is a prerequisite for this course, and, as expected, this class builds upon the knowledge you gained in that course. In ECE~155, I assume you know the basics of object-oriented programming and have knowledge of C\#. If ECE~150 went well for you, then you are in good shape to begin this course. If you had a hard time in ECE~150 or you still feel uncomfortable with programming, I suggest using some time at the start of the term (when you are comparatively less busy) to address this. We will use Java, which is similar to C\#, so your knowledge should transfer from one to the other easily. Nevertheless, I suggest that everyone spend a little time to get used to Java.
+
+\paragraph{Course Objectives} At the end of this course, students should be able to:
+\begin{enumerate}
+\itemsep0em
+        \item describe the major blocks comprising common embedded systems;
+        \item program an event-driven embedded system (Android);
+        \item compare and contrast different software development life cycles and situations in which they work well;
+        \item describe the engineering design process, planning and estimation, reviews, simulation, and software maintenance;
+        \item collect and document requirements for, and design, a simple software system;
+        \item use modern software development tools and concepts, including: integrated development environments, version control, UML, refactoring, and unit tests.
+\end{enumerate}
+
+\paragraph{Course Website} As is standard, information will be posted on Learn.
+For additional information about First Year Engineering, check the First Year Office's website:
+\texttt{https://uwaterloo.ca/engineering/\\current-undergraduate-students/first-year}
+
+
+\paragraph{Textbook} There is no required textbook for this class.
+
+
+
+\paragraph{Class Schedule}
+
+A brief summary of the schedule for this class follows. Your online schedule of classes will tell you which tutorial and lab sections you are enrolled in.
+
+\begin{table}[h]
+        \begin{center}
+        \begin{tabular}{l|l|l|l}
+
+
+                 Regular Lectures & LEC001 & T 15:30-16:20 & MC 4020         \\
+                                  &        & W 15:30-16:20 & MC 4020         \\
+                                  &        & W 11:30-12:20 & MC 4020         \\
+             \hline
+                 Make-Up Lectures & LEC001 & W 16:30-17:20 [Make-Up Lecture Dates] & MC 4020         \\
+                 \hline
+                 Tutorials        & TUT101 & Th  10:30-11:20 & MC 4064         \\
+                                  & TUT102 & T 	 10:30-11:20 & MC 4064         \\
+                                  & TUT103 & W   10:30-11:20 & MC 4064         \\
+                 \hline
+                 Labs             & LAB201 & W 08:30-11:20 [Lab 201 Dates]          & E2 2364         \\
+                                  & LAB202 & Th 08:30-11:20 [Lab 202 Dates]         & E2 2364         \\
+                                  & LAB203 & T 08:30-11:20 [Lab 203 Dates]          & E2 2364         \\
+            \hline
+            Midterm Exam          &        & F 20 June 14:30-16:20 & TBA \\
+            \hline
+            Final Exam            &        & TBA                              & TBA       \\
+          \end{tabular}
+        \end{center}
+\end{table}
+
+\textit{Schedule Oddity}: Wednesday, 21 May will follow the \textit{Monday} schedule of classes.
+
+\textit{Midterm Week}: Classes are not held during the midterm week.
+
+\textit{University Holidays}: The university is closed (no classes) on the following days: 19 May (Victoria Day), 30 June (monday before Canada Day), 1 July (Canada Day), and 4 August (Civic Holiday).
+
+\textit{Make-Up Lecture Dates}: We will use at least three of the five make-up lecture slots. Slots are scheduled on the following dates: 21 May, 4 June, 18 June, 25 June, 9 July, 23 July. You will be told in advance which of the make-up lectures will be used.
+
+\textit{Lab Dates}: Note that a few lab sessions are scheduled at unusual times.
+
+\textit{Lab 201 Dates}: 7 May, 21 May (17:30-20:20), 4 June, 18 June, 2 July, 16 July\\
+\textit{Lab 202 Dates}: 8 May, 22 May, 5 June, 19 June, 3 July, 17 July\\
+\textit{Lab 203 Dates}: 6 May, 20 May, 3 June, 17 June, 2 July (17:30-20:20), 15 July\\
+
+
+Note the following submission due dates for the labs (all times being Eastern Standard/Daylight Time):\\
+
+
+\begin{table}[h]
+        \begin{center}
+        \begin{tabular}{l|l|l|l|l}
+        	\textbf{Section} & \textbf{Lab 1} & \textbf{Lab 2} & \textbf{Lab 3} & \textbf{Lab 4}\\
+			\hline
+			201 & 3 June 23:59 & 17 June 23:59 & 1 July 23:59 & Halfway through final lab session\\
+			\hline
+			202 & 4 June 23:59 & 18 June 23:59 & 2 July 23:59 & Halfway through lab session  \\
+			\hline
+			203 & 2 June 23:59 & 16 June 23:59 & 1 July 23:59 & Halfway through lab session  \\
+			\hline
+			204 & 3 June 23:59 & 17 June 23:59 & 1 July 23:59 & Halfway through lab session  \\
+			\hline
+			205 & 4 June 23:59 & 18 June 23:59 & 2 July 23:59 & Halfway through lab session  \\
+			\hline
+			206 & 2 June 23:59 & 16 June 23:59 & 2 July 23:59 & Halfway through lab session  \\
+        \end{tabular}
+        \end{center}
+\end{table}
+
+\textit{Final Exam}: The final exam dates are 5 August - 16 August. Partway through the term, the registrar's office will announce the exact date, time, and location of the exam. It could fall at any time in this period. Note that student travel plans are \emph{not} considered an acceptable reason for missing an exam. When it is announced, please alert your instructor immediately if you have a conflict.
+
+\section*{Course Staff}
+
+For all course staff, office hours are by appointment. Please keep in mind that course staff have other responsibilities, so it may not be possible for them to meet with you at the last minute. Similarly, please do not expect that course staff will answer an e-mail sent seven minutes before the final exam.
+
+\begin{table}[h]
+        \begin{center}
+        \begin{tabular}{l|l|l|l}
+                                        Instructor & Jeff Zarnett & DC-2641 & \texttt{jzarnett@uwaterloo.ca} \\
+                                        \hline
+                                        Lab Instructor & Sanjay Singh & DC-2629 & \texttt{ssingh@uwaterloo.ca}\\
+                                        \hline
+
+                                    TA & Mortaja Alqassab & EIT-3104 & \texttt{malqassa@uwaterloo.ca} \\
+                                                   \end{tabular}
+        \end{center}
+\end{table}
+
+
+\paragraph{About Prof. Zarnett.}
+I graduated from the Computer Engineering program at Waterloo (under the previous curriculum), and have since earned my Master's Degree (also at Waterloo) and my P.Eng. license. As a graduate student I was a TA for an earlier revision of ECE~155.
+
+In addition to being your instructor, I work full time in software engineering. It's my job to help you learn, so contact me if you feel the need. The vast majority of the week, I will not be on campus, so stopping by my office is not a good way to find me. I'm more than happy to answer questions by e-mail, and if they can't be answered by e-mail, we can set up an appointment for office hours. The best day for me to meet with you is Monday.
+
+\paragraph{About the Lab Instructor.}
+
+The lab instructor can answer your questions about the labs in this course. You may contact the lab instructor to arrange some more time with the lab equipment, if you need. The lab instructor will be present at the labs and will supervise them.
+
+\paragraph{About the Teaching Assistants.}
+
+Teaching assistants can help you with the course material, including tutorials, labs, and exams. They will be present in the labs and will conduct the tutorials. TA Office hours are as follows, and by appointment.
+
+\begin{table}[h]
+        \begin{center}
+        \begin{tabular}{l|l|l}
+        							\textbf{TA} & \textbf{Office} & \textbf{Office Hour} \\ \hline
+									 Scott (Wei-Ting) Chen & EIT-4117 & M 12:30-13:20 \\
+		\end{tabular}
+        \end{center}
+\end{table}
+\vspace{-2em}
+
+\section*{Grading Scheme}
+
+Your class grade is comprised of your marks in the labs $l_{i}$, the midterm exam $m$, and the final exam $f$.
+
+The lab grade $L$ is calculated as: $\sum_{i=1}^{4}l_{i}$.
+
+The weight of the midterm $W_{m}$ is $25$. The weight of the labs $W_{l}$ depends on your final exam grade $f$ and follows this formula:
+\[
+ W_{l} = \begin{cases}
+        25      & $if~$ f \ge 60\\
+        f - 35  & $if~$ 40 \le f < 60\\
+        5       & $if~$ f < 40
+        \end{cases}
+\]
+
+The weight of the final is $W_{f}$ is $100 - (W_{l} + W_{m})$.
+
+Your final grade is calculated as: $\frac{W_{l}}{100}L + \frac{W_{m}}{100}m + \frac{W_{f}}{100}f $.
+
+If you miss the midterm exam and are able to provide a good reason, the grading scheme will change such that the final exam is worth 70\%. If you miss the midterm exam without a good reason, you will get a 0 grade in that part of the class and the grading scheme above still applies.
+
+The University rules say if miss the final exam, without an acceptable reason, your grade in the class will be DNW - Did Not Write. This is very undesirable. Show up for the final exam.
+
+See also the section about late submissions under the section Course Policies.
+
+I cannot tell you about your final exam grade or your total course grade until after marks become visible in Quest. Please do not e-mail me (or any of the TAs, or the Lab Instructor) after the final exam asking about your grades. You will simply have to be patient.
+
+%\section*{Lecture Topics}
+
+%In the following table are the lecture topic groups, the objective(s) they contribute to, and the estimated lecture hours for each topic.
+
+%\begin{table}[h]
+%        \begin{center}
+%        \begin{tabular}{l|l|l}
+%
+%                \textbf{Topic} & \textbf{Objective(s)} & \textbf{Lecture Hours}\\
+%                \hline
+%                Java \& Android Programming & 2 & 7 \\
+%                Requirements \& Architecture 	     & 1, 3, 5       & 7 \\
+%                Engineering Design 				 & 1, 3, 4, 5, 6 & 6 \\
+%                Implementation \& Embedded Systems & 2, 6          & 7 \\
+%                Integration 						 & 2, 6          & 1 \\
+%                Testing \& Debugging               & 2, 6          & 7 \\
+%                Verification \& Validation 		 & 4             & 1 \\
+%                Operation, Maintenance, Security        & 4, 6          & 6 \\
+%        \end{tabular}
+%        \end{center}
+%\end{table}
+
+
+\section*{Labs}
+This class includes Labs, which you will complete in groups of three. Unlike the initial offerings of this class, we will use Android smartphones in the labs instead of Lego robots. Lego robots sound pretty cool, but they were difficult to work with and not available outside the lab hours (and students hated that). There will be UW-owned Android tablets (Nexus 7!) available in the labs, and there are UW-owned Nexus One phones on reserve for 3-day loan at the Davis Centre Library. That said, Android phones and tablets are very popular; you can use your own in the labs if you choose.
+
+You have six lab sessions of three hours each. During the lab sessions, you can work on the labs, the tablets will be in the lab room, and the TAs will be available to help you (this is how upper-year labs work). You will also demonstrate your previous work to the TAs (if applicable).
+
+TAs will mark your labs based on the quality and performance of your design. You must submit your source code to the course Subversion (\texttt{svn}) repository and demonstrate your software to the TAs during the lab demo period. Each lab (other than Lab 0; Lab 0 is an introductory session and is not graded) will be graded according to the lab demonstration rubric. Each lab will have its own rubric, released in advance of the lab. We will also provide feedback on your implementation.
+
+After each lab, you may continue to work on your solution until the due date, at which time you must have committed your code to the repository. In the lab session immediately following the due date for the lab, you must be prepared to demonstrate your work. The exception to this is Lab 4, where you must present your work at the end of the final lab session.  If your group is not in the lab, the source code is not submitted into \texttt{svn}, or you are not ready to present your work when it is your turn, your group will receive a 0 grade for the lab being graded.
+
+Please note the due dates for the labs in the Class Schedule section of this syllabus. On grounds of fairness, late lab submissions will not be accepted. The timestamp of the ECE subversion server will be considered the official time of submission of any deliverable.
+
+Your lab code will be checked for plagiarism using Moss (Measure Of Software Similarity). You may request to opt out of the automatic screening by sending a formal written letter to your instructor explaining why; a meeting will then follow to discuss the subject with the instructor.
+
+\section*{Course Policies}
+
+\paragraph{Collaboration \& Plagiarism}
+
+Plagiarism, taking credit for work that others did, is not permitted, and this applies to source code as well as exams. The course staff will be checking for it through a variety of different methods. Any cases of plagiarism I detect will be reported, according to university policy (see the University Policy section below).
+
+It is expected you will collaborate with your lab partners. Your lab submissions are joint efforts and the work you submit in is that of your lab group. Note, however, that grades are still individual and if one group member is not contributing to the lab work at all, that student may receive a zero in the lab.
+
+You may discuss ideas, design alternatives, and help other groups debug small fragments of code. However, each group must submit their own, independently-developed code for each lab. I suggest you avoid looking at other groups' code entirely, but if you do, then you should not be doing that anywhere you might be writing your own code.
+
+Groups are not permitted to share code electronically or in written form, unless such sharing has been clearly documented and acknowledged in the receiving work. An acknowledged fragment will not be considered while grading the lab, but will not result in disciplinary penalties. Acknowledgements must include the name of the providing group and the date of the collaboration. It is very important to acknowledge the work of others if you use it.
+
+For the record, all members of a group take responsibility for a submitted piece of work. Thus, if a member of your lab group copies some code from another group and it is submitted under all of your names, even if you did not know that some code was copied, you will both be held responsible. Accordingly, if you copy some code, your lab partner(s) will jointly be held responsible for your actions. Please don't plagiarize.
+
+I want to emphasize that I take the issue of plagiarism very seriously, and so does the University of Waterloo. If you are uncertain about this subject, please seek some guidance. There are many resources available to you. You can check the university policies, talk to the course instructor or lab instructor, visit the First Year Engineering Office, et cetera.
+
+Or, let's sum this up in two short instructions:
+\begin{enumerate}
+	\item Acknowledge the work of others. 
+	\item If you are uncertain, ask!
+\end{enumerate}
+
+\paragraph{Late Submissions} Late lab submissions will not be accepted; see the section on labs.
+
+The timestamp of the ECE subversion server will be considered the official time of submission of any lab. Don't leave things to the last minute.
+
+\paragraph{Re-marking}
+If you believe that your grade on an a written, submitted deliverable (e.g., a midterm exam question) is incorrect or unfair, you may ask that it be re-marked. Note that lab demonstrations cannot be re-marked. To request that a question be re-marked, you will need to submit your request on a sheet of paper, in writing, to me (the instructor). You may submit it to me in person, or ask an administrative assistant at the Electrical \& Computer Engineering undergraduate office to put it in my mailbox. Please do not hang around outside my office hoping to find me (this is really inefficient). Please do not submit it to a TA or lab staff. 
+
+When you submit your request, it should include the following: (1) Your name and student ID number; (2) a clear indication of which question or part of the deliverable is to be re-marked; and (3) an explanation of why you believe the grade assigned was incorrect.
+
+If you received the marked version of the deliverable back (e.g., the midterm exam), please submit that alongside your written request. Staple them (not paperclip, not some sort of origami) together so they do not get separated.
+
+I will accept items for re-marking any time before the final exam, including as I'm arriving to the room where the final exam is to be written (I have actually done this myself as a student). Be forewarned, when a deliverable is being re-marked, your grade could go up, it could stay the same, or it could go down. I will notify you of the outcome and attempt to return the deliverable you submitted (if any).
+
+\paragraph{Extra Credit}
+In this class, there will be no opportunities to earn extra credit. Make-up assignments, labs, or examinations will not be offered under any circumstances.
+
+\paragraph{Attendance \& Illness}
+
+My personal opinion on attending classes is that it is usually a good idea to attend lectures. That said, this is university and you are capable of deciding for yourself if you are going to the lecture or not. Attendance is not taken and not graded. No attendance is taken in tutorials or labs, but at least one member of your lab group will need to be present in the labs to present lab deliverables.
+
+Some advice Professor Gebotys gave my class when I was a student: If you are tired, go sleep at home. Sleeping in the lecture doesn't work; you will get poor quality of sleep and you won't learn the material while you're asleep, either.
+
+During the term, you may need arrive late to a class or leave partway through, because of co-op interviews. This is not a problem, as long as you are not disruptive when arriving/departing.
+
+If you feel ill, you should seek appropriate medical attention. If you miss an exam for health reasons, you need a verification of illness form. Forms can be completed by the physicians at Health Services. Your completed verification of illness form should be presented to the First Year Engineering Office and not directly to the course staff. If you anticipate missing a deliverable deadline or an examination for a non-medical reason, you should contact me as soon as you are aware of the problem. Given sufficient notice, alternate arrangements may be possible. Alternate arrangements are rare and at my discretion.
+
+
+\section*{University Policies}
+
+\paragraph{Academic Integrity}
+In order to maintain a culture of academic integrity, members of the University of Waterloo community are expected to promote honesty, trust, fairness, respect and responsibility. Check \texttt{www.uwaterloo.ca/academicintegrity/} for more information.
+
+\paragraph{Grievance}
+A student who believes that a decision affecting some aspect of his/her university life has been unfair or unreasonable may have grounds for initiating a grievance. Read Policy 70, Student Petitions and Grievances, Section 4, \texttt{adm.uwaterloo.ca/infosec/Policies/policy70.htm} \\
+If in doubt, contact the department's administrative assistant, who will provide further assistance.
+
+\paragraph{Discipline}
+A student is expected to know what constitutes academic integrity (see above section) to avoid committing an academic offence, and to take responsibility for his/her actions. A student who is unsure whether an action constitutes an offence, or who needs help in learning how to avoid offences (e.g., plagiarism, cheating) or about ''rules'' for group work/collaboration should seek guidance from the course instructor, academic advisor, or the undergraduate Associate Dean. For information on categories of offences and types of penalties, students should refer to Policy 71, Student Discipline, \texttt{www.adm.uwaterloo.ca/infosec/Policies/policy71.htm} . For typical penalties check Guidelines for the Assessment of Penalties, see \\\texttt{www.adm.uwaterloo.ca/infosec/guidelines/penaltyguidelines.htm} .
+
+\paragraph{Appeals}
+A decision made or penalty imposed under Policy 70 (Student Petitions and Grievances) (other than a petition) or Policy 71 (Student Discipline) may be appealed if there is a ground. A student who believes he/she has a ground for an appeal should refer to Policy 72 (Student Appeals)\\~\texttt{www.adm.uwaterloo.ca/infosec/Policies/policy72.htm}.
+
+\paragraph{Privacy}
+Questions about the collection, use, and disclosure of personal information by the University, should be directed to the Freedom of Information and Privacy Coordinator, Secretariat, University of Waterloo, 200 University Avenue West, Waterloo, Ontario, Canada N2L 3G1. The email address of the Freedom of Information and Privacy Coordinator is \texttt{fippa@uwaterloo.ca}. See also University of Waterloo Policy 19: Access to and Release of Student Information; Information and Privacy.
+\\ \texttt{https://uwaterloo.ca/secretariat/policies-procedures-guidelines/policy-19}
+
+\paragraph{Note for Students with Special Needs}
+The AccessAbility Services (formerly known as OPD) located in Needles Hall, Room 1132, collaborates with all academic departments to arrange appropriate accommodations for students with disabilities without compromising the academic integrity of the curriculum. If you require academic accommodations to lessen the impact of your disability, please register with the AccessAbility Services office at the beginning of each academic term.
+
+
+
+
+\end{document}
