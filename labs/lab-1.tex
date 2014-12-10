@@ -64,7 +64,7 @@
 
 \begin{document}
 
-\lecture{1 (Reading Sensors \& The Android API)}{Spring 2014}{Prepared by Kirill Morozov, Han Xu, \& Zheng Ma}{version 1.4}
+\lecture{1 (Reading Sensors \& The Android API)}{Spring 2014}{Prepared by Kirill Morozov, Han Xu, Zheng Ma, Devin Binnie}{version 1.4}
 
 { \bf Deadline:} You must submit the lab to the SVN repository by the submission deadline (see the syllabus) and be
 prepared to demonstrate Lab 1 to a TA at the start of your assigned
@@ -73,7 +73,13 @@ earlier time where you can convince a TA to watch is OK too.
 
 \section{Objective}
 
-The objectives of this week's lab are for you to 1) familiarize yourself with the Android phones that you will be developing for, and 2) learn how to read the sensors on these phones. During this lab, you will write a simple Android application that reads the various sensors available on the phone and graphs them. Your code will initialize an Android Activity; accept the values from the phone's sensors; and display these values on the screen.
+The objectives of Lab 1 are for you to:
+\begin{enumerate} 
+	\item Familiarize yourself with the Android phones that you will be developing for, and 
+	\item Learn how to read the sensors on these phones. 
+\end{enumerate}	
+	
+During this lab, you will write a simple Android application that reads the various sensors available on the phone and graphs them. Your code will initialize an Android Activity; accept the values from the phone's sensors; and display these values on the screen. Consult the lecture notes \& slides for more details on what Android Activities are.
 
 The steps in this lab will be:
 \begin{enumerate}
@@ -85,8 +91,8 @@ The steps in this lab will be:
 
 \paragraph{Deliverables.} For this lab, you must:
 \begin{itemize}
-\item Create a system that will let you display the output from all the sensors that you are monitoring. Display each sensor's current value upon event reception. (See Figure~\ref{fig:device-screenshot}, field ``Acceleration (linear) ($m/s^2$)''.)
-\item Since the reading from the sensors will change quickly, you must also display the all-time highest (in absolute value) readings from each sensor so that we can see concrete numbers.  (Field ``Record Acceleration (linear) ($m/s^2$)'' in Figure~\ref{fig:device-screenshot}.)
+\item Create a system that will let you display each sensor's current value when the event is received using an event handler. (See Figure~\ref{fig:device-screenshot}, field ``Acceleration (linear) ($m/s^2$)''.)
+\item Since the reading from the sensors will change quickly, you must also display the all-time highest or lowest (depending on which is greater in absolute value) readings from each sensor so that we can see concrete numbers.  (Field ``Record Acceleration (linear) ($m/s^2$)'' in Figure~\ref{fig:device-screenshot}.)
 %\item stop the phone from reorienting its screen when you rotate it.
 \item Ensure that the data you display is readable, accessible to the user, and that it does not vanish off the edge of the screen. How you do this is up to you. For instance, you can enable scrolling, or simply format the data effectively. Any functional system is acceptable.
 \end{itemize}
@@ -106,7 +112,7 @@ The steps in this lab will be:
 
 \section{Phases of the lab}
 
-This lab contains the following steps:
+The recommended procedure to complete the lab is as follows:
 
 \begin{enumerate}
 \item Create infrastructure to display raw data to the user.
@@ -135,7 +141,7 @@ Even the empty Android project (e.g. from Lab 0) contains folders and files. Her
 \paragraph{About Activities.}
 The fundamental building block of an Android application is the ``Activity.'' Activities represent screens in your application. When a screen gains focus, Android activates the appropriate activity, which may then interact with the user. When the user switches to a different screen, Android disables the activity, preserving the program state.
 
-The new Android application wizard will create a blank Main activity for you. You can work exclusively with that activity, and you won't need to create any new activities for these labs. 
+The new Android application wizard will create a blank \texttt{MainActivity} for you. You can work exclusively with that activity, and you won't need to create any new activities for these labs. 
 
 %% If you do create additional activities, you can launch them in one of three ways:
 
@@ -158,14 +164,14 @@ Android's JavaDoc documentation is thorough and easy to read. It is at \url{http
 
 \subsection{Back to displaying data to the user} The immediate goal of this exercise is to display information to the user. The best way to do that is by creating labels and modifying their contents programmatically. We'll walk you through changing the content of the ``Hello World'' label from Lab 0.
 
-The Main activity contains the ``Hello World'' label. To reference this label from your code, you need to give it an ID. Here's how.
+The Main activity contains the ``Hello World'' label. To reference this label from your code, you need to give it an ID (identifier). Or, in other words, we need a way to refer to that label. Here's how.
 \begin{enumerate}
 \item Open the fragment\_main.xml file located in \textbf{[your project] \textgreater~res \textgreater~layout}. 
 \item Switch to the xml tab at the bottom of the editor.
 \item Look for the xml tag \verb+<TextView>+ and add the attribute \verb-android:id="@+id/label1"-.
 \end{enumerate}
 
-In the Android API, all user-visible controls are sub-classes of {\tt android.view.View}. You can get a reference to the ``Hello World'' label by calling {\tt findViewById()} in your Activity with the label id (which you just added) as a parameter. The Android compilation system will add the ids to the {\tt R} class. For instance, to find the label you just added above, you might call {\tt findViewById(R.id.label1)}. 
+In the Android API, all user-visible controls are sub-classes of {\tt android.view.View}. You can get a reference to the ``Hello World'' label by calling {\tt findViewById()} in your Activity with the label id (which you just added) as a parameter. The return value of this function will be the View object that has the ID provided as an argument to the function. The Android compilation system will add the ids to the {\tt R} class. For instance, to find the label you just added above, you might call {\tt findViewById(R.id.label1)}. 
 
 Labels are {\tt TextView} objects. You can change the text of a label by calling {\tt TextView.setText()}. You can just pass any {\tt String} to
 {\tt TextView.setText()}, and Android will automatically redraw the label with the
@@ -199,20 +205,20 @@ the steps above.
 \paragraph{Non-deliverable.} You should now have an Android application where you can change the label. We are, however, going to take a step back and remove that label, replacing it with automatically-generated labels.
 
 \subsection{Adding more labels}
-You'll need to create additional labels to display all the needed data. Of course, you could do this ``by hand'': modify the layout xml for your activity directly, or use the graphical layout tool (double-click on the layout xml). This lab requires creating a lot of labels, and doing that by hand is tedious. Computer scientists ruthlessly automate. Conveniently, the Android API lets you create views programmatically. Here's how to create one label and add it to a view. First, assign an id to the parent:
+You'll need to create additional labels to display all the needed data. Of course, you could do this ``by hand'': modify the layout xml for your activity directly, or use the graphical layout tool (double-click on the layout xml). This lab requires creating a lot of labels, and doing that by hand is tedious. Engineers ruthlessly automate. Conveniently, the Android API lets you create views programmatically. Here's how to create one label and add it to a view. First, assign an id to the parent:
 
-\begin{itemize}
-\item Give the top-level layout tag (\verb+<RelativeLayout>+ in the auto-generated project) in your xml an ID, like you did for the ``Hello World'' label.
-A layout is a special kind of view that can itself contain views (i.e. have child views).
-\end{itemize}
-
-In the {\tt onCreateView()} of the \texttt{PlaceHolderFragment}:
 \begin{enumerate}
-\item Create a new {\tt TextView}, e.g. {\tt TextView tv1 = new TextView(rootView.getContext()); }
-\item Set the text of {\tt tv1}, as above.
+\item In the layout XML, find the \texttt{<RelativeLayout>} tag and assign it an id like you did the label.
+\item In the \texttt{onCreateView()} method of the \texttt{PlaceHolderFragment} class, declare and initialize a new \texttt{TextView} object as follows:\\
+    \texttt{TextView tv1 = new TextView(rootView.getContext());}
+\item Then, set the text as above: \texttt{tv1.setText("Example Text");}
+\item In the \texttt{onCreateView()} method of your \texttt{PlaceholderFragment} class, get a reference to the \texttt{RelativeView} object that we assigned an id to by using \texttt{findViewByID()}.
+\item Add the \texttt{TextView} to the layout by using the \texttt{addView()} method:
+    \texttt{layout.addView(tv1)}
+\item Repeat steps 2 through 5 as necessary to add more labels as needed.
 \end{enumerate}
 
-Then, in your PlaceholderFragment’s {\tt onCreateView()} method:
+Then, in your PlaceholderFragment's {\tt onCreateView()} method:
 \begin{enumerate}
 \item Get a reference to the top-level layout (which you just assigned an id to) by using \texttt{findViewByIdwith} the parameter of the ID of the layout (usually starts with \texttt{R.id.}. Cast the result to \texttt{RelativeLayout}.
 \item Create a new \texttt{TextView}, e.g. \texttt{TextView tv1 = new TextView(rootView.getContext())}
@@ -270,7 +276,7 @@ which will stack all of the {\tt TextView} objects vertically rather than horizo
 \paragraph{Deliverable.} Add labels for all of the sensors that we'll record in the next stage. Your Android app should now have a number of labels on the screen, which you should have created programmatically. But you might be displaying more labels than will fit on the screen.
 
 \subsection{Scrolling}
-It is easy to implement a scrollbar so that the user can look at all of the labels that you've added.
+It is easy to implement a scrollbar so that the user can look at all of the labels that you've added. This will not be necessary on a device with a sufficiently-sized screen, but not all devices are large.
 
 \begin{enumerate}
 \item Go back to {\tt fragment\_main.xml}, where you should currently have a top-level {\tt LinearLayout}. Before the {\tt LinearLayout}, introduce a {\tt ScrollView}:
@@ -290,7 +296,15 @@ and close the tag after the {\tt LinearLayout}:
 
 \section{Create handlers to read and record sensor values}
 
-Now that you can display data to the user, you need to manufacture data. For this lab, you'll need to get that data from the phone's sensors. A number of Android classes collaborate to allow you to read this data, including:
+\paragraph{Tip.} You saw the C\# syntax {\tt String.Format} in ECE150. The corresponding Java syntax is:
+\begin{verbatim}
+  String s = String.format("(%f, %f, %f)", x, y, z);
+\end{verbatim}
+This will allow you to display $(x, y, z)$ coordinate triples, which will be helpful. You may also want to not display 6 decimal places. I'll leave figuring out how to do that up to you. Use the Internet.
+
+
+
+Now that you can display data to the user, you need some data to display. For this lab, you'll need to get that data from the phone's sensors. A number of Android classes collaborate to allow you to read this data, including:
 
 \begin{itemize}
 \item The {\tt SensorManager}. Manages the various sensors of the phone.
@@ -303,7 +317,7 @@ We'll walk you through how to read the values from the light sensor. You are res
 for reading the other values and for displaying them on the screen.
 
 \begin{enumerate}
-\item Implement a {\tt SensorEventListener} to receive sensor events\footnote{If you know what an inner class is, you can use one. But you might not want to.}. You will want to add some way for the listener to communicate data back to the Activity. In this example, we give the listener a reference to a label, but you have the freedom to do this however you like.
+\item Implement a {\tt SensorEventListener} to receive sensor events. You will want to add some way for the listener to communicate data back to the Fragment. In this example, we give the listener a reference to a label, but you have the freedom to do this however you like.
 \begin{verbatim}
   class LightSensorEventListener implements SensorEventListener {
   	TextView output;
@@ -316,24 +330,26 @@ for reading the other values and for displaying them on the screen.
 
     public void onSensorChanged(SensorEvent se) {
       if (se.sensor.getType() == Sensor.TYPE_LIGHT) {
-        // TODO put se.values[0] somewhere useful
+        // the variable se.values is an array of type int[] or double[]. 
+        // the first value (se.values[0]) contains the value 
+        // of the light sensor. store it somewhere useful.
       }
     }
   }
 \end{verbatim}
-\item In your Activity request the sensor manager:
+\item In your Fragment request the sensor manager:
 \vspace*{-1em}
 \begin{verbatim}
     SensorManager sensorManager = (SensorManager) 
               rootView.getContext().getSystemService(SENSOR_SERVICE);
 \end{verbatim}
-\item In your Activity request the light sensor:
+\item In your Fragment request the light sensor:
 \vspace*{-1em}
 \begin{verbatim}
     Sensor lightSensor = 
             sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
 \end{verbatim}
-\item In your Activity create an instance of your new {\tt SensorEventListener} and register it.
+\item In your Fragment create an instance of your new {\tt SensorEventListener} and register it.
 \vspace*{-1em}
 \begin{verbatim}
     SensorEventListener l = new LightSensorEventListener();
@@ -343,13 +359,6 @@ for reading the other values and for displaying them on the screen.
 \end{enumerate}
 This should now display the value of the light sensor, if you fill in the TODO line
 appropriately.
-\vspace*{-0.5em}
-
-\paragraph{Tip.} You saw the C\# syntax {\tt String.Format} in ECE150. The corresponding Java syntax is:
-\begin{verbatim}
-  String s = String.format("(%f, %f, %f)", x, y, z);
-\end{verbatim}
-This will allow you to display $(x, y, z)$ coordinate triples, which will be helpful. You may also want to not display 6 decimal places. I'll leave figuring out how to do that up to you. Use the Internet.
 \vspace*{-0.5em}
 
 \paragraph{Cleaning up after yourself.} For many applications, it is appropriate to unregister
@@ -398,7 +407,8 @@ For the next labs, it is enormously useful to be able to see how the acceleromet
 The following sample code shows how to set up the
 {\tt LineGraphView} that we've provided. You are under
 no obligation to use this code; you can provide your own,
-if you want, or modify the code as you feel best.
+if you want, or modify the code as you feel best, but chances are you
+will just want to stick with the code we provided.
 
 Note that you'll have to include an {\tt import} statement for this
 class, since it belongs to the {\tt ca.uwaterloo.sensortoy}
@@ -425,7 +435,7 @@ constructor call are 100 and \verb+Arrays.asList("a", "b", "c")+. The 100 repres
 t-axis. The syntax {\tt Arrays.asList("x", "y", "z")} is Java
 shorthand for providing a list of labels for the graph.
 
-%% The {\tt LineGraphView}'s constructor takes three parameters. The first is the application context. It is a special object that the view needs to know how to interact with the global state of the Android OS. The second parameter is an integer telling the {\tt LineGraphView} how many samples its X axis should be. The last parameter is an Object that implements Java's {\tt List} interface. This object should contain a list of strings that will be used as the labels of the different lines in the graph. Here is some sample code initialising a three-variable graph. It should go into the {\tt onCreate()} method of your {\tt Activity}.
+The {\tt LineGraphView}'s constructor takes three parameters. The first is the application context. It is a special object that the view needs to know how to interact with the global state of the Android OS. The second parameter is an integer telling the {\tt LineGraphView} how many samples its X axis should be. The last parameter is an Object that implements Java's {\tt List} interface. This object should contain a list of strings that will be used as the labels of the different lines in the graph. Here is some sample code initialising a three-variable graph. It should go into the {\tt onCreate()} method of your {\tt Activity}.
 
 Once you've created your view, you can start adding data to it. Use methods {\tt addPoint()} and {\tt purge()}. {\tt purge()} will clear the graph. {\tt addPoint()} takes either an array or {\tt List} of data points. The data must be in the same order as the labels that were passed into the constructor. We'll include an example of how to populate the graph below.
 
@@ -433,7 +443,9 @@ Once you've created your view, you can start adding data to it. Use methods {\tt
 
 \begin{lstlisting}{}
     public void onSensorChanged(SensorEvent event) {
+    	// ... other code ...
         graph.addPoint(event.values);
+        // ... other code ...
     }
 \end{lstlisting}
 
@@ -485,7 +497,7 @@ Your application should now display the current values of the sensors. You must 
 \section{Demonstration}
 Once you are satisfied that your design and implementation are working correctly, arrange a demonstration with a teaching assistant.  You will need to have the TA complete an assessment form.  All of the members of your laboratory group must sign the completed assessment form.  Your grade will be based on the results of the project demonstration at the end of the laboratory session and an evaluation of how well your code follows engineering design principles. (We will run plagiarism detection software on the source code, which may subsequently lower your grade and trigger a Policy 71 case. Don't plagiarize!)
 
-\paragraph{Writing Good Code.} Your application must follow good engineering design principles. You should therefore avoid: unnecessary code duplication; excessive use of variables the state of which you keep synchronized manually; forgetting to deallocate resources you have requested from the Android OS; and any other such design failures that make your application difficult to maintain or that step on the toes of other applications you share the device with.
+\paragraph{Writing Good Code.} Your application must follow good engineering design principles. You should therefore avoid: unnecessary code duplication; excessive use of variables the state of which you keep synchronized manually; forgetting to deallocate (free up) resources like files you have requested from the Android OS; and any other such design failures that make your application difficult to maintain or that step on the toes of other applications you share the device with.
 
 \section{Submission of project files}
 Commit the {\tt Lab1\_SSS\_XX} files to your Subversion repository. The TAs will not mark labs that have not been submitted to SVN. The address is
@@ -495,5 +507,8 @@ Commit the {\tt Lab1\_SSS\_XX} files to your Subversion repository. The TAs will
 Email Sanjay Singh if you can't commit to that address.
 
 %% \todo{Do we want to evaluate their code for maintainability / good design / etc?, also, what is the best way to evaluate code? On site or afterwards? During the demo, students can defend their design, but afterwards, we can give better feedback.}
+
+\section{Too Long; Did Not Read}
+If you just want to cut to the chase and get an exact listing of what to do, check the lab 1 assessment form and you will see exactly what we are looking for in the deliverables for this lab.
 
 \end{document}
