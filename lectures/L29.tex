@@ -1,176 +1,462 @@
 \input{header.tex}
+\DeclareUrlCommand\j{}
 
 \begin{document}
 
-\lecture{ 29 --- Simulation}{\term}{Patrick Lam \& Jeff Zarnett}
+\lecture{ 29 --- Software Statistics}{\term}{Eric David Hollbach \& Mahesh Tripunitara}
 
-Here are a bunch of simulations:
+\section{The Setting}\label{sec:setting}
+The Java SDK \cite{xxx} specifies an interface called \j{Set}. Its semantics
+is the mathematical notion of a set --- an unordered collection of unique items.
+Several implementations of \j{Set} are provided by the SDK.
+Which one should one use?
 
-\begin{tabular}{ll}
-\url{http://www.youtube.com/watch?v=HUGjUvjtwS8} & physics N-body simulation \\
-\url{http://www.youtube.com/watch?v=JGyJqXJWkuY} & aircraft \\
-\url{http://www.youtube.com/watch?v=No5N6uYJaNk} & nuclear plant control room\\
-\url{https://www.youtube.com/watch?v=bRgFuwG4nYg} & Kerbal Space Program
-\end{tabular}
-
-\paragraph{Basic Idea.} Create a model of a system to investigate 
-its behaviour.
-
-A \emph{simulation} evaluates a mathematical model of a system to
-estimate the behaviour of the system.
-
-These days, most simulations use computers to evaluate the state of
-the system. However, you could think of some board games as a
-primitive sort of simulation.
-
-\subsection*{Why Simulate?}
-Building the system and testing on it always gives more accurate
-results. However, testing on the actual system is sometimes impossible:
+We expect that the answer is, ``it depends on your application.'' However, it
+is reasonable to expect that there exist some criteria to which we should
+be able to agree based on which we compare different implementations of \j{Set}.
+We adopt the following two criteria.
 \begin{itemize}
-\item the system may not exist yet (e.g. proposed commercial jet design);
-\item the system may be costly to use (e.g. space shuttle);
-\item the system may be dangerous to use (e.g. nuclear reactor);
-\item the system may be disrupted by use (e.g. animal migration); or
-\item you just don't have enough access to the system (e.g. phones).
+    \item We want additions to the set to be fast.
+    \item We want membership-checking to be fast.
 \end{itemize}
 
-The next best thing, then, is to simulate. You might be forced to
-simulate when experimenting with an actual system is infeasible, too
-costly, too dangerous, or too disruptive to the system. Or you can simulate
-for fun and profit (e.g., a computer game).
+These criteria, in turn, suggest an objective way of saying that
+a set-implementation is better than another. Thus, our goal is
+more modest than the absolute, non-comparative, criteria we
+enunciate above. We seek only to establish that a set-implementation
+is better than another based on these criteria.
 
-\subsection*{Models are Inherently Wrong}
+\section{Statistics} \label{sec:statistics}
+
+We use statistics to try and establish that a set-implementation
+is better than another. How do we go about doing this? The answer
+to this question is not straightforward. To illustrate this via
+an example, consider the following process that Alice uses.
+
+\begin{itemize}
+\item Randomly choose a bunch of, e.g., 100, integers.
+
+\item Use some API for measuring time on the computer.
+Write Java code to measure the time it takes to add each of
+those integers to an instance of a set-implementation $I_1$,
+starting at $I_1 = \emptyset$. Compute the average time, $a_1$.
+
+\item Repeat for an instance of another set-implementation
+$I_2$ to get the average $a_2$ for it.
+
+\item If $a_1 < a_2$, conclude that the first set-implementation
+is better than the second from the standpoint of additions to the set.
+\end{itemize}
+
+What is wrong with adopting the above process? Following are some
+questions and concerns.
+
+\begin{enumerate}
+    \item How do we know that the random set of integers Alice chooses
+	is representative of all possible integers we may want to
+	add to a set?
+    \item Don't we have to consider the order in which we add
+	the integers? For example, starting with a set $S$, it
+	is possible that adding integer $i_1$ then $i_2$ may
+	result in a different total time for the two additions
+	than adding $i_2$ and then $i_1$.
+    \item Why is it meaningful to use the average to draw our
+	conclusion?
+    \item Even if we feel that use of the average is meaningful,
+	how do we know that the averages are \emph{statistically
+	significant}. That is, how do we know that we can make a
+	conclusion based on the fact that $a_1 < a_2$? Is it possible
+	that in a run of this experiment, we ended up with
+	$a_1 < a_2$ purely by chance?
+    \item Computers demonstrate considerable variations over
+	time in how long they take to perform an operation. That is,
+	if you run the Java code again, the time for adding a 
+	particular integer $i$ to the set in the second run may
+	result in a different time-measurement than the first time.
+	How do we know that we can trust the reading which contributes
+	to the average based on which we draw our conclusion?
+\end{enumerate}
+
+Ideally, we will have good answers to all of the above questions.
+Even if we are unable to conclusively address a concern such
+as the above, it is very important to recognize the concern. And
+at the minimum articulate an assumption explicitly.
+
+\subsection{Basics} \label{sec:statistics:basics}
+A \emph{function} is defined as follows. Given two sets,
+a domain and a range, a function associates a member of the
+range with every member of the domain.
+
+One can associate the time it takes to add or membership-check
+an element against a set as a \emph{random variable}.
+A random variable is a function
+$f\!\! : E \longrightarrow \mathbb{R}$, where $E$ is a set
+of \emph{events}, and $\mathbb{R}$ is the set of 
+real numbers. In our case, the range of a random variable
+we choose is presumably the time it takes to add
+the item to the set, or check its membership in the set.
+We choose the domain based on the assumptions we make.
+For this work, we choose the domain $E$ as the set
+of all integers.
+
+That is, we adopt two random variables, $a, m$, the former
+for add and the latter for membership-checking. Each maps
+an integer to a time-value. One of the points of characterizing
+$a, m$ as random variables is that
+we typically associate
+a random variable with a \emph{probability distribution}.
+
+A probability distribution is itself a function. It maps
+each event in $E$ to a probability that it occurs.
+For example, it is possible that the
+probability that we add the integer $15$ to a set,
+is different from the probability that we add the $32$.
+Thus, the probability we associate with the event
+$\tuple{15}$ is different from the probability
+we associate with the event $\tuple{32}$.
+
+If we can discover this $a(e)$ and $m(e)$
+for a ``typical'' $e \in E$ for
+two different set-implementations, then we can draw a conclusion.
+This has two challenges: (1) what is a ``typical'' $e \in E$, and,
+(2) how do we compute $a$ and $m$ even if we know this $e$?
+
+\subsection{Characterizing $a$ and $m$}\label{sec:statictics:charac}
+The domain of a random variable ($E$, above) is called a
+\emph{population}. To characterize a random variable, an approach
+is to determine to what value in the range it maps every member of
+the population, and then compute a \emph{central tendency} or
+\emph{centre} of those values.
+A centre, as its name suggests, represents the ``middle'' of
+all possible values. The \emph{average}, the sum of all values
+divided by the number of values, is a centre. Other examples of
+centres are the \emph{median} and \emph{trimean}.
+The choice of a centre is crucial. Not every centre is
+\emph{robust} to \emph{outliers}. An outlier is a value
+that occurs infrequently. Robustness is the property that
+a centre is representative of the ``middle'' notwithstanding
+the presence of outliers. We discuss further our choice
+of the centre below.
+
+It is often impractical or even impossible to compute a
+centre for the entire population. For example, if the population
+is all Canadians, determining the value of a random variable
+for every Canadian may be deemed too expensive.
+Consequently, we collect data \emph{samples}.
+A sample is a particular member of the population.
+The procedure by which we collect samples is important. Otherwise,
+the samples may not reflect the properties of the population,
+and thereby, the random variable.
+
+Given a random variable $X$ whose underlying
+probability distribution is $P$, a well-accepted property of
+samples is that they are: (1) \emph{independent and identically
+distributed} (iid), and, (2) each sample, when viewed as a
+random variable
+in its own right, has the same distribution $P$ as $X$.
+
+With regards to (1),
+a set of random variables is said to be iid if each random
+variable from the set has the same probability distribution
+as all the other random variables in the set.
+With regards to (2), as an example,
+if $X$ is the random variable that is the height
+of a person, then the manner in which we collect samples must
+reflect the distribution of heights amongst individuals.
+If the probability that there exists a person of height $h$ in
+the entire population is $\rho$, then the probability that height
+$h$ ends up in our set of samples must be $\rho$.
+(Or, the probability that we pick a person of height $h$ to be
+part of our sample-set must be $\rho$.)
+
+We now address three issues we must resolve: how do we choose
+a sample, what is our choice for centre, and how do we compute
+our choice of centre for the random variables $a,m$ given the
+samples we choose?
+
+\paragraph{Choice of samples} Our discussions above indicate that
+we should choose samples in a manner that reflects the population.
+A difficulty for us is that we do not know what the underlying
+distribution of integers in the population is.
+That is, we do not know what kinds of 
+integers are added/membership-checked
+in them. We resolve this issue by assumption.
+
+One would of course like to minimize the number and nature of
+assumptions in any study. However, practicality may require that
+we make some. And it is okay to make assumptions, provided
+we clearly state them.
+%This is a very important part
+%of being an objective techie --- being clear and open about any
+%assumptions that are made in an analysis.
+
+We have done the following in our study.
+We have restricted ourselves to integer items only.
+We make the assumption that every integer is
+equally likely to be added to, or queried for, in a set.
+This restriction and assumption limits the applicability
+of our results. So, one needs to be careful in applying or
+interpreting our results.
+
+\paragraph{Choice of centre} Our choice of centre is the
+average, or mean. We choose this for convenience --- it is
+easy to compute an average, particularly for a continuous
+(i.e., non-discrete) values.
+
+The mean is not \emph{robust} against outliers.
+An outlier is an atypical value, that is, a value that occurs
+with low probability. An outlier can skew the mean in a manner
+that the mean is no longer a meaningful centre.
+The median, on the other hand, is robust.
+The median of a continuous random variable is a value, $m$,
+such that the probability that a given value lies above
+or below $m$ is $1/2$.
+
+In our hypothesis testing below, we assume that the population
+is distributed normally. In such a case, the mean and median
+are the same. Note that it is possible to test for normality,
+rather than simply assume it. We omit a discussion of that, and
+urge you to take a stats course.
+
+\paragraph{Computing the centre for $a, m$} Given our above
+assumptions, to compute the centre (average, in our case), we
+simply pick random integers to add/query, check how long it
+takes, and compute the average for some large number of such
+trials.
+
+There are some additional issues we need to consider, however.
+
+\begin{itemize}
+    \item The time for individual additions/queries can be
+	so small that the measurement mechanism we use can
+	be highly unreliable. We resolve this by performing
+	several adds/queries, and measuring the time for those.
+	We have chosen 250,000 adds/queries.
+
+    \item Java VMs demonstrate strange behaviour when running
+	such experiments. Specifically, there is a ``warm up''
+	period for every VM after it starts to run
+	that we need to exclude.
+
+	A way that has been proposed to deal with this \cite{xxx}
+	is to measure a statistic called the coefficient
+	of variance (CoV) across some number, call it
+	$k$, of measurements. Then, check whether this
+	CoV is below some threshold. This approach is
+	supposedly robust in practice.
+
+	We have also run our experiments several times, across
+	several days and times of the day. And established that
+	there is no statistically significant variance across
+	those.
+\end{itemize}
+
+\subsection{Hypothesis Testing}\label{sec:statistics:hypo}
+Now that we have decided on a centre and how to compute it,
+we can compare the three implementations of set across
+each of the two axes, add-time and query-time.
+We do this by comparing two implementations at a time.
+Given two implementations, say, TreeSet and HashSet,
+we ask whether the difference in the centres for them
+is statistically significant. An effective way to establish
+this is via a hypothesis test.
+
+In a hypothesis test, we articulate a hypothesis, that is,
+an assertion that may be true or false. We then ask whether
+the hypothesis should be accepted or rejected. In statistics,
+we typically enunciate a \emph{null hypothesis}.
+It is called that because it is usually a hypothesis of
+`no effect,' or `no difference.' In our case, an appropriate
+null hypothesis is that there is no difference in performance
+between two different implementations of set, say,
+HashSet and TreeSet.
+
+The complement of the null hypothesis is called an
+\emph{alternate hypothesis}.
+If we articulate a null hypothesis as above, then the alternate
+hypothesis is that there is a difference in performance
+between HashSet and TreeSet.
+
+It is important to point out that our null hypothesis was posed
+before we designed the statistical experiments. Posing hypotheses
+after looking at data is dangerous, as it 
+can compromise objectivity and lead to incorrect inferences.
+
+Once we choose a null hypothesis,
+we choose a probability $p$ which is the threshold at which
+we \emph{reject} the null hypothesis and adopt the alternate
+hypothesis. The meaning of a value for $p$ is the following.
 \begin{quote}
-\textit{...essentially, all models are wrong, but some are useful.}
+    If the null hypothesis is true, then
+    there is a probability $p$ of observing a difference
+    in the averages as large as we observe.
 \end{quote}
-\hfill George E. P. Box
 
-It's important to remember that a simulation is an abstraction of the real world and it does not actually contain all the details of reality. This is frequently necessary because reality is too complex or expensive to model. A physics model might ignore the effects of friction between small objects. This is, in the strictest sense, incorrect, but at some point we decide the error is small enough that we can ignore it. For example, $\pi$ has an infinite number of digits, but after the first thousand digits or so, the error introduced by rounding the value off is so small it has no relevance for architectural calculations. It is not as accurate as it could be, but it is ``good enough''. Deciding when we are at the point of ``good enough'' is a matter of engineering judgement.
+As you can tell from the above semantics for $p$, a smaller
+value for $p$ as threshold is better, i.e., suggests more
+statistical significance. This is because if the null hypothesis
+is indeed true, then there is only a small chance of observing
+the difference in averages that we did observe. Therefore,
+the fact that we did observe it, and can presumably reproduce
+the observations if we repeat the experiment, suggests that
+probabilistically, the null hypothesis is false.
 
-Models usually have a range of validity which must be respected if the model is to be useful. This is something you have probably seen in physics. Newton's equations are valid as a model for motions of bodies as long as the bodies are not moving at relativistic speeds (and in general if the speed is below 0.1$c$, where $c$ is the speed of light in vacuum, the error is so small it can be ignored). If you try to apply Newton's model outside of its range of validity, such as at speeds of 0.5$c$, your answer will be incorrect. Instead, you should apply Einstein's relativistic equations; a different model, which has a different range of validity. When using or creating a model, it is definitely important to understand its limitations.
+\paragraph{Choice of test} There are a number of tests from
+which one could choose. The main thing to note here is the
+pre-requisites each tests requires for it to be sound.
+For example, a number of tests require that the underlying
+population is distributed normally.
 
-\begin{quote}
-\textit{The map is not the territory.}
-\end{quote}
-\hfill Alfred Korzybski
+We do not go over the fundamentals of particular tests. You
+should take a course on statistics for that. But we again
+warn you that before you use any particular test, you should
+carefully read about the pre-conditions for the test to be
+applicable. For example, we use the Student's t-test in
+our following discussion. 
 
-Do not confuse the map (an abstract representation of reality) with the territory (reality). Studying the model and the output of the model can be helpful, but it is only a tool to aid understanding of reality. It is possible to invest too much time into simulation or building the simulation, and not enough time in understanding the challenges of the real world. At some point, you will have to build or use the real thing. 
+The requirements for the Student's t-test in our context
+are: (1) the data is continuous, (2) the data follows a normal
+probability distribution, (3) the samples are independent, and
+(4) they are simple random samples from the respective populations.
+We know that (1) is true if we assume that any value for time my
+occur, and we ensure (3) and (4) from the
+manner in which we choose the samples. We satisfy (2) by
+assumption.
 
-A rather literal example of how the map is not the territory: the Canada-US Border, west of the province of Ontario, is drawn on most maps as being exactly the $49^{th}$ parallel. This is, however, wrong. When the border was officially marked, the surveyors did so by placing small monuments at discrete distances. The border is legally the series of line segments connecting these monuments. Given the level of technology available at the time of measurement, these are not in a perfectly straight line. And even a map representing those is wrong. Even if there are no significant drawing errors, shrinking the scale from thousands of kilometres of country down to a map measured in centimetres will introduce error and inaccuracy: the point marking the placement of the monument might be the finest resolution the printer can print and still represent an area over 100m in diameter - where exactly in the 100m-diameter circle is the monument?
-
-
-\subsection*{Case Studies}
-We will discuss two case studies, both related to the robots that
-students programmed in previous offerings of this class. The case
-studies simulate the robots with varying degrees of accuracy.
-
-\paragraph{Coarse Simulation.} Here's one design for a Lego robot and
-environment simulator: 
-
-\begin{itemize}
-\item Create a class {\tt Board}. Other classes can query this 
-class to find out whether the board is black or white
-at a certain point.
-\item Create a class {\tt Robot}. This class stores, in fields, the
-  current position and velocity of the robot, and contains the main
-  logic of the robot.
-\item Create a class {\tt LightSensor}. The {\tt Robot} gets light
-readings from the {\tt LightSensor} which are appropriate to its
-position on the {\tt Board}.
-\end{itemize}
-
-Then you can have a main simulation driver which calls the {\tt Robot}
-to (1) update its position according to the velocity; and (2) turn the
-robot if necessary. (You would probably program these actions in
-different methods.) Note that each call to the {\tt Robot} would
-simulate the effect of time moving forward by one time-step.
-
-\paragraph{Detailed Simulation: Visual Simulation Environment.}
-It is possible to simulate the same system at many different levels of
-detail. For instance, Microsoft's Visual Simulation Environment
-simulates the behaviour of your robot code much more realistically.
-
-In particular, VSE creates a simulated world and evaluates the 
-behaviour of physical objects within that simulated world.
-This simulation resembles step (1) in the coarse-grained simulation,
-except that it tracks the behaviour of multiple objects and has a
-more-detailed model of the environment than just a {\tt Board}.
-
-VSE also calls your actual code to simulate the behaviour
-of your control software. This is like step (2) in the coarse-grained
-simulation, but in this case it is running actual code.
-
-\paragraph{Caveat.} Simulations aren't perfect. 
-For instance, a previous lab report reported that everything worked
-fine in simulation under VSE, but needed lots more work to work on the
-actual robot.
-
-{\sf Why?}\\[2em]
-
-
-The Android emulator is pretty good as far as it goes, but it's
-difficult for it to emulate accelerometer readings.
-
-\subsection*{Other Examples} 
-You might simulate a digital logic circuit using discrete techniques,
-since gates change values at specific times, in response to changing
-inputs.
-
-On the other hand, you might simulate an analog circuit using continuous
-techniques, since the voltages and currents change continuously with
-respect to time.
-
-In terms of writing a simulation, you would use different techniques
-to implement discrete simulations (queue-based: put the time of next
-event into the queue) and continuous simulations (numerically
-integrate an ordinary differential equation over and over; see
-ECE204).
-
-
-
-
-\paragraph{Classifying Simulations.}
-Here are three orthogonal axes along which you can classify simulations.
-
-Continuous vs. Discrete Simulation Models:
-\begin{itemize}
-\item A \emph{continuous} simulation model represents a system with continuously changing state variables.
-\item A \emph{discrete} simulation model represents a system with discrete state changes.
-\end{itemize}
-
+\paragraph{Results} Following are the average and standard
+deviation, in seconds, for HashSet, LinkedHashSet and TreeSet for
+adding 250,000 integers starting from the empty set.
 \begin{center}
-\includegraphics[width=.7\textwidth]{images/fig6}~\cite{magneto}
+    \begin{tabular}{|l|c|c|}
+	\cline{2-3}
+	\multicolumn{1}{c|}{} & Average & Std.~Dev.\\ \hline
+	HashSet & $0.183095$ & $0.00124$ \\ \hline
+	LinkedHashSet & $0.20011$ & $0.000609$ \\ \hline
+	TreeSet & $0.3975$ & $0.00222$ \\ \hline
+    \end{tabular}
 \end{center}
 
-Dynamic vs. Static Simulation Models: 
-\begin{itemize}
-\item A \emph{dynamic} simulation model represents a system as it evolves over time; it recomputes the state of the system at various times.
-\item A \emph{static} simulation model is a one-shot deal: you feed it some conditions and it tells you the result. This is useful for what-if simulations: if I price my cookies at \$2, how many will I sell?
-\end{itemize}
+Following are the average and standard
+deviation, in seconds, for HashSet, LinkedHashSet and TreeSet for
+querying each of the 250,000 integers that have been added.
+Thus, our queries are elements we know to be in the set only.
+We articulate our null hypothesis accordingly to account for
+not testing for elements that are not in the set.
+\begin{center}
+    \begin{tabular}{|l|c|c|}
+	\cline{2-3}
+	\multicolumn{1}{c|}{} & Average & Std.~Dev.\\ \hline
+	HashSet & $0.029934$ & $0.000685$ \\ \hline
+	LinkedHashSet & $0.083366$ & $0.001148$ \\ \hline
+	TreeSet & $0.097701$ & $0.002612$ \\ \hline
+    \end{tabular}
+\end{center}
 
-Deterministic vs. Stochastic Simulation Models:
-\begin{itemize}
-\item A \emph{deterministic} simulation model exactly computes the simulated state of the system at every step (subject to inaccuracies in the calculations).
-\item A \emph{stochastic} simulation model uses randomness to (accurately!) estimate the expected behaviour of the system without computing the behaviour of each particle; it relies on the underlying randomness of the system components.
-\end{itemize}
-% bring in some chocolates or something and stochastically throw them
-% at the students
+In reporting such numbers, it is important to identify as much
+of the setup as possible so there is sufficient information
+for someone to reproduce these results. Our information is:
 
-\paragraph{Simulation Tools.} While you'd have to develop your own tools
-in certain domains, others domains have well-supported tools. These
-tools allow you to rapidly prototype a simulation of a complex system
-and its environment. However, you must understand how the tool works
-before relying on it. Here are some examples:
+\begin{quote}
+ the experiments were conducted on an isolated Intel dual core
+ ASUS P5LD2-VM PC with a 3 GHz processor and 3.1 GiB of RAM,
+ running the Ubuntu Linux operating system. The java
+ version was 1.6.0\_31, and it was the OpenJDK Runtime Environment.
+ To measure time, we used System.nanoTime().
+ Each of our averages are over 30 iterations after the VM
+ reached steady-state.
+ \end{quote}
+ Steady-state refers to the VM after 
+ warm-up. See our discussions above under,
+ `Computing the centre\ldots'
 
-\begin{itemize}
-\item \emph{Microsoft Visual Simulation Environment} simulates decentralized software services for robots.
-\item \emph{Arena} simulates businesses, services, and manufacturing processes.
-\item \emph{Simulink} simulates a variety of time-varying systems, including communications, controls, signal processing, video processing, and image processing; people use it to investigate and verify implementations of these systems.
-\item \emph{SPICE} and its many variants can be used to simulate analog circuits.
-\end{itemize}
+\paragraph{Hypothesis tests} We now articulate null hypothesis,
+and a choice for the threshold $p$ value, and conduct our tests.
+As an example, we have chosen a two-tailed, unpaired
+Student's t-test. Again, we urge you to take a stats course
+to understand the test in more depth. We have used 
+GraphPad's QuickCalcs site, \url{http://www.graphpad.com/quickcalcs/},
+to enter our data and run the tests.
 
-General-purpose simulation languages also exist to aid in the
-development of complex, application-specific simulation tools.
+As $p$ value, we choose, say, $0.01$, i.e., $1\%$. This choice
+is arbitrary, and really depends on what your peers will accept.
+In conducting a hypothesis test in the context of the discovery
+of Higgs Boson, for example, the $p$ value was chosen as
+``five-sigma'' (i.e., $5$ times the standard deviation), which
+corresponds to a $p$ threshold value of $3\times 10^{-7}$.
+(See the discussion at \url{http://blogs.scientificamerican.com/observations/2012/07/17/five-sigmawhats-that/}.)
+
+We choose a much more conservative threshold of $0.01$.
+So, we reject the null hypothesis if the calculated probability
+is less than $0.01$.
+
+Our first null hypothesis is, ``To add 250,000 integers, there
+is no difference in time between HashSet and LinkedHashSet.''
+The Student's t-test run with our above mean, standard deviation
+and $N$ (number of samples, which in our case is $30$) produces
+the following output:
+\begin{quote}
+    The two-tailed P value is less than $0.0001$.
+\end{quote}
+That is, the computed probability is less than our threshold
+probability of $0.01$. Therefore, we reject the null hypothesis
+that there is no difference in performance. There is just one
+more issue, however. Our alternate hypothesis is that there
+is a difference in performance. But not that a particular one
+of those is better than the other. However, we could informally
+look at our data and conclude that our experiments suggest that
+HashSet performs better than LinkedHashSet, given all our
+assumptions and choices.
+
+We can similarly perform the other two comparisons,
+HashSet vs.~TreeSet, and LinkedHashSet vs.~TreeSet, and get
+similar results. Similarly, a Student's t-test for the
+null hypothesis, ``there is no difference in querying 250,000
+members of LinkedHashSet and TreeSet'' using our data from
+the table above for querying produces the same output as above:
+\begin{quote}
+    The two-tailed P value is less than $0.0001$.
+\end{quote}
+
+\paragraph{Multiple comparisons} Are we done? Unfortunately, not
+quite. In the above, we have performed a pairwise comparison
+of three groups. This is an example of a situation that makes
+us susceptible to a problem known as \emph{multiple comparisons}.
+The problem is that we posed multiple hypotheses using the same
+data. Therefore, the chance that we see statistical significance
+in some pairwise comparison is increased purely by chance.
+
+Consider our situation, in which we have only a probability of
+$0.01$ of erroneously rejecting each null hypothesis if indeed
+the null hypothesis is true. We have, however, posed three
+such hypotheses. Therefore,
+$\text{Pr}\{\ge 1 \text{ erroneous rejection}\} =
+1 - \text{Pr}\{\text{no erroneous rejection}\} =
+1 - (0.99)^3 \approx 0.03 > 0.01$. (We multiply the three
+probabilities, $0.99$, under the assumption that those
+probabilities across the three tests are independent.)
+
+How do we address this? A natural way is to correct
+for the multiple comparisons. A correction is suggested
+by the example above, and is called the Bonferroni
+correction. Under the Bonferroni correction, to test
+$k$ hypotheses with a desired significance level of
+$s$, we test each hypothesis at a significance level
+of $s/k$. In our case, $k=3$, and so we need to test
+each of our pairwise hypotheses at a threshold of
+$0.0033$ so that the family of tests has a threshold
+of $0.01$.
+
+In our case, the computed probability
+based on the data is less than $0.0033$ for each test,
+so our conclusions are remain valid.
+
+The Bonferroni correction is conservative, i.e.,
+overkill, and therefore safe. A more exact
+correction can be applied instead. The way we computed the
+probability above for erroneously rejecting at least
+one null hypothesis is the way to compute an exact
+correction, but we omit the details.
+
 
 \input{bibliography.tex}
 

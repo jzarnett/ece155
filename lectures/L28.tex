@@ -2,215 +2,176 @@
 
 \begin{document}
 
-\lecture{ 28 --- Interval \& Watchdog Timers}{\term}{Patrick Lam}
+\lecture{ 28 --- Simulation}{\term}{Patrick Lam \& Jeff Zarnett}
 
-Previously, we've discussed the idea of polling vs. interrupts. In this lecture, we'll talk about how to use a timer, and its relationship to polling and other embedded
-systems concepts.
+Here are a bunch of simulations:
 
-\section*{Timers}
-Recall that in \emph{periodic polling}, the software polls a device at
-fixed intervals. The usual way of implementing periodic polling is
-through timers. Two potential applications of timers:
+\begin{tabular}{ll}
+\url{http://www.youtube.com/watch?v=HUGjUvjtwS8} & physics N-body simulation \\
+\url{http://www.youtube.com/watch?v=JGyJqXJWkuY} & aircraft \\
+\url{http://www.youtube.com/watch?v=No5N6uYJaNk} & nuclear plant control room\\
+\url{https://www.youtube.com/watch?v=bRgFuwG4nYg} & Kerbal Space Program
+\end{tabular}
+
+\paragraph{Basic Idea.} Create a model of a system to investigate 
+its behaviour.
+
+A \emph{simulation} evaluates a mathematical model of a system to
+estimate the behaviour of the system.
+
+These days, most simulations use computers to evaluate the state of
+the system. However, you could think of some board games as a
+primitive sort of simulation.
+
+\subsection*{Why Simulate?}
+Building the system and testing on it always gives more accurate
+results. However, testing on the actual system is sometimes impossible:
 \begin{itemize}
-\item perform a task occasionally (e.g. raising alarms, or polling); or
-\item reset a system that's gotten stuck.
+\item the system may not exist yet (e.g. proposed commercial jet design);
+\item the system may be costly to use (e.g. space shuttle);
+\item the system may be dangerous to use (e.g. nuclear reactor);
+\item the system may be disrupted by use (e.g. animal migration); or
+\item you just don't have enough access to the system (e.g. phones).
 \end{itemize}
 
+The next best thing, then, is to simulate. You might be forced to
+simulate when experimenting with an actual system is infeasible, too
+costly, too dangerous, or too disruptive to the system. Or you can simulate
+for fun and profit (e.g., a computer game).
+
+\subsection*{Models are Inherently Wrong}
+\begin{quote}
+\textit{...essentially, all models are wrong, but some are useful.}
+\end{quote}
+\hfill George E. P. Box
+
+It's important to remember that a simulation is an abstraction of the real world and it does not actually contain all the details of reality. This is frequently necessary because reality is too complex or expensive to model. A physics model might ignore the effects of friction between small objects. This is, in the strictest sense, incorrect, but at some point we decide the error is small enough that we can ignore it. For example, $\pi$ has an infinite number of digits, but after the first thousand digits or so, the error introduced by rounding the value off is so small it has no relevance for architectural calculations. It is not as accurate as it could be, but it is ``good enough''. Deciding when we are at the point of ``good enough'' is a matter of engineering judgement.
+
+Models usually have a range of validity which must be respected if the model is to be useful. This is something you have probably seen in physics. Newton's equations are valid as a model for motions of bodies as long as the bodies are not moving at relativistic speeds (and in general if the speed is below 0.1$c$, where $c$ is the speed of light in vacuum, the error is so small it can be ignored). If you try to apply Newton's model outside of its range of validity, such as at speeds of 0.5$c$, your answer will be incorrect. Instead, you should apply Einstein's relativistic equations; a different model, which has a different range of validity. When using or creating a model, it is definitely important to understand its limitations.
+
+\begin{quote}
+\textit{The map is not the territory.}
+\end{quote}
+\hfill Alfred Korzybski
+
+Do not confuse the map (an abstract representation of reality) with the territory (reality). Studying the model and the output of the model can be helpful, but it is only a tool to aid understanding of reality. It is possible to invest too much time into simulation or building the simulation, and not enough time in understanding the challenges of the real world. At some point, you will have to build or use the real thing. 
+
+A rather literal example of how the map is not the territory: the Canada-US Border, west of the province of Ontario, is drawn on most maps as being exactly the $49^{th}$ parallel. This is, however, wrong. When the border was officially marked, the surveyors did so by placing small monuments at discrete distances. The border is legally the series of line segments connecting these monuments. Given the level of technology available at the time of measurement, these are not in a perfectly straight line. And even a map representing those is wrong. Even if there are no significant drawing errors, shrinking the scale from thousands of kilometres of country down to a map measured in centimetres will introduce error and inaccuracy: the point marking the placement of the monument might be the finest resolution the printer can print and still represent an area over 100m in diameter - where exactly in the 100m-diameter circle is the monument?
 
 
+\subsection*{Case Studies}
+We will discuss two case studies, both related to the robots that
+students programmed in previous offerings of this class. The case
+studies simulate the robots with varying degrees of accuracy.
 
-\paragraph{Skill.} In today's lecture, you'll learn how to use Java timers to
-implement interval timers and watchdog timers. You'll also learn about
-the difference between Android timers and Java timers.
+\paragraph{Coarse Simulation.} Here's one design for a Lego robot and
+environment simulator: 
 
-\subsection*{Interval Timers.} Interval timers are appropriate for recurring tasks. 
-For instance, one could implement light sensor polling with an
-interval timer (but you don't need to do this in Android, since the
-system sends you events when the value changes). We've seen the use of
-{\tt Handler} to implement interval timers, which performs tasks
-occasionally.  You can always use more than one timer at a time, each
-with different frequencies.
-
-Reminder: Here's some code for executing an infinitely recurring task using
-{\tt Handler}:
-
-{\small \begin{verbatim}
-  Handler h = new Handler();
-  Runnable r = new Runnable() {
-    public void run() {
-      // execute the task
-      h.postDelayed(this, delayInMS);
-    }
-  };
-  h.postDelayed(r, delayInMS);
-\end{verbatim}}
-
-By the way, you can cancel an upcoming task like this:
-{\small \begin{verbatim}
-  h.removeCallbacks(r);
-\end{verbatim}}
-
-\paragraph{True Interval Timers.}
-Strictly speaking, the timers we'll be implementing aren't actually
-interval timers. A true interval timer interrupts the processor,
-rather than waiting for the executing thread to become free.
-
-We can simulate an interval timer more closely using the {\tt Timer}
-class~\cite{ody}. Such a timer executes in a different thread,
-so it doesn't need to wait for processor availability. A serious
-problem is that other threads can't do updates to the user interface
-(UI). Timers have more overhead and generally aren't the right thing
-on Android, but you should know about them.
-
-Here's how you can use {\tt Timer} successfully. You can put this code
-anywhere, including {\tt onCreate()} or in an on-click listener.
-
-{\small \begin{verbatim}
-  Timer t = new Timer();
-  t.schedule(new TimerTask() {
-    @Override
-    public void run() {
-      runOnUiThread(timerTick);
-    }
-  }, firstDelayMS, repeatIntervalMS);
-\end{verbatim}}
-
-You are creating a Java {\tt Timer} object, which takes a
-delay-before-first-event and a repeat interval, both in
-milliseconds. If you omit the repeat interval, the {\tt Timer} only
-fires once. In the {\tt run()} method of the {\tt TimerTask} (again,
-event-oriented programming), you are asking Android to run the {\tt
-  timerTick} {\tt Runnable} on the UI thread. If you just call {\tt
-  timerTick.run()}, your app will crash!
-
-Let's also create the {\tt timerTick} object.
-{\small \begin{verbatim}
-  Runnable timerTick = new Runnable() {
-    @Override
-    public void run() {
-      Toast.makeText(getApplicationContext(), 
-                     "ding!", Toast.LENGTH_SHORT).show();
-    }
-  };
-\end{verbatim}}
-
-A recap: you have to do the following to set up a Java timer.
 \begin{itemize}
-\item instantiate a new {\tt Timer} object;
-\item schedule a {\tt TimerTask} on that {\tt Timer};
-\item inside the {\tt TimerTask}, invoke a {\tt Runnable} to run on the
-UI thread; and
-\item implement the {\tt run()} method on the {\tt Runnable} to effect
-  UI changes.  
+\item Create a class {\tt Board}. Other classes can query this 
+class to find out whether the board is black or white
+at a certain point.
+\item Create a class {\tt Robot}. This class stores, in fields, the
+  current position and velocity of the robot, and contains the main
+  logic of the robot.
+\item Create a class {\tt LightSensor}. The {\tt Robot} gets light
+readings from the {\tt LightSensor} which are appropriate to its
+position on the {\tt Board}.
 \end{itemize}
 
-\subsection*{Watchdog Timers} The other timer application I mentioned
-is that of a watchdog timer, which can observe that a system appears to
-be stuck and take some action.
+Then you can have a main simulation driver which calls the {\tt Robot}
+to (1) update its position according to the velocity; and (2) turn the
+robot if necessary. (You would probably program these actions in
+different methods.) Note that each call to the {\tt Robot} would
+simulate the effect of time moving forward by one time-step.
 
-Watchdog timers are commonly found in computer systems where humans cannot easily take corrective action. If a NASA satellite gets stuck somehow, NASA usually cannot send astronauts up to press the reset button. If not for the ability to automatically restart, the satellite would be permanently disabled.
+\paragraph{Detailed Simulation: Visual Simulation Environment.}
+It is possible to simulate the same system at many different levels of
+detail. For instance, Microsoft's Visual Simulation Environment
+simulates the behaviour of your robot code much more realistically.
 
-When a watchdog timer is set up, the system needs to indicate, before the limit of the timer, that everything is okay. If the system thinks all is well, either by checking some fault conditions or simply by default, the watchdog timer is reset. 
+In particular, VSE creates a simulated world and evaluates the 
+behaviour of physical objects within that simulated world.
+This simulation resembles step (1) in the coarse-grained simulation,
+except that it tracks the behaviour of multiple objects and has a
+more-detailed model of the environment than just a {\tt Board}.
 
-An example of a potential fault condition is checking if free memory is below a reference value, such as 256~MB. If the system detects free memory is above 256~MB then then it resets the watchdog timer. If it is below 256~MB, then the watchdog timer is not reset and the timer will fire, taking some corrective action (i.e., freeing up some memory).
+VSE also calls your actual code to simulate the behaviour
+of your control software. This is like step (2) in the coarse-grained
+simulation, but in this case it is running actual code.
 
-Corrective action is variable, based on the system the watchdog is looking after. In some cases, corrective action is minor (killing a task), but in physical systems it might be necessary to turn off motors for safety. 
+\paragraph{Caveat.} Simulations aren't perfect. 
+For instance, a previous lab report reported that everything worked
+fine in simulation under VSE, but needed lots more work to work on the
+actual robot.
 
-\paragraph{Implementing Watchdogs with Interval Timers.}
-You can build a watchdog timer using an interval timer.
+{\sf Why?}\\[2em]
+
+
+The Android emulator is pretty good as far as it goes, but it's
+difficult for it to emulate accelerometer readings.
+
+\subsection*{Other Examples} 
+You might simulate a digital logic circuit using discrete techniques,
+since gates change values at specific times, in response to changing
+inputs.
+
+On the other hand, you might simulate an analog circuit using continuous
+techniques, since the voltages and currents change continuously with
+respect to time.
+
+In terms of writing a simulation, you would use different techniques
+to implement discrete simulations (queue-based: put the time of next
+event into the queue) and continuous simulations (numerically
+integrate an ordinary differential equation over and over; see
+ECE204).
+
+
+
+
+\paragraph{Classifying Simulations.}
+Here are three orthogonal axes along which you can classify simulations.
+
+Continuous vs. Discrete Simulation Models:
 \begin{itemize}
-\item Set the timer interval to be the largest allowable time for a task
-to take. Start the timer.
-\item If the timer fires, the task took too long.
-\item The timer event handler should still execute, so it can deal with
-the situation (for instance, by killing the task.)
+\item A \emph{continuous} simulation model represents a system with continuously changing state variables.
+\item A \emph{discrete} simulation model represents a system with discrete state changes.
 \end{itemize}
-
-{\sf Why wouldn't the event handler execute?}\\[2em]
-
-When designing an embedded system, you might use specialized hardware
-for a watchdog timer. This gives it some resilience to failures in the
-rest of the system. The fact that {\tt Timer}s run in separate threads
-also give them some resilience.
-
-Choosing an appropriate timer length is important and is usually a matter of practice and experience. Choosing a length that is too short means the system will get reset even when nothing is really wrong; in the extreme case, no meaningful work is accomplished because the system is always being interrupted. Choosing an interval that is too long can result in the system being stuck for a long period of time before corrective action is taken; in the extreme case, the corrective action does not happen in time and the system suffers a serious failure.
-
-\paragraph{Example.}
-Here's an example of an Android analogy of a watchdog timer.
-
-{\scriptsize \begin{verbatim}
-class MainActivity extends Activity
-{
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	setContentView(R.layout.activity_main);
-
-        final Timer watchdogTimer = new Timer();
-
-        // When this task is run, finish the activity.
-        final Runnable timerTick = new Runnable() {
-          @Override 
-          public void run() {
-            MainActivity.this.finish();
-          }
-        };
-
-        // User has 10 seconds to complete this page, otherwise finish.
-        watchdogTimer.schedule(new TimerTask() {
-          @Override
-          public void run() {
-            runOnUiThread(timerTick);
-          }
-        }, 10000);
-
-        Button b = (Button) findViewById(R.id.next_page);
-	b.setOnClickListener(new View.OnClickListener() {
-	  @Override
-	  public void onClick(View arg0) {
-            watchdogTimer.cancel();
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW);
-	    browserIntent.setData(Uri.parse("http://www.patricklam.ca"));
-	    startActivity(browserIntent);
-          }
-        });
-    }
-}
-\end{verbatim}}
-
-If the user clicks on the button fast enough,
-the app navigates to \texttt{patricklam.ca}. Otherwise, the app's main activity finishes.
-
-\paragraph{Multiple-Stage Watchdog Timers.}
-So far we have only discussed corrective action as if it is all-or-nothing. However, watchdog timers can have multiple stages -- multiple levels of response. If the first level of response does not resolve the problem, then a second level of response will activate to take more drastic action. 
-
-Suppose there is a system with a two-stage watchdog timer. Under normal operation, the first stage timer is reset regularly. If this timer is not reset, then stage one activates: it sets up a watchdog timer for stage two and attempts to take corrective action. If stage one's corrective action succeeds, it cancels stage two's activation. Otherwise, stage two activates and takes some more serious action.
-
-Example: the software has a two-stage watchdog timer. The first watchdog timer attempts to restart the application \texttt{example.exe}. The first level has a timer length of 180 seconds; every 60 seconds, \texttt{example.exe} resets the watchdog timer. If the reset doesn't happen, the watchdog activates. Its first step is to start another watchdog timer, with a length of 120 seconds. Then the first watchdog tries to restart \texttt{example.exe}. If the first watchdog does not successfully restart the program within the 120 seconds, the second watchdog timer activates and restarts the computer.
-
-\subsection*{Timer Coalescing}
-
-Using timers has an impact on power consumption in an embedded or mobile system (phones, laptops, et cetera). Suppose we have a phone with an interval timer set up with an interval of 1000ms. Then every second the system will execute the timer's action -- the system wakes up, runs the action, then goes back to sleep. This is okay, but if we have multiple concurrent interval timers then the system might never actually get to sleep, because it is constantly being woken up by interval timers that are just slightly out of sync with one another. See the example below:
 
 \begin{center}
-	\includegraphics[width=0.7\textwidth]{images/coalesced_before.png}
-	\cite{coalesce}
+\includegraphics[width=.7\textwidth]{images/fig6}~\cite{magneto}
 \end{center}
 
-There is a way to deal with this, and it hinges on a critical point about timers. When a timer is set up for a specific time, such as 1000 ms, the system does not promise that the timer will run exactly 1000 ms from now. What it really says is that the timer task will execute \textit{no sooner than} 1000 ms from now. It might happen that the task runs 1000 ms from now, but it could be 1004 ms or 1200 ms later, yet it could not be 997 ms or 980 ms later.
+Dynamic vs. Static Simulation Models: 
+\begin{itemize}
+\item A \emph{dynamic} simulation model represents a system as it evolves over time; it recomputes the state of the system at various times.
+\item A \emph{static} simulation model is a one-shot deal: you feed it some conditions and it tells you the result. This is useful for what-if simulations: if I price my cookies at \$2, how many will I sell?
+\end{itemize}
 
-This allows operating systems to do something clever to deal with the problem of timers that are close together but not exactly. It can delay some of them a little bit so that they line up. See the updated example:
+Deterministic vs. Stochastic Simulation Models:
+\begin{itemize}
+\item A \emph{deterministic} simulation model exactly computes the simulated state of the system at every step (subject to inaccuracies in the calculations).
+\item A \emph{stochastic} simulation model uses randomness to (accurately!) estimate the expected behaviour of the system without computing the behaviour of each particle; it relies on the underlying randomness of the system components.
+\end{itemize}
+% bring in some chocolates or something and stochastically throw them
+% at the students
 
-\begin{center}
-	\includegraphics[width=0.7\textwidth]{images/coalesced-after.png}
-	\cite{coalesce}
-\end{center}
+\paragraph{Simulation Tools.} While you'd have to develop your own tools
+in certain domains, others domains have well-supported tools. These
+tools allow you to rapidly prototype a simulation of a complex system
+and its environment. However, you must understand how the tool works
+before relying on it. Here are some examples:
 
-Now, this image is not a hundred percent accurate. A careful examination shows that some of the lines were moved to the left (back in time) to make them line up and that would violate the no-sooner-than semantics. This is just artistic license to make the graphic look a little bit nicer (blame the authors,~\cite{coalesce}), but in reality the lines could only be shifted to the right.
+\begin{itemize}
+\item \emph{Microsoft Visual Simulation Environment} simulates decentralized software services for robots.
+\item \emph{Arena} simulates businesses, services, and manufacturing processes.
+\item \emph{Simulink} simulates a variety of time-varying systems, including communications, controls, signal processing, video processing, and image processing; people use it to investigate and verify implementations of these systems.
+\item \emph{SPICE} and its many variants can be used to simulate analog circuits.
+\end{itemize}
 
-Despite that, the image shows clearly the impact of timer coalescing on power consumption. Most modern operating systems do this, including Windows and Mac OS X.
+General-purpose simulation languages also exist to aid in the
+development of complex, application-specific simulation tools.
 
 \input{bibliography.tex}
-
 
 \end{document}

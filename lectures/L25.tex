@@ -2,174 +2,323 @@
 
 \begin{document}
 
-\lecture{ 25 --- Code Reviews}{\term}{Patrick Lam \& Jeff Zarnett}
+\lecture{ 25 --- Refactoring}{\term}{Patrick Lam \& Jeff Zarnett}
 
 
-\section*{Reviews}
+\section*{Refactoring}
+We've repeatedly mentioned the existence of refactoring, especially
+when talking about Agile methods. \emph{Refactoring} incrementally
+improves code quality using local, semantics-preserving changes to the
+code. Our reference in most of this is the definitive reference \cite{fowler}.
 
-A \emph{review} is any activity where reviewers examine a work product
-to provide feedback.  Reviews can reveal defects early, when the
-defects are less costly to fix.  You can review anything, including:
-software requirements specifications, schedules, design documents,
-code, test plans, test cases, and defect reports.
+Some people believe that for this to count as a refactoring, it has to make the code clearer. You can make lots of changes to your software that have no impact on its semantics (behaviour), but it is only refactoring if it makes the code easier to understand \cite{sourcemaking}. However, ease of understanding is not the only goal, and in this course we will use the more inclusive definition.
 
-Reviews can be either informal or formal.
-\begin{itemize}
-\item An \emph{informal review} is a written or verbal review
-  requested by a developer of a work product to improve that product.
-\item A \emph{formal review} is a written review conducted by a team
-  leader or a moderator for the purpose of identifying, documenting,
-  and fixing defects in a work product.  
-\end{itemize}
+Contrast this against performance optimizations: performance optimizations should not change the semantics of the code (just its execution speed), but they may make the code that much harder to understand.
 
-\paragraph{Types of Reviews.}
-Here are some types of reviews.
-\begin{itemize}
-\item A \emph{desk check} is an informal review where the author distributes
-a work product to peers for reviews and comments.
-\item A \emph{walkthrough} is an informal review meeting, moderated by the author of a work product.
-\item An \emph{inspection} is a formal review meeting, guided by a moderator. The meeting produces a log of identified defects in a work product.
-\item A \emph{code review} is a software inspection where defects in source code are identified, logged, and perhaps corrected.
-\end{itemize}
-
-It is useful to combine informal and formal reviews. Informal reviews
-help identify simple defects. Formal reviews can identify complex
-defects that might be missed by simple desk checks.
-
-\paragraph{Desk Checks.}
-A \emph{desk check} is the first line of defence against defects.  You
-can speed up formal inspections by taking care of simple defects in
-desk checks first. For many work products, desk checks suffice, and you
-might not need to go to a formal inspection.
-
-However, desk checks are only effective if taken seriously. It's easy
-to just say ``LGTM'' (Looks Good To Me) without actually checking the
-product. It's important to spend enough time on desk checks, and
-managers must allocate time for them. 
-
-\paragraph{Walkthroughs.}
-
-A \emph{walkthrough} guides reviewers through the review of a work
-product.  The author of the work product presents the design and
-ensures that the attendees understand its design.
-
-Walkthroughs allow people with less expertise to review a work
-product, and users of the work product are often invited to
-walkthroughs.  New points-of-view often help identify defects.
+Let's unpack the definitions of the terms we used to define refactoring.
 
 \begin{itemize}
-\item Prior to the walkthrough, the author should distribute presentation materials to attendees.
-\item During the walkthrough, the author should solicit feedback from the audience.
-\item After the walkthrough, the author should follow up with attendees who have helped out by giving comments.
+\item {\bf Local}: Refactoring should not affect unrelated parts of the
+program; it should only change the parts of the program that you're 
+refactoring. When you commit a refactoring to the repository,
+you should be sure to only commit the source files that got refactored.
+\item {\bf Semantics-preserving}: This means that the behaviour
+of the refactored code should be identical to the behaviour of the
+original code. If some tool did the refactoring, you can usually be sure
+that it was semantics-preserving. Otherwise, your unit tests will help
+ensure that you didn't change anything.
 \end{itemize}
 
-\paragraph{Formal Inspections.}
+\subsection*{Motivation}
 
-An \emph{inspection} is a formal review meeting where participants
-identify and document defects or possible improvements in a work
-product. At an inspection, participants aim to identify and propose
-ideas for solving defects. Having a good mix of participants can help
-find previously-overlooked defects (perhaps subtle or complex ones).
+The first major reason is to improve the design of the software. Nobody gets designs 100\% right on the first try, so you will always find some changes to make. We take the code that is in one structure and we make some changes to create a new (better) structure for it. 
 
-Here are some steps for a formal inspection:
+Related to improving the design is the idea of maintaining the design. As programmers change the code, the structure tends to decay. Changes are introduced that break the structure rules or bend things out of place, or are just bolted on where they do not belong \cite{sourcemaking}. If we consistently maintain the structure of the code, it is much easier to preserve. An analogy that students probably have a lot of experience with: when there is one dish to clean in the sink, cleaning it is easy. If the sink is overflowing with dirty dishes then washing them is much more of a chore. When we refactor, we tidy things up (do the dishes) and prevents the work from getting out of hand.
+
+It also make code easier to change. Poorly designed code usually takes more lines to do the work, because code has been copy-and-pasted around. If we change one section but not another, then the behaviour of the software is inconsistent. We can prevent some future errors if the code is easily maintained.
+
+And finally, it makes the code to understand. Someone else is going to need to read the code and make changes. Code that is clearer might take a few more CPU cycles to execute, but it could save that other programmer a week of work in understanding it. This is true even if there are no other programmers working on your code base: yourself a year from now is ``someone else'' who will need to read the code and change it \cite{sourcemaking}. 
+
+
+\subsection*{Types of Refactoring} The Fowler book classifies the
+refactorings into the following broad categories:
+
 \begin{itemize}
-\item \emph{Preparation}: Before the meeting, distribute a printout of the work project to each member of the inspection team, along with a checklist indicating what to review.
-\item \emph{Overview}: At the inspection meeting, the moderator
-provides an overview of the work product.
-\item \emph{Page-by-page Review}: The moderator walks the inspection team
-through the work product page-by-page and logs defects.
-\item \emph{Rework}: After the meeting, the author
-goes through the list of defects and fixes them.
-\item \emph{Follow-up}: The inspection team members verify that
-the author has fixed the defects.
-\item \emph{Approval}: The inspection team approves the work.
+\item Composing methods: change what code belongs to which method;
+\item Moving features between objects: put fields, methods, classes in
+different places;
+\item Organizing data: change how data gets stored in your program;
+\item Simplifying conditionals: make your {\tt if} statements easier
+to understand;
+\item Making method calls simpler: change how methods relate to each other;
+\item Generalizations: like moving features between objects, but related
+to the inheritance hierarchy.
 \end{itemize}
-We do something similar for master's and PhD theses.
 
-\paragraph{Code Reviews.}
+\subsection*{Refactoring Algorithm}
+The basic pattern for refactoring looks something like this:
 
-A \emph{code review} examines source code (or, more commonly, a patch)
-to identify defects or possible improvements.
+\begin{enumerate}
+	\item Create unit tests (if needed)
+	\item Run unit tests
+	\item Make changes
+	\item Re-run unit tests
+	\item Evaluate results
+\end{enumerate}
 
-Different projects have different review coverage; some projects
-(Mozilla) review everything, whereas companies might review only 
-a representative sample. One can argue for sampling because developers
-tend to repeat the same mistakes, so that finding one issue will prompt
-developers to look for the same issue elsewhere. 
+Hopefully, you already have unit tests so you can skip step one. Then you will run your tests and be sure you are starting from a state where everything is working. Make your changes, and re-run the tests. If the tests fail, then we did not make a semantic-preserving change, and we need to undo some changes and try again.
 
-When sampling, here are some places to look:
+
+\subsection*{Examples}
+We'll continue by looking at two examples of refactorings this time.
+Next time, we'll look at a list of refactorings and talk about refactorings in
+general.
+
+\paragraph{Example: Extract Method.} A popular example of a refactoring
+is the ``extract method'' refactoring, which splits out part of a
+method into an independent method. For instance~\cite{ref:extmeth}:
+
+{\tt
+\begin{verbatim}[language=Java]
+// (1) make sure the code only runs on mac os x
+boolean mrjVersionExists = System.getProperty("mrj.version") != null;
+boolean osNameExists = System.getProperty("os.name").startsWith("Mac OS");
+
+if ( !mrjVersionExists || !osNameExists)
+{
+  System.err.println("Not running on a Mac OS X system.");
+  System.exit(1);
+}
+
+// (2, 3) do all the preferences stuff, and get the default color
+preferences = Preferences.userNodeForPackage(this.getClass());
+int r = preferences.getInt(CURTAIN_R, 0);
+int g = preferences.getInt(CURTAIN_G, 0);
+int b = preferences.getInt(CURTAIN_B, 0);
+int a = preferences.getInt(CURTAIN_A, 255);
+currentColor = new Color(r,g,b,a);
+\end{verbatim}
+}
+
+We can instead split this into three sub-methods, which each make more
+sense as an independent unit rather than agglomerated into one method:
+
+{\tt
+\begin{verbatim}[language=Java]
+  dieIfNotRunningOnMacOsX();
+  connectToPreferences();
+  getDefaultColor();
+\end{verbatim}
+}
+
+This is particularly useful when the code does the same thing 
+many times (``code clones''); you can replace all of the clones with
+a call to a single method, which means that you only need to change the
+code once. 
+
+A method should have unity of purpose: it should do one
+conceptual thing. A good test is that you should be able to come up
+with a meaningful name for the method. Note that we are putting some
+design into the code through this refactoring.
+
+Although the example here replaces all of the code with method calls,
+it's also common to pick out just part of a method and make a separate
+function from that, while leaving the rest of the method in
+place. Many IDEs support this sort of refactoring with one click.
+
+\paragraph{Another example: Replace Magic Number With Symbolic Constant.}
+Here's another example of a refactoring, which is quite applicable to
+your labs. Using symbolic constants is often better coding practice
+than putting numbers directly into the code. Consider this example~\cite{ref:repconst}:
+
+{\tt
+\begin{verbatim}[language=Java]
+	double potentialEnergy(double mass, double height) {
+		return mass * height * 9.81;
+	}
+\end{verbatim}}
+
+You can refactor this to:
+{\tt \begin{verbatim}[language=Java]
+	double potentialEnergy(double mass, double height) {
+		return mass * GRAVITATIONAL_CONSTANT * height;
+	}
+	static final double GRAVITATIONAL_CONSTANT = 9.81;
+\end{verbatim}}
+\vspace{-1em}
+There are two benefits to this refactoring: 1) the refactored code is
+easier to understand; and 2) if you might need to change the value of 
+the constant, it's easier to do so in one place only.
+\vspace{-1em}
+
+\paragraph{When to Refactor} A key decision we will have to make in our software is when it is the right time to refactor. All the options below have advantages and disadvantages. We can use one, a few, or all of them in the same project.
+
 \begin{itemize}
-\item source code that only one person has the expertise to maintain;
-\item tricky algorithms that are susceptible to defects;
-\item source code that calls difficult-to-use libraries;
-\item code written by inexperienced developers; and
-\item functions that could fail catastrophically if a defect is present.
+	\item \textbf{Continuously}?\\
+	Refactoring done continuously helps prevent the ``pile of dirty dishes'' problem, but it can lead to spending too much time tinkering with the refactoring and not implementing the code. 
+	\item \textbf{Fixed Schedule}?\\
+	If we refactor on a fixed schedule, say, every three months, that allows us to take some time and examine the code and do a lot of refactorings all at once. 
+	\item \textbf{When Fixing a Bug}?\\
+	Some advocate for making changes while we fix bugs: if we notice something when we're re-examining code, we fix it right away. However, this strategy is dangerous because it conflates the bug fix with the structural change. 
+	\item \textbf{At the End of a Project}?\\
+	In other cases, it's desirable to refactor once the code for a project is complete (before it goes into maintenance mode). 
+	\item \textbf{At the Start of a Project}?\\
+	Lastly, we might consider refactoring at the start of a project; before we open up the module and begin to make our changes and additions, we clean up the code and then begin the new project.
 \end{itemize}
 
-In industry, you might have code review by a team; I don't
-know. However, in the open-source world (more below), you typically
-have 1 experienced developer doing a review. Generally, code reviews
-look for: clarity, maintainability, accuracy, reliability and
-robustness, security, scalability, reusability, and efficiency.
+\subsection*{List of Refactorings} 
 
-\paragraph{Pair Programming.} We've talked about pair programming in the 
-context of agile programming. Ideally, it can serve as instantaneous code
-review.
+I've augmented Wikipedia's 
+non-exhaustive list of
+refactorings~\cite{wiki:refactoring}. These refactorings are organized differently 
+than the list you saw last time.
 
-\subsection*{Code Reviews and University}
-One problem we clearly have at Waterloo, and other universities, is that we have the students do a lot of programming assignments but we do not review student code. We never sit down with students and take a look at the code and give feedback on variable names, on comments, on documentation (if appropriate). None of those items matter to the compiler or to the execution of the program, but they're important six months or a year down the road when someone else will need to read and understand that code. In the context of the university-assigned programming you will do, possibly the only case where a piece of code you write will be seen again more than four months later is in your Fourth-Year Design Project. The result is that students write throwaway code (not commented, not documented, hard to understand or debug) because there are no consequences for doing so and doing it the ``right'' way seems more difficult. This will fall flat in the real world~\cite{pumps}. Perhaps students get some code reviews done on co-op terms, but there is no guarantee of that.
+\begin{itemize}
+\item Techniques that allow for more abstraction:
+\begin{itemize}
+\item \emph{Encapsulate Field}: force code to access the field with getter and setter methods.
+\item \emph{Generalize Type}: create more general types to allow for more code sharing.
+\item \emph{Replace conditional with polymorphism}: use inheritance and virtual dispatch instead of a conditional.
+\end{itemize}
+\item Techniques for breaking code apart into more logical pieces:
+\begin{itemize}
+\item \emph{Extract Method}: as seen above, pull out part of a larger method into a new method.
+\item \emph{Extract Class}: moves code from an existing class into a new class.
+\end{itemize}
+\item Techniques for integrating code that's needlessly spread apart:
+\begin{itemize}
+\item \emph{Inline Method}: integrate a copy of the body of a method into its calling method.
+\item \emph{Inline Class}: put all of the fields and methods of a class into another class and erase the original.
+\end{itemize}
+\item Techniques for improving names and location of code:
+\begin{itemize}
+\item \emph{Move Method/Field}: move to a more appropriate class or source file.
+\item \emph{Rename Method/Field}: changing the name into a new one that better reveals its purpose.
+\item \emph{Pull Up}: in OOP, move to a superclass.
+\item \emph{Push Down}: in OOP, move to a subclass.
+\end{itemize}
+\end{itemize}
 
-This is something we are trying to address in the ECE~155 labs, by asking the TAs to review your code and give you feedback about things like your choice of variable name, comments, et cetera. Still, the most important issue is not really how the variables are named, but how the problem is decomposed.
+\subsection*{Design Antipatterns}
+An antipattern is kind of like antimatter - the opposite of normal matter, and very dangerous. In the context of software development, it is a way of developing your code that is messy or makes errors more likely. Antipatterns are not restricted to software development; there are many of them related to project management. However, when we encounter antipatterns in software, that is something we can often fix with refactoring. From \cite{sourcemaking}, some common antipatterns and suggestions about how to deal with them.
 
-\subsection*{Problem Decomposition} Problem decomposition is one of the most critical problem-solving skills. It means taking a big, complex problem, and breaking it down into a number of smaller problems that are easier to solve. Each of the subproblems can be broken down further as necessary until the subproblems are of small enough size that they can be easily implemented.  If your starting problem is ``write ATM software'', you can break this down into a few subproblems: withdraw cash, deposit cash, and check balance. Each of those will need to be broken down into some series of other subproblems (like verify card and PIN). 
 
-When doing a code review of something larger than a minor patch, such as when a new feature is being added, it is important to consider how well the problem has been decomposed. 
+\paragraph{The Blob.}
+One object is not only the most important class in the system... it does basically everything. It's called the Blob because of the old horror movie where the alien blob just keeps growing and growing, until it's dangerously large and threatening the entire planet. A Blob design has far too much of the code and logic centralized in one specific class. The solution is to refactor the design to extract methods and classes so that responsibilities are properly distributed. 
 
-Good programmers decompose the problems well into subproblems that can be clearly described, independently implemented, and easily tested. Some documentation about what the parts do is often written in advance, but writing the rest of the documentation is simple because of the good structure~\cite{pumps}.
 
-Adequate programmers decompose problems reasonably, but they tend to have some awkward data structures which result in a lot of special-case code. The code seems to be ``debugged'' into existence and the documentation is written all at the end once things are more or less finished~\cite{pumps}.
+\paragraph{Lava Flow.}
+Dead code and forgotten design information is frozen in an ever-changing design. A piece code was written by previous developers or just so long ago that everyone forgot, and nobody wants to touch it or delete it for fear of breaking something. It gets the name from the geological phenomenon: lava flows when it is hot, but it cools and hardens into solid rock. These are serious drains on productivity because developers spend time compiling, testing, and refactoring code that is useless. To solve this, identify this dead code (try using ``References'' in Eclipse) and delete it. If it was really important, your unit tests will alert you (and not just the test class for the method or class you deleted). If it turns out it wasn't dead code, just restore an older version from version control.
 
-Poor programmers decompose the problem seemingly randomly, with unhelpful variable and method names like \texttt{x}, \texttt{foo}, or \texttt{doIt()}. Their code is often poorly tested and fails on boundary conditions. It sometimes appears that the code is ``evolved'' into existence: make random changes and see if that improves the output. Documentation, if it exists, is difficult to read or misleading~\cite{pumps}.
+\paragraph{Functional Decomposition.}
+This antipattern is the output of experienced, non-object-oriented developers who design and implement an application in an object-oriented language. The resulting code resembles a structural language (Pascal, FORTRAN) in class structure. It can be incredibly complex as smart procedural developers devise very ``clever'' ways to replicate their time-tested methods in an object-oriented architecture. To solve this, extract classes, merge duplicate code, and create methods such that there is defined structure in the program.
 
-Problem decomposition is a skill and the best way to improve is to practice it. Make the effort to define your subproblems well, choose appropriate variable names, and write (at least an outline of the) documentation early on. Proper decomposing of the problems might be valuable at university, in that you can complete assignments quicker and with fewer errors. Things like variable names might not make much of a difference in assignments, but it will get you into the correct habits for later -- and just might impress your employers!
+\paragraph{Copy-and-Paste Programming.}
+Code reused by copying and pasting lines leads to serious maintenance problems. You may have two methods which are very similar or identical. The solution: extract common elements and make them generic (where applicable). 
 
-\subsection*{Reviews for Open-Source Software Projects}
-We've mentioned that open-source projects have an official repository.
-These projects also have a set of committers, who may commit changes
-to the repository. Outside contributors sometimes send patches to a
-project, adding new features or fixing bugs; in that case, a committer
-will typically review the patch before committing it. Committers may
-also seek review for their patches if they want someone else to take a
-look at it.
+\paragraph{Poltergeists.}
+Poltergeists are classes with very limited roles and effective life cycles. A poltergeist is the term for a ghost that allegedly causes noise (knocking on a door) or destruction (smashing a lamp). In the context of software, they are objects that pop in, do one thing, then vanish. These are bad design because they are unnecessary and waste resources when they appear and disappear. To get rid of them, we call the Ghostbusters (``Who you gonna call?!''). No, we actually get rid of them by inlining their functionality into other objects.
 
-\paragraph{Case Study: Mozilla Review Policy.}
-The Mozilla Project develops the Firefox web browser (and others
-projects). Due to the size of the codebase, they have an elaborate
-reviewing
-policy~\cite{moz:sr, moz:cr}:
-they require at least one review (``owner/peer review'') for all
-patches, and a second review (``super-review'') for many of the
-patches as well.
 
-The owner/peer review is by a domain expert who understands the code
-being modified and the implications of the change.  In particular, ``A
-review is focused on a patch's design, implementation, usefulness in
-fixing a stated problem, and fit within its module.''  From the Code
-Review FAQ, reviews check for: whether the patch fixes a problem; the
-API/design; maintainability; security; integration; testing; and
-license compliance.
+\paragraph{Golden Hammer.}
+The saying is ``When all you have is hammer, everything looks like a nail.''. A Golden Hammer is a familiar technology or concept applied obsessively to many software problems. A hammer is great at what it does, but it's not the solution to every problem. Having a specific architecture, like client-server, is good, but not every problem should be solved that way. To solve this, refactor the code to a more appropriate architecture or design.
 
-Super-reviews are by ``strong hackers'', who understand the way
-Mozilla code is supposed to look, but need not have domain expertise.
-In particular (per the Code Review FAQ), they are supposed to look out
-for: proper use of APIs; adherence to Mozilla's portability
-guidelines; cross-module effects; and respect of Mozilla coding
-practices.
+\paragraph{Exceptions as Control Flow.}
+Exceptions should be, well, exceptions, and they should not be things we normally expect to happen. Using an Exception as part of the normal flow of the program instead of calling the appropriate methods is just bad design. Exceptions are expensive to generate, send, and deal with (and potentially fatal to the execution of your program). Using them for normal operations is rare, and much more common is using them for error handling control flow inappropriately. Instead of having a try-catch block where the catch block does something, refactor this so the condition is checked in advance and the exception is prevented.
 
-\paragraph{Other organizations.} Google and the Linux kernel both
-review code extensively. You can also read about
-Gerrit~\cite{gerrit}, a tool out of
-Google for code reviews.
+
+\paragraph{Spaghetti Code.}
+This is the most famous of all the design antipatterns. It refers to a program that contains little or no structure; there are typically a small number of objects with methods that are really long. Ad-hoc software structure makes it difficult to extend and optimize code. All the refactoring techniques above can be used to deal with different areas, until some structure is formed.
+
+
+\subsection*{More Refactoring Examples} 
+\vspace{-1.5em}
+We'll continue by talking about the
+refactorings in more detail; perhaps this will help you understand the
+goals of refactoring, so that you can do it in your own code.
+
+\paragraph{Encapsulate field.} A common Java idiom is to have private fields,
+public accessor methods, and replace all field reads {\tt x.foo} and
+writes {\tt x.foo = y}, respectively, with calls to {\tt x.getFoo()}
+and {\tt x.setFoo(y)}. The goal of this refactoring is to enhance the modularity of the code. Only the class that defines {\tt x} is allowed to read or write {\tt x}
+directly. 
+
+One implication is that you can change the way you store the internal
+data inside a class, and it won't affect any other classes. For instance,
+you can have a {\tt Point} class which you initially implement using 
+x/y coordinates, and then transparently change it to using polar
+coordinates without having to change any of the users of the {\tt Point}. 
+
+Not every field needs to be encapsulated, though. For instance, if you 
+have a class which represents an RGB colour, it's probably OK to have 
+public fields for the red, green and blue fields.
+
+
+\paragraph{Pull Up Method.} This is an example of a 
+generalization. Consider the following UML class diagrams~\cite{ref:pullup}:
+
+\begin{center}
+\includegraphics[width=\textwidth]{images/pullUpMethod.png}
+\end{center}
+
+What we can see here is that the two subclasses {\tt Salesman} and
+{\tt Engineer} both have a common method {\tt getName}, with
+identical behaviour. It makes sense to move the method to the common
+superclass {\tt Employee}.
+
+\paragraph{Push Down Method.} Conversely, sometimes it makes sense
+to push methods down to subclasses~\cite{ref:pushdown}:
+
+\begin{center}
+\includegraphics[width=\textwidth]{images/pushDownMethod.png}
+\end{center}
+
+In this case, the original design was flawed: {\tt Engineer}s don't
+have quotas, only {\tt Salesman}. So we improve the design by 
+putting {\tt getQuota} where it should be.
+
+I didn't show you the code, only the UML, but the transformation to the
+code should be obvious. Note that in both cases, it's not supposed
+to change the behaviour of the program, only improve its design.
+
+\paragraph{Inline Class.} Here's one more refactoring example~\cite{ref:inline}. In this case, we get
+rid of helper classes that aren't that useful.
+
+\begin{center}
+\includegraphics[width=\textwidth]{images/inlineClass.png}
+\end{center}
+
+The UML transformation corresponds to a code transformation where we
+fold the {\tt areaCode} and {\tt number} fields, along with the
+{\tt getTelephoneNumber} method, into the containing {\tt Person} class.
+Maybe we found that no one else was using the {\tt Telephone Number} class.
+Be sure to delete the class after you've inlined it.
+
+\paragraph{Fix an Antipattern: Exceptions as Control Flow}
+In this one, we'll rewrite some code (not using an official, named refactoring), to stop employing the antipattern of exceptions as control flow.
+
+\begin{verbatim}[language={Java}]
+try {
+   fileReader.readFile(fileSelector.getSelection().getFileName());
+} catch (NullPointerException npe) {
+   showErrorDialog(Error.NO_FILE_SELECTED);
+   return;
+}
+\end{verbatim} 
+
+The \texttt{NullPointerException} can occur if the selection of the \texttt{fileSelector} is \texttt{null}: we try to call \texttt{getFileName()} on the \texttt{null} resulting in the exception. Now let's rewrite this so that we stop using the Exception handling:
+
+\begin{verbatim}[language={Java}]
+if (fileSelector.getSelection() == null) {
+   showErrorDialog(Error.NO_FILE_SELECTED);
+   return;
+}
+fileReader.readFile(fileSelector.getSelection().getFileName());
+\end{verbatim} 
+
+The functionality of the code is unchanged, but this will be both a performance and readability enhancement.
+
+
 
 \input{bibliography.tex}
 

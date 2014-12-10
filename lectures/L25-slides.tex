@@ -1,8 +1,9 @@
 \input{configuration}
+\usepackage{tikz-3dplot}
 
-\title{Lecture 25 --- Reviews}
+\title{Lecture 25 --- Refactoring}
 
-\author{Patrick Lam \& Jeff Zarnett \\ \small \texttt{p.lam@ece.uwaterloo.ca} \& \texttt{jzarnett@uwaterloo.ca}}
+\author{Jeff Zarnett \& Patrick Lam \\ \small \texttt{jzarnett@uwaterloo.ca} \&\texttt{p.lam@ece.uwaterloo.ca}}
 \institute{Department of Electrical and Computer Engineering \\
   University of Waterloo}
 \date{\today}
@@ -13,474 +14,675 @@
   \titlepage
 \end{frame}
 
-\part{Reviews}
-\frame{\partpage}
 
 \begin{frame}
-\frametitle{On Reviews}
-
+\frametitle{Refactoring}
 \begin{changemargin}{1cm}
 
-\structure{Review}: \\activity where reviewers examine a work product
-to provide feedback.\\[1em]
+We have mentioned refactoring very frequently in the course.
 
-Advantage: \\
-reveal defects early---defects less costly to fix.  \\[1em]
-
-What to review:\\
-requirements specifications; schedules; bug reports; \\design documents;
-\structure{code}; test plans; test cases.
+\alert{Refactoring} incrementally improves code quality using local, semantics-preserving changes to the code.
 
 \end{changemargin}
-
 \end{frame}
 
 \begin{frame}
-\frametitle{Informal vs Formal}
-
-\large
+\frametitle{Refactoring}
 \begin{changemargin}{1cm}
-\begin{itemize}
-\item \emph{informal review}: written or verbal review
-  requested by a developer of a work product.\\[1em]
-\item \emph{formal review}: written review conducted by a team
-  leader or a moderator to identify, document,
-  and fix defects in a work product.  
-\end{itemize}
-\end{changemargin}
 
+More restrictive definition: refactoring must make code clearer.
+
+Ease of understanding is not our only goal, so we will use the more inclusive definition.
+
+Constrast this against a performance optimization: makes code harder to understand, but faster.
+
+\end{changemargin}
 \end{frame}
 
-\begin{frame}
-\frametitle{Types of Reviews}
-
-\begin{changemargin}{1cm}
-\begin{itemize}
-\item \structure{desk check}: informal review; \\ \qquad author distributes
-work to peers for reviews and comments.
-\item \structure{walkthrough}: informal review meeting; \\ \qquad moderated by the author.
-\item \structure{inspection}: formal review meeting; \\ \qquad guided by a moderator.\\
-Produces a log of identified defects in a work product.
-\item \structure{code review}: software inspection \\ \qquad identifying, logging, and perhaps correcting bugs.
-\end{itemize}
-\end{changemargin}
-
-\end{frame}
 
 \begin{frame}
-
-\frametitle{Desk Checks}
-
+\frametitle{Refactoring}
 \begin{changemargin}{1cm}
-\structure{Desk check}: first line of defence against defects.  
+
+Two small clarifications:
 
 \begin{itemize}
-\item can speed up formal inspections \\ by taking care of simple defects in
-desk checks first. 
-\item for many work products, desk checks suffice; \\ often don't need a formal inspection.
+\item {\bf Local}: Refactoring should not affect unrelated parts of the
+program. \mnote{it should only change the parts of the program that you're 
+refactoring. When you commit a refactoring to the repository,
+you should be sure to only commit the source files that got refactored.}
+\item {\bf Semantics-preserving}: The behaviour
+of the refactored code should be identical to the behaviour of the
+original code. \mnote{If some tool did the refactoring, you can usually be sure
+that it was semantics-preserving. Otherwise, your unit tests will help
+ensure that you didn't change anything.}
 \end{itemize}
 
-But:
-\begin{itemize}
-\item only effective if taken seriously. 
-\item easy
-to just say ``LGTM'' (Looks Good To Me)\\ without actually checking the
-product. \\[1em]
-
-It's important to spend enough time on desk checks, and
-managers must allocate time for them. 
-\end{itemize}
 \end{changemargin}
-
 \end{frame}
 
-\begin{frame}
-\frametitle{Walkthroughs}
-
-\begin{changemargin}{1cm}
-\structure{Walkthrough}: guided review of a work
-product.
-
-\begin{itemize}
-\item allow people with less expertise to review a work
-product;
-\item users of the work product often invited to
-walkthroughs.  
-\item New points-of-view often help identify defects.
-\end{itemize}~\\
-
-
-Author of the work product presents the design and
-ensures that the attendees understand its design.\\[1em]
-
-How a walkthrough works:
-\begin{itemize}
-\item Before: distribute presentation materials.
-\item During: solicit feedback from the audience.
-\item After: follow up with attendees who have helped out by giving comments.
-\end{itemize}
-\end{changemargin}
-
-\end{frame}
 
 \begin{frame}
-\frametitle{Inspection}
-
-\begin{changemargin}{1.5cm}
-\structure{Inspection}: formal review meeting where participants\\
-identify and document defects or possible improvements. \\[1em]
-
-Participants identify, and propose
-solutions to, defects. \\[1em]
-
-A good mix  of participants (but not too many!) helps\\
-find previously-overlooked defects (subtle, complex bugs).
-
-\end{changemargin}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Steps in a formal inspection}
-
-\begin{changemargin}{1cm}
-\begin{itemize}
-\item \structure{Preparation}: Before the meeting, distribute the work project to each member of the inspection team, 
-plus a checklist indicating what to review.\\[0.5em]
-\item \structure{Overview}: Moderator
-provides an overview of the item.\\[0.5em]
-\item \structure{Page-by-page Review}: Moderator walks the inspection team
-through the work product and logs defects.\\[0.5em]
-\item \structure{Rework}: Afterwards, the author
-goes through the list of defects and fixes them.\\[0.5em]
-\item \structure{Follow-up}: Inspection team members verify that
-the author has fixed the defects.\\[0.5em]
-\item \structure{Approval}: Inspection team approves the work.\\[0.5em]
-\end{itemize}
-We do something similar for master's and PhD theses.
-\end{changemargin}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Code Review}
-
+\frametitle{Why Refactor?}
 \begin{changemargin}{1cm}
 
-\structure{Code review}: examines source code (usually a patch)\\
-to identify defects or possible improvements.\\[1em]
-
-Coverage options:
 \begin{itemize}
-\item review everything (Mozilla); or,
-\item review a representative sample.
+	\item Change the design\\
+	 \quad(Nobody gets it 100\% right on the first try).
+	\item Maintain good structure \& prevent decay.
+	\item Make code easier to change.
+	\item Prevent future errors.
+	\item Make it easy to understand.
 \end{itemize}
 
-Representative sample: \\ \qquad developers tend to repeat the same mistakes.\\
-If you find one bug, look for similar ones nearby.
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Code Review (sampling)}
-
+\frametitle{Types of Refactoring}
 \begin{changemargin}{1cm}
-When sampling, here are some places to look:
 \begin{itemize}
-\item source code that only one person has the expertise to maintain;
-\item tricky algorithms that are susceptible to defects;
-\item source code that calls difficult-to-use libraries;
-\item code written by inexperienced developers; and
-\item functions that could fail catastrophically if a defect is present.
-\end{itemize}
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Code Review (who? what?)}
-
-\begin{changemargin}{1cm}
-In industry: by team?\\[1em]
-
-Open-source world: 1 or 2 experienced developers, independently.\\[1em]
-
-What to look for:
-\begin{itemize}
-\item clarity, maintainability, accuracy, reliability,
-\item robustness, security, scalability, reusability, efficiency.
-\end{itemize}
-\end{changemargin}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Pair Programming}
-
-\begin{changemargin}{1cm}
-\Large 
-Part of Extreme Programming.\\[1em]
-
-Can also serve as instant code review.
-\end{changemargin}
-
-\end{frame}
-
-\part{Reviews at University}
-\frame{\partpage}
-
-\begin{frame}
-\frametitle{Reviews at University}
-
-\begin{changemargin}{1cm}
-We have the students do a lot of programming assignments...\\
-\quad but we do not review student code.
-
-We do not give feedback on variable names, comments, etc.
-
-Irrelevant to the compiler \& execution,\\
-\quad but important when someone (else) will need to read it.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Reviews at University}
-
-\begin{changemargin}{1cm}
-UW projects are, at most, 4 months long.\\
-\quad Possible exception: 4$^{th}$ year design project.
-
-There are no consequences for writing throwaway code.
-
-Maybe on co-op terms, but how much does it happen?
-
-Trying to ask TAs to do code reviews in ECE~155 labs.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Problem Decomposition}
-
-\begin{changemargin}{1cm}
-Key thing to look for in code reviews: problem decomposition.
-
-Take a big, complex problem, break it down into a number of smaller problems that are easier to solve. 
-
-Each subproblem can be broken down further if necessary.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Problem Decomposition}
-
-\begin{changemargin}{1cm}
-
-If your starting problem is ``write ATM software'':
-
-Subproblems: Withdraw cash, deposit cash, check balance. 
-
-Each of those will need to be broken down into some series of other subproblems (like verify card and PIN). 
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Reviewing Problem Decomposition}
-\begin{changemargin}{1cm}
-Good programmers decompose the problems well into subproblems that can be:
-\begin{itemize}
- \item clearly described, 
- \item independently implemented, and 
- \item easily tested. 
-\end{itemize}
-Documentation is often written in advance, but writing the documentation is simple because of the good structure.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Reviewing Problem Decomposition}
-\begin{changemargin}{1cm}
-Adequate programmers decompose problems reasonably. 
-
-They tend to have some awkward data structures which result in a lot of special-case code. 
-
-The code seems to be ``debugged'' into existence.
-
-Documentation written all at the end once things are finished.
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Reviewing Problem Decomposition}
-\begin{changemargin}{1cm}
-Poor programmers decompose problems seemingly randomly. 
-
-Unhelpful variable and method names like \texttt{x}, \texttt{foo}, or \texttt{doIt()}. 
-
-Code is often poorly tested and fails on boundary conditions. 
-
-It sometimes appears that the code is ``evolved'' into existence: make random changes and see if that improves the output. 
-
-Documentation, if it exists, is difficult to read or misleading.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Reviewing Problem Decomposition}
-\begin{changemargin}{1cm}
-Problem decomposition is a skill; improve by practicing.
-
-Define your subproblems well, choose appropriate variable names, and write an outline of documentation early on. 
-
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Reviewing Problem Decomposition}
-\begin{changemargin}{1cm}
-Proper decomposing of the problems is valuable at UW: \\
-\quad you can complete assignments quicker and with fewer errors. 
-
-Variable names might not make a difference in assignments. 
-
-It will get you into the correct habits for later\\
-\quad and just might impress your employer!
-
-\end{changemargin}
-\end{frame}
-
-
-
-\part{Reviews for Open-Source Projects}
-\frame{\partpage}
-
-\begin{frame}
-\frametitle{How Open-Source Projects Work}
-
-\begin{changemargin}{1cm}
-Typically: 
-
-\begin{itemize}
-\item an official repository. (SVN, Git, Mercurial)\\[1em]
-\item a set of committers, who may commit changes.\\[1em]
+	\item Composing methods
+	\item Moving features between objects
+	\item Organizing data
+	\item Simplifying conditionals
+	\item Making method calls simpler
+	\item Generalizations
 \end{itemize}
 
-Outside contributors: may send patches \\ \qquad (bug fixes, new features).
-\begin{itemize}
-\item a committer reviews the patch before committing it.
-\end{itemize}
+\end{changemargin}
+\end{frame}
 
-Committers may/must also seek review for their patches.
+
+\begin{frame}
+\frametitle{Refactoring Process}
+\begin{changemargin}{1cm}
+
+\begin{enumerate}
+	\item Create unit tests (if needed)
+	\item Run unit tests
+	\item Make changes
+	\item Re-run unit tests
+	\item Evaluate results
+\end{enumerate}
+
+Hopefully, you already have unit tests so you can skip step 1. If not - why not?
+
+\end{changemargin}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+\frametitle{Refactoring Example: Extract Method}
+\begin{changemargin}{1cm}
+
+\begin{verbatim}
+// (1) make sure the code only runs on mac os x
+boolean mrjVersionExists = 
+     System.getProperty(``mrj.version'') != null;
+boolean osNameExists = 
+     System.getProperty(``os.name'')
+           .startsWith(``Mac OS'');
+
+if ( !mrjVersionExists || !osNameExists) {
+  System.err.println(
+       ``Not running on a Mac OS X system.'');
+  System.exit(1);
+}
+\end{verbatim}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Refactoring Example: Extract Method}
+\begin{changemargin}{1cm}
+
+\begin{verbatim}
+// (2, 3) do all the preferences stuff
+// and get the default color
+preferences = Preferences
+          .userNodeForPackage(this.getClass());
+int r = preferences.getInt(CURTAIN_R, 0);
+int g = preferences.getInt(CURTAIN_G, 0);
+int b = preferences.getInt(CURTAIN_B, 0);
+int a = preferences.getInt(CURTAIN_A, 255);
+currentColor = new Color(r,g,b,a);
+\end{verbatim}
+
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Refactoring Example: Extract Method}
+\begin{changemargin}{1cm}
+
+We can instead split this into three sub-methods.
+
+\begin{verbatim}
+
+  dieIfNotRunningOnMacOsX();
+  connectToPreferences();
+  getDefaultColor();
+
+
+\end{verbatim}
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Case Study: Reviews at Mozilla}
-
+\frametitle{Refactoring: Extract Method}
 \begin{changemargin}{1cm}
-Mozilla Foundation: develops the Firefox web browser \\
-(and other
-projects). 
+
+This is useful when the code does the same thing many times.
+
+Replace all the clones with a call to a single method.
+
+Update the code once to update all.
+
 \end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Refactoring: Extract Method}
+\begin{changemargin}{1cm}
+
+Methods should do one conceptual thing.
+
+A good test: can you come up with a name for it?
+
+We are putting more design into the code.
+
+Eclipse supports doing this in one click.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Refactoring: Replace Magic Number}
+\begin{changemargin}{1cm}
+ Using symbolic constants is often better coding practice
+than putting numbers directly into the code.
+
+\begin{verbatim}
+double potentialEnergy(double mass, double height) {
+     return mass * height * 9.81;
+}
+\end{verbatim}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Refactoring: Replace Magic Number}
+\begin{changemargin}{1cm}
+ Using symbolic constants is often better coding practice
+than putting numbers directly into the code.
+
+\begin{verbatim}
+static final double GRAVITATIONAL_CONSTANT = 9.81;
+
+double potentialEnergy(double mass, double height) {
+     return mass * GRAVITATIONAL_CONSTANT * height;
+}
+\end{verbatim}
+
+Easier to understand and easier to update.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Refactoring: Rename Variable}
+\begin{changemargin}{1cm}
+One minor example of refactoring is renaming a variable.
+
+
+\begin{verbatim}
+DateTime creationTime;
+
+public DateTime getCreationTime(){
+    return creationTime;
+}
+
+public void setCreationTime(DateTime newTime) {
+    this.creationTime = newCreationTime;
+}
+
+\end{verbatim}
+
+We change the variable and methods for more clarity.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Refactoring: Rename Variable}
+\begin{changemargin}{1cm}
+One minor example of refactoring is renaming a variable.
+
+
+\begin{verbatim}
+DateTime creationDateTime;
+
+public DateTime getCreationDateTime(){
+    return creationDateTime;
+}
+
+public void setCreationDateTime(DateTime newDateTime) {
+    this.creationDateTime = newCreationDateTime;
+}
+
+\end{verbatim}
+
+We change the variable and methods for more clarity.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Refactoring: Limitations}
+\begin{changemargin}{1cm}
+
+Diminishing returns as more is changed.
+
+Changing interfaces might not be possible.
+
+External systems (e.g., database) might constrain changes.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Refactoring vs Performance}
+\begin{changemargin}{1cm}
+
+Refactoring aims to improve \emph{non-functional properties} of the code; performance may get better, worse, or stay the same.
+
+Our goal is easier to maintain code.
+
+Example: split one loop into two separate loops.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{When to Refactor}
+\begin{changemargin}{1cm}
+
+\begin{itemize}
+	\item Continuously?\mnote{Refactoring done continuously helps prevent the ``pile of dirty dishes'' problem, but it can lead to spending too much time tinkering with the refactoring and not implementing the code.}
+	\item Fixed Schedule?\mnote{If we refactor on a fixed schedule, say, every three months, that allows us to take some time and examine the code and do a lot of refactorings all at once.}
+	\item When Fixing a Bug?\mnote{Some advocate for making changes while we fix bugs: if we notice something when we're re-examining code, we fix it right away. However, this strategy is dangerous because it conflates the bug fix with the structural change. }
+	\item At the End of a Project?\mnote{In other cases, it's desirable to refactor once the code for a project is complete (before it goes into maintenance mode). }
+	\item At the Start of a Project?\mnote{Lastly, we might consider refactoring at the start of a project; before we open up the module and begin to make our changes and additions, we clean up the code and then begin the new project.}
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{List of Refactorings}
+\begin{changemargin}{1cm}
+
+\mnote{These refactorings are organized differently than last lecture.}
+
+
+Techniques that allow for more abstraction:
+\begin{itemize}
+\item \emph{Encapsulate Field}: force code to access the field with getter and setter methods.
+\item \emph{Generalize Type}: create more general types to allow for more code sharing.
+\item \emph{Replace conditional with polymorphism}: use inheritance and virtual dispatch instead of a conditional.
+\end{itemize}
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{List of Refactorings}
+\begin{changemargin}{1cm}
+
+Techniques for breaking code apart into more logical pieces:
+\begin{itemize}
+\item \emph{Extract Method}: as seen above, pull out part of a larger method into a new method.
+\item \emph{Extract Class}: moves code from an existing class into a new class.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{List of Refactorings}
+\begin{changemargin}{1cm}
+Techniques for integrating code that's needlessly spread apart:
+\begin{itemize}
+\item \emph{Inline Method}: integrate a copy of the body of a method into its calling method.
+\item \emph{Inline Class}: put all of the fields and methods of a class into another class and erase the original.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{List of Refactorings}
+\begin{changemargin}{1cm}
+
+Techniques for improving names and location of code:
+\begin{itemize}
+\item \emph{Move Method/Field}: move to a more appropriate class or source file.
+\item \emph{Rename Method/Field}: changing the name into a new one that better reveals its purpose.
+\item \emph{Pull Up}: in OOP, move to a superclass.
+\item \emph{Push Down}: in OOP, move to a subclass.
+\end{itemize}
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Antipatterns}
+\begin{changemargin}{1cm}
+
+Antipatterns are like antimatter -- the opposite of how software should be designed.
+
+In software, a way of coding that makes errors more likely.
+
+Not only for software (e.g., management antipatterns).
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Antipatterns Family}
+\begin{changemargin}{1cm}
+
+Some common antipatterns you might encounter:
+
+\begin{itemize}
+	\item The Blob
+	\item Lava Flow
+	\item Functional Decomposition
+	\item Copy-and-Paste Programming
+	\item Poltergeists
+	\item Golden Hammer
+	\item Exceptions as Control Flow
+	\item Spaghetti Code
+\end{itemize}
+
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Antipatterns: The Blob}
+\begin{changemargin}{1cm}
+One object does basically everything.
+
+From the horror movie: the blob just keeps growing.
+
+Too much code/logic centralized in this one class.
+
+Solution: extract methods and classes so it is spread out.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Antipatterns: Lava Flow}
+\begin{changemargin}{1cm}
+Old dead (useless) code hanging around in the software.
+
+Nobody changes/deletes it for fear of breaking something.
+
+From the geological phenomenon: lava flows then solidifies.
+
+Time wasted testing and refactoring this dead code.
+
+Solution: delete it (restore from version control if needed).
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Antipatterns: Functional Decomposition}
+\begin{changemargin}{1cm}
+Code resembles a structural language when using OOP.
+
+Often caused by non-OOP programmers writing in Java/C\#.
+
+Solution: Extract classes and methods, pull up common code.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Antipatterns: Copy-and-Paste Programming}
+\begin{changemargin}{1cm}
+Code is copy-and-pasted; possibly modified slightly each time.
+
+Copies can be slightly different so bugs will not be solved if one is updated and the rest are not.
+
+Solution: extract class or method to replace all these copies.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Antipatterns: Poltergeists}
+\begin{changemargin}{1cm}
+Poltergeist (English): a ghost that allegedly causes noise or destruction and then vanishes.
+
+Poltergeists: classes with limited roles and effective life cycles.
+
+Objects that pop in, do one thing, then vanish.
+
+Waste of resources and inefficient.
+
+Solution: Call the Ghostbusters!\\
+\quad\quad Actually, inline their functionality to other classes.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Antipatterns: Golden Hammer}
+\begin{changemargin}{1cm}
+``When all you have is hammer, everything looks like a nail.''
+
+Familiar concept or architecture applied to everything, whether that makes sense or not.
+
+Solution: Refactor the code to more appropriate design.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Antipatterns: Exceptions as Control Flow}
+\begin{changemargin}{1cm}
+``That error is supposed to happen.''
+
+Exceptions should not be considered normal.
+
+Exceptions are expensive to generate and handle.
+
+Solution: Refactor to avoid Exceptions where they are expected.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Antipatterns: Spaghetti Code}
+\begin{changemargin}{1cm}
+Program with little or no structure.
+
+Typically small number of objects with long methods.
+
+No structure means difficult to extend or change things.
+
+Solution: refactor until the code has appropriate structure.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Refactoring: Examples}
+\begin{changemargin}{1cm}
+
+We'll continue by talking about the
+refactorings in more detail; perhaps this will help you understand the
+goals of refactoring, so that you can do it in your own code.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Refactoring: Encapsulate Field}
+\begin{changemargin}{1cm}
+
+Java programming practice: private fields, public accessor methods. 
+
+Replace {\tt x.foo} with {\tt x.getFoo()} and {\tt x.setFoo(y)}. 
+
+Why? Modularity, logging, flexibility, etc. \mnote{One implication is that you can change the way you store the internal
+data inside a class, and it won't affect any other classes. For instance,
+you can have a {\tt Point} class which you initially implement using 
+x/y coordinates, and then transparently change it to using polar
+coordinates without having to change any of the users of the {\tt Point}.}
+
+Should all fields be encapsulated? \mnote{For instance, if you 
+have a class which represents an RGB colour, it's probably OK to have 
+public fields for the red, green and blue fields.}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Refactoring: Pull Up Method}
+\begin{changemargin}{1cm}
+
+This refactoring is an example of a generalization.
 
 \begin{center}
-\includegraphics[width=.5\textwidth]{images/firefox-512-noshadow.png}
+\includegraphics[width=0.85\textwidth]{images/pullUpMethod.png}
 \end{center}
-\end{frame}
 
-\begin{frame}
-\frametitle{Case Study: Reviews at Mozilla}
-
-\begin{changemargin}{1cm}
-Huge codebase $\Rightarrow$ elaborate
-reviewing
-policy\footnote{\url{http://www.mozilla.org/hacking/reviewers.html}, 
-\url{https://developer.mozilla.org/en/Code_Review_FAQ}}.
-
-\begin{itemize}
-\item require at least one review (``owner/peer review'') for all
-patches, plus
-\item second review (``super-review'') for many 
-patches.
-\end{itemize}
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Case Study: Peer review at Mozilla}
-\begin{changemargin}{1cm}
-\structure{Owner/peer review}: by a domain expert who understands the code
-being modified and the implications of the change.  
-
-\begin{quote} 
-A
-review is focused on a patch's design, implementation, usefulness in
-fixing a stated problem, and fit within its module.
-\end{quote}
-
-Reviews check for: 
-\begin{itemize}
-\item whether the patch fixes a problem; 
-\item API/design; 
-\item maintainability; 
-\item security; 
-\item integration; 
-\item testing; and
-\item license compliance.
-\end{itemize}
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Case Study: Super-reviews at Mozilla}
-
-\begin{changemargin}{1cm}
-Super-reviews by ``strong hackers''.
-\begin{itemize}
-\item understand the way
-Mozilla code is supposed to look,
-\item need not have domain expertise.
-\end{itemize}
-~\\[1em]
-
-They look out
-for: 
-\begin{itemize}
-\item proper use of APIs; 
-\item adherence to Mozilla's portability
-guidelines; 
-\item cross-module effects; and 
-\item respect of Mozilla coding
-practices.
-\end{itemize}
+\mnote{What we can see here is that the two subclasses {\tt Salesman} and
+{\tt Engineer} both have a common method {\tt getName}, with
+identical behaviour. It makes sense to move the method to the common
+superclass {\tt Employee}.}
 
 \end{changemargin}
 \end{frame}
 
+
 \begin{frame}
-\frametitle{Other organizations}
+\frametitle{Refactoring: Push Down Method}
+\begin{changemargin}{1cm}
+
+Sometimes we want to do the opposite.
 
 \begin{center}
-\includegraphics[width=.4\textwidth]{images/Googlelogo.png} \quad
-\includegraphics[width=.4\textwidth]{images/Tux.png}
+\includegraphics[width=0.85\textwidth]{images/pushDownMethod.png}
 \end{center}
-\begin{changemargin}{1cm}
-Many organizations, including Google and Linux kernel hackers,
-review extensively.\\
 
-Gerrit\footnote{\url{http://lwn.net/Articles/359489/}}: a tool out of
-Google for code reviews.
+
+\mnote{In this case, the original design was flawed: {\tt Engineer}s don't
+have quotas, only {\tt Salesman}. So we improve the design by 
+putting {\tt getQuota} where it should be.}
+
+\mnote{I didn't show you the code, only the UML, but the transformation to the
+code should be obvious. Note that in both cases, it's not supposed
+to change the behaviour of the program, only improve its design.}
 
 \end{changemargin}
-
 \end{frame}
+
+\begin{frame}
+\frametitle{Refactoring: Inline Class}
+\begin{changemargin}{1cm}
+
+Here, we get rid of helper classes that aren't useful.
+
+\begin{center}
+\includegraphics[width=0.85\textwidth]{images/inlineClass.png}
+\end{center}
+
+
+
+\mnote{The UML transformation corresponds to a code transformation where we
+fold the {\tt areaCode} and {\tt number} fields, along with the
+{\tt getTelephoneNumber} method, into the containing {\tt Person} class.
+Maybe we found that no one else was using the {\tt Telephone Number} class.
+Be sure to delete the class after you've inlined it.}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Fixing an Antipattern: Exception as Control Flow}
+\begin{changemargin}{1cm}
+
+In this example, we are (ab)using an Exception and handler:
+
+\begin{verbatim}[language={Java}]
+try {
+   fileReader.readFile(
+      fileSelector.getSelection().getFileName());
+} catch (NullPointerException npe) {
+   showErrorDialog(Error.NO_FILE_SELECTED);
+   return;
+}
+\end{verbatim} 
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Fixing an Antipattern: Exception as Control Flow}
+\begin{changemargin}{1cm}
+
+Rewrite to avoid the Exception in the first place:
+
+\begin{verbatim}[language={Java}]
+if (fileSelector.getSelection() == null) {
+   showErrorDialog(Error.NO_FILE_SELECTED);
+   return;
+}
+fileReader.readFile(
+      fileSelector.getSelection().getFileName());
+\end{verbatim} 
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Refactoring: Further Examples}
+\begin{changemargin}{1cm}
+
+Now we'll do some further examples on the board and/or Eclipse, if time allows.
+
+\begin{itemize}
+	\item Generalize Type
+	\item Replace Conditional with Polymorphism
+	\item Extract Method / Variable
+	\item ... and maybe more!
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
 
 
 \end{document}

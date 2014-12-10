@@ -157,6 +157,64 @@ Otherwise you're likely to just waste time. Single-stepping may be useful
 as you're gaining experience with software development, but tends to be
 generally less useful as you get better as debugging.
 
+
+\section*{Types of Bugs}
+Bugs are our enemies, so we need to get to know them and get to understand them, and we will be a long way towards defeating them. Our guides in this matter \cite{dgtd} gives us the members of the bug family. Fixing the bug is going to be much easier if the failure can be reproduced consistently (we say the bug is reproducible). How to reproduce the bug will depend on the kind of bug it is.
+
+\subsection*{The Common Bug}
+This one is the basic type. It is in the source code, and behaves predictably. It is sometimes the result of an ambiguous specification or something not tested, or simply programmer error.
+
+\subsection*{The Sporadic Bug}
+The common bug strikes predictably when a test case is executed. The sporadic bug is not so consistent, but it can be lured out if you are careful. Some tricks that can lure out the bug: leaving a trap in place (a watchdog to identify when something has gone wrong) or finding the right bait (test case). Once the right test case is found, however, this bug is reproducible.
+
+\subsection*{Heisenbugs}
+
+Recall the Heisenberg uncertainty principle from physics: \textit{The more precisely the position of a particle is known, the less precisely the momentum is, and vice versa}. In software, the situation is analogous: the harder you try to debug the problem, the better the bug is at hiding. When you step through the code the bug doesn't happen, or printing debug statements prevents the problem from happening at all. 
+
+Heisenbugs can usually be broken down into one of the following problems:
+
+\paragraph{Race Condition}
+A \emph{race condition} is the cause of most Heisenbugs. This is a situation where the program behaviour depends on the order of completion of certain tasks (that's why it's called a race). Parallel and multi-threaded programs suffer from these commonly, but it can happen in single threaded programs. Execution order is important that's why adding additional debugging statements will change how long it takes for a task to complete and possibly suppress the bug.
+
+\paragraph{Memory Errors}
+Another possible source of Heisenbugs are memory access problems. Reading an uninitialized value, reading off the end of an array, reading an area of memory after it's been freed, and so on, can be sources of bugs that are hard to reproduce. If the variable is uninitialized and we read it, who knows what value we will get. It might be zero sometimes (and in that circumstance the program works okay) and other times it might have another value and the error occurs.
+
+This isn't a problem in Java, because accessing an uninitialized variable is a compile-time warning and will always result in a null value at runtime. Similarly, because of how memory works in Java, we won't have the situation of using a variable after the memory for it has been released. Although we use it in the labs, Java is not the only programming language in the world, so we had better be prepared for this situation.
+
+\paragraph{Optimization}
+\begin{quote}
+	\emph{... premature optimization is the root of all evil.}
+\end{quote}
+\hfill Donald Knuth
+
+Optimizations will sometimes be necessary and are occasionally desirable. However, sometimes an optimization is a shortcut. This might pay off, but in other cases the shortcut results in an error. The optimization will need to be changed or turned off. If you suspect that an optimization is part of the problem, consider what happens if the algorithm is executed the ``slow'' way.
+
+
+\subsection*{Bugs Hiding Behind Bugs}
+Sometimes we have multiple bugs that are interacting in some way. As a rule, you need to fix the first bug that occurs before the others. Although we typically want to change only one thing at a time, in this situation, it's necessary to keep very good notes and try to solve the bugs in sequence.
+
+\subsection*{Secret Bugs}
+One problem faced in the real world is the secret bug -- it strikes when the customer is using the software and encounters a bug, but they don't want to tell you about it because it involves confidential information, or they are not experts in software and cannot provide you the relevant information.
+
+You can try to reproduce the problem in house. Whether this is by creating test data or asking the customer for an anonymized set of test data, it's necessary to reproduce the bug. It might also be helpful to see what's going on at the customer site. Maybe you can visit in person, or via remote tools (screen sharing, console login, etc). In other cases you will have to settle for logging.
+
+\subsection*{Configuration or Environment Bugs}
+Another problem you may face is that there's nothing wrong with the software, but something wrong with the environment. The user might not have the permissions necessary for the program to run as expected. The software can be changed such that it handles the situation more gracefully, or change the environment or configuration procedure to avoid the error in the first place.
+
+\subsection*{Hardware Bugs}
+In embedded systems there are lots of possibilities for hardware bugs to deal with. Proving that the error comes from hardware can be a challenge, but once it's done we may be able to work around this kind of bug in our software.  
+
+However, hardware bugs are not limited to embedded systems. Consider a very famous bug in the original Pentium processors (this is known as the FDIV bug), where the processor returned an incorrect value when doing a floating point division operation. The bug was identified by Thomas Nicely in 1994~\cite{fdiv}.
+
+$4195835.0/3145727.0 = 1.333 820 449 136 241 002 5$  (Correct value)\\
+$4195835.0/3145727.0 = 1.333 739 068 902 037 589 4$  (Flawed Pentium)
+
+Intel ended up fixing the problem in its future processors, and recalling the flawed chips. As a workaround, Intel recommended multiplying the numerator and denominator each by $15/16$ before the division is performed (this factor will of course cancel when the division takes place) because it shifts the bits in such a way that the error is not encountered. 
+
+
+\subsection*{The Not-A-Bug}
+Sometimes when you are examining a bug, you find that it's not really a bug at all. The system is performing the way the specification says it should. In this case you may not need to change anything, or it may be a bug in the specification. Explaining it to the customer, however, might not be that easy.
+
 \input{bibliography.tex}
 
 \end{document}

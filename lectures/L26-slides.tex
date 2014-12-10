@@ -1,9 +1,8 @@
 \input{configuration}
-\usepackage{tikz-3dplot}
 
-\title{Lecture 26 --- Refactoring}
+\title{Lecture 26 --- Interval \& Watchdog Timers}
 
-\author{Jeff Zarnett \& Patrick Lam \\ \small \texttt{jzarnett@uwaterloo.ca} \&\texttt{p.lam@ece.uwaterloo.ca}}
+\author{Patrick Lam \& Jeff Zarnett\\ \small \texttt{p.lam@ece.uwaterloo.ca} \& \texttt{jzarnett@uwaterloo.ca}}
 \institute{Department of Electrical and Computer Engineering \\
   University of Waterloo}
 \date{\today}
@@ -16,673 +15,400 @@
 
 
 \begin{frame}
-\frametitle{Refactoring}
+\frametitle{Concept: Timers in Embedded Systems}
+
 \begin{changemargin}{1cm}
+\large
 
-We have mentioned refactoring very frequently in the course.
-
-\alert{Refactoring} incrementally improves code quality using local, semantics-preserving changes to the code.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Refactoring}
-\begin{changemargin}{1cm}
-
-More restrictive definition: refactoring must make code clearer.
-
-Ease of understanding is not our only goal, so we will use the more inclusive definition.
-
-Constrast this against a performance optimization: makes code harder to understand, but faster.
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Refactoring}
-\begin{changemargin}{1cm}
-
-Two small clarifications:
-
+Today: How to use timers,\\ \qquad \qquad e.g. in embedded~systems:
 \begin{itemize}
-\item {\bf Local}: Refactoring should not affect unrelated parts of the
-program. \mnote{it should only change the parts of the program that you're 
-refactoring. When you commit a refactoring to the repository,
-you should be sure to only commit the source files that got refactored.}
-\item {\bf Semantics-preserving}: The behaviour
-of the refactored code should be identical to the behaviour of the
-original code. \mnote{If some tool did the refactoring, you can usually be sure
-that it was semantics-preserving. Otherwise, your unit tests will help
-ensure that you didn't change anything.}
+\item Interval Timers
+\item Watchdog Timers
 \end{itemize}
+~\\
+We'll use Java timers to implement these,
+and learn the difference between Android and Java timers.
 
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Applications of Timers}
+
+\Large
+\begin{changemargin}{1.3cm}
+Interval Timers---perform a task occasionally.\\[-0.5em]
+\begin{itemize}\item (raising alarms; polling).
+\end{itemize}
+~\\
+Watchdog Timers---reset a stuck system.
+~\\[1em]
+
+\end{changemargin}
+
+\end{frame}
+
+\part{Interval Timers}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Interval Timers}
+
+\begin{changemargin}{1cm}
+\large
+
+Good for recurring tasks.\\[1em]
+
+Example: Light sensor polling\\
+ (but not on Android---receive sensor events instead).\\[1em]
+
+Previously: {\tt Handler} for interval timers.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Handlers for Infinitely-Recurring Interval Timers}
+
+\begin{verbatim}
+  Handler h = new Handler();
+  Runnable r = new Runnable() {
+    public void run() {
+      // execute the task
+      h.postDelayed(this, delayInMS);
+    }
+  };
+  h.postDelayed(r, delayInMS);
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Cancelling Tasks}
+
+\begin{changemargin}{1cm}
+By the way, you can cancel an upcoming task like this:
+\begin{verbatim}
+  h.removeCallbacks(r);
+\end{verbatim}
 \end{changemargin}
 \end{frame}
 
-
 \begin{frame}
-\frametitle{Why Refactor?}
-\begin{changemargin}{1cm}
+\frametitle{True Interval Timers}
 
+\large
+\begin{changemargin}{1cm}
+Handlers run when the thread is available.\\[1em]
+
+True interval timers interrupt the processor.
+
+Can simulate with {\tt java.util.Timer}\footnote{\url{http://steve.odyfamily.com/?p=12}, accessed
+  February 3, 2013.}. \\[1em]
+
+Payload runs in a different thread:
 \begin{itemize}
-	\item Change the design\\
-	 \quad(Nobody gets it 100\% right on the first try).
-	\item Maintain good structure \& prevent decay.
-	\item Make code easier to change.
-	\item Prevent future errors.
-	\item Make it easy to understand.
+\item[(+)] more predictable timing;
+\item[(--)] can't update UI from other thread.
 \end{itemize}
-
+~\\
+Generally more overhead for {\tt java.util.Timer}, not great for Android apps.
 \end{changemargin}
 \end{frame}
 
-\begin{frame}
-\frametitle{Types of Refactoring}
-\begin{changemargin}{1cm}
-\begin{itemize}
-	\item Composing methods
-	\item Moving features between objects
-	\item Organizing data
-	\item Simplifying conditionals
-	\item Making method calls simpler
-	\item Generalizations
-\end{itemize}
+\begin{frame}[fragile]
+\frametitle{Getting Around UI Thread Issues}
 
+\begin{changemargin}{1cm}
+Start the Timer like this:
+
+\begin{verbatim}
+  Timer t = new Timer();
+  t.schedule(new TimerTask() {
+    @Override
+    public void run() {
+      runOnUiThread(timerTick);
+    }
+  }, firstDelayMS, repeatIntervalMS);
+\end{verbatim}
+If you omit repeatIntervalMS, you get a one-shot timer.
+
+Don't call {\tt timerTick.run()} directly.
 \end{changemargin}
+
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Programming timerTick}
+
+\begin{changemargin}{1cm}
+Put your UI-manipulating code in {\tt timerTick}:
+\begin{verbatim}
+Runnable timerTick = new Runnable() {
+  @Override
+  public void run() {
+    Toast.makeText(getApplicationContext(), 
+                   "ding!", 
+                   Toast.LENGTH_SHORT).show();
+  }
+};
+\end{verbatim}
+\end{changemargin}
+
+\end{frame}
 
 \begin{frame}
-\frametitle{Refactoring Process}
-\begin{changemargin}{1cm}
 
+\frametitle{Java Timer summary}
+
+\begin{changemargin}{1cm}
+\large
+To use a Java Timer:
 \begin{enumerate}
-	\item Create unit tests (if needed)
-	\item Run unit tests
-	\item Make changes
-	\item Re-run unit tests
-	\item Evaluate results
+\item instantiate a new {\tt Timer} object;
+\item schedule {\tt TimerTask} on that {\tt Timer};
+\item inside the {\tt TimerTask}, invoke {\tt Runnable} to run on the
+UI thread; and
+\item implement the {\tt run()} method on the {\tt Runnable} to effect
+  UI changes.  
 \end{enumerate}
-
-Hopefully, you already have unit tests so you can skip step 1. If not - why not?
-
 \end{changemargin}
+
 \end{frame}
 
+\part{Watchdog Timers}
+\frame{\partpage}
 
+\begin{frame}
 
-\begin{frame}[fragile]
-\frametitle{Refactoring Example: Extract Method}
+\frametitle{Goal of a Watchdog Timer}
+
+\Large
 \begin{changemargin}{1cm}
-
-\begin{verbatim}
-// (1) make sure the code only runs on mac os x
-boolean mrjVersionExists = 
-     System.getProperty(``mrj.version'') != null;
-boolean osNameExists = 
-     System.getProperty(``os.name'')
-           .startsWith(``Mac OS'');
-
-if ( !mrjVersionExists || !osNameExists) {
-  System.err.println(
-       ``Not running on a Mac OS X system.'');
-  System.exit(1);
-}
-\end{verbatim}
+Observe that a system appears to
+be stuck and take some action.
 \end{changemargin}
-\end{frame}
 
-\begin{frame}[fragile]
-\frametitle{Refactoring Example: Extract Method}
-\begin{changemargin}{1cm}
-
-\begin{verbatim}
-// (2, 3) do all the preferences stuff
-// and get the default color
-preferences = Preferences
-          .userNodeForPackage(this.getClass());
-int r = preferences.getInt(CURTAIN_R, 0);
-int g = preferences.getInt(CURTAIN_G, 0);
-int b = preferences.getInt(CURTAIN_B, 0);
-int a = preferences.getInt(CURTAIN_A, 255);
-currentColor = new Color(r,g,b,a);
-\end{verbatim}
-
-
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Refactoring Example: Extract Method}
-\begin{changemargin}{1cm}
-
-We can instead split this into three sub-methods.
-
-\begin{verbatim}
-
-  dieIfNotRunningOnMacOsX();
-  connectToPreferences();
-  getDefaultColor();
-
-
-\end{verbatim}
-\end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Refactoring: Extract Method}
+\frametitle{About Watchdog Timers}
 \begin{changemargin}{1cm}
+Commonly found in computer systems where humans cannot easily take corrective action.
 
-This is useful when the code does the same thing many times.
+If a NASA satellite is stuck, it's hard to send astronauts up to push the reset button.
 
-Replace all the clones with a call to a single method.
-
-Update the code once to update all.
+If not for the ability to automatically restart, the satellite could be permanently disabled.
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Refactoring: Extract Method}
+\frametitle{About Watchdog Timers}
 \begin{changemargin}{1cm}
 
-Methods should do one conceptual thing.
+The system needs to indicate, before the limit of the timer, that everything is okay. 
 
-A good test: can you come up with a name for it?
+If the system thinks all is well, either by checking some fault conditions or simply by default, the watchdog timer is reset. 
 
-We are putting more design into the code.
-
-Eclipse supports doing this in one click.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Refactoring: Replace Magic Number}
-\begin{changemargin}{1cm}
- Using symbolic constants is often better coding practice
-than putting numbers directly into the code.
-
-\begin{verbatim}
-double potentialEnergy(double mass, double height) {
-     return mass * height * 9.81;
-}
-\end{verbatim}
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Refactoring: Replace Magic Number}
-\begin{changemargin}{1cm}
- Using symbolic constants is often better coding practice
-than putting numbers directly into the code.
-
-\begin{verbatim}
-static final double GRAVITATIONAL_CONSTANT = 9.81;
-
-double potentialEnergy(double mass, double height) {
-     return mass * GRAVITATIONAL_CONSTANT * height;
-}
-\end{verbatim}
-
-Easier to understand and easier to update.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Refactoring: Rename Variable}
-\begin{changemargin}{1cm}
-One minor example of refactoring is renaming a variable.
-
-
-\begin{verbatim}
-DateTime creationTime;
-
-public DateTime getCreationTime(){
-    return creationTime;
-}
-
-public void setCreationTime(DateTime newTime) {
-    this.creationTime = newCreationTime;
-}
-
-\end{verbatim}
-
-We change the variable and methods for more clarity.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Refactoring: Rename Variable}
-\begin{changemargin}{1cm}
-One minor example of refactoring is renaming a variable.
-
-
-\begin{verbatim}
-DateTime creationDateTime;
-
-public DateTime getCreationDateTime(){
-    return creationDateTime;
-}
-
-public void setCreationDateTime(DateTime newDateTime) {
-    this.creationDateTime = newCreationDateTime;
-}
-
-\end{verbatim}
-
-We change the variable and methods for more clarity.
 
 \end{changemargin}
 \end{frame}
 
 
 \begin{frame}
-\frametitle{Refactoring: Limitations}
+\frametitle{Watchdog Example}
 \begin{changemargin}{1cm}
 
-Diminishing returns as more is changed.
+Checking if free memory is below 256~MB. 
 
-Changing interfaces might not be possible.
+If the system detects free memory is $>$256~MB, reset timer.
 
-External systems (e.g., database) might constrain changes.
+If it is below 256~MB, then the watchdog timer is not reset. \\
+\quad The timer will fire.
+
+Corrective action takes place: (i.e., freeing up some memory).\mnote{Corrective action is variable, based on the system the watchdog is looking after. In some cases, corrective action is minor (killing a task), but in physical systems it might be necessary to turn off motors for safety. }
+
 
 \end{changemargin}
 \end{frame}
 
-\begin{frame}
-\frametitle{Refactoring vs Performance}
-\begin{changemargin}{1cm}
 
-Refactoring aims to improve \emph{non-functional properties} of the code; performance may get better, worse, or stay the same.
-
-Our goal is easier to maintain code.
-
-Example: split one loop into two separate loops.
-
-\end{changemargin}
-\end{frame}
 
 \begin{frame}
-\frametitle{When to Refactor}
-\begin{changemargin}{1cm}
 
+\frametitle{Implementing a Watchdog Timer}
+
+\begin{changemargin}{1cm}
+Can build a watchdog timer using an interval timer:
 \begin{itemize}
-	\item Continuously?\mnote{Refactoring done continuously helps prevent the ``pile of dirty dishes'' problem, but it can lead to spending too much time tinkering with the refactoring and not implementing the code.}
-	\item Fixed Schedule?\mnote{If we refactor on a fixed schedule, say, every three months, that allows us to take some time and examine the code and do a lot of refactorings all at once.}
-	\item When Fixing a Bug?\mnote{Some advocate for making changes while we fix bugs: if we notice something when we're re-examining code, we fix it right away. However, this strategy is dangerous because it conflates the bug fix with the structural change. }
-	\item At the End of a Project?\mnote{In other cases, it's desirable to refactor once the code for a project is complete (before it goes into maintenance mode). }
-	\item At the Start of a Project?\mnote{Lastly, we might consider refactoring at the start of a project; before we open up the module and begin to make our changes and additions, we clean up the code and then begin the new project.}
+\item Set the timer interval to be the largest allowable time for a task
+to take. Start the timer.
+\item If the timer fires, the task took too long.
+\item The timer event handler deals with
+the situation\\~~~~ (e.g. by killing the task.)
 \end{itemize}
-
 \end{changemargin}
 \end{frame}
 
+
 \begin{frame}
-\frametitle{List of Refactorings}
+\frametitle{Resilience for Watchdog Timers}
+
+\Large
 \begin{changemargin}{1cm}
+In an embedded system: \\~~~specialized~hardware.\\[1em]
 
-\mnote{These refactorings are organized differently than last lecture.}
+Timer has some resilience: \\~~~runs in a separate thread.
+\end{changemargin}
 
+\end{frame}
 
-Techniques that allow for more abstraction:
-\begin{itemize}
-\item \emph{Encapsulate Field}: force code to access the field with getter and setter methods.
-\item \emph{Generalize Type}: create more general types to allow for more code sharing.
-\item \emph{Replace conditional with polymorphism}: use inheritance and virtual dispatch instead of a conditional.
+\begin{frame}
+\frametitle{Android Watchdog Timer}
+
+\begin{changemargin}{1cm}
+\large
+Summary: 
+\begin{itemize} 
+\item start the watchdog timer;
+\item the timer runs a task $t$ on the UI thread;
+\item task $t$ kills the activity; and
+\item set up a click listener to go to a web page instead.
 \end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Outcomes from Watchdog Timer}
+\begin{changemargin}{1cm}
+\Large
+\begin{enumerate}
+\item If you click the button soon enough, \\
+~~~app goes to the web page;
+\item Otherwise, the Activity finishes.
+\end{enumerate}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Multiple Stage Watchdog Timers}
+\begin{changemargin}{1cm}
+So far corrective action has been all-or-nothing. 
+
+We can have multiple stages -- multiple levels of response. 
+
+If the first level of response does not resolve the problem: \\
+\quad second level of response activates; takes more drastic action. 
 
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{List of Refactorings}
+\frametitle{Two Stage Watchdog Timer Example}
 \begin{changemargin}{1cm}
 
-Techniques for breaking code apart into more logical pieces:
-\begin{itemize}
-\item \emph{Extract Method}: as seen above, pull out part of a larger method into a new method.
-\item \emph{Extract Class}: moves code from an existing class into a new class.
-\end{itemize}
+The first watchdog timer attempts to restart \texttt{example.exe}. 
 
-\end{changemargin}
-\end{frame}
+The first level has a timer length of 180 seconds; every 60 seconds, \texttt{example.exe} resets the watchdog timer. 
 
+If the reset doesn't happen, the watchdog activates. 
 
-\begin{frame}
-\frametitle{List of Refactorings}
-\begin{changemargin}{1cm}
-Techniques for integrating code that's needlessly spread apart:
-\begin{itemize}
-\item \emph{Inline Method}: integrate a copy of the body of a method into its calling method.
-\item \emph{Inline Class}: put all of the fields and methods of a class into another class and erase the original.
-\end{itemize}
+Watchdog 1: starts watchdog 2, with a length of 120 seconds. Then the first watchdog tries to restart \texttt{example.exe}. 
 
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{List of Refactorings}
-\begin{changemargin}{1cm}
-
-Techniques for improving names and location of code:
-\begin{itemize}
-\item \emph{Move Method/Field}: move to a more appropriate class or source file.
-\item \emph{Rename Method/Field}: changing the name into a new one that better reveals its purpose.
-\item \emph{Pull Up}: in OOP, move to a superclass.
-\item \emph{Push Down}: in OOP, move to a subclass.
-\end{itemize}
-
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Antipatterns}
-\begin{changemargin}{1cm}
-
-Antipatterns are like antimatter -- the opposite of how software should be designed.
-
-In software, a way of coding that makes errors more likely.
-
-Not only for software (e.g., management antipatterns).
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{The Antipatterns Family}
-\begin{changemargin}{1cm}
-
-Some common antipatterns you might encounter:
-
-\begin{itemize}
-	\item The Blob
-	\item Lava Flow
-	\item Functional Decomposition
-	\item Copy-and-Paste Programming
-	\item Poltergeists
-	\item Golden Hammer
-	\item Exceptions as Control Flow
-	\item Spaghetti Code
-\end{itemize}
-
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Antipatterns: The Blob}
-\begin{changemargin}{1cm}
-One object does basically everything.
-
-From the horror movie: the blob just keeps growing.
-
-Too much code/logic centralized in this one class.
-
-Solution: extract methods and classes so it is spread out.
+If the first watchdog does not successfully restart the program within the 120 seconds, the second watchdog timer activates and restarts the computer.
 
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Antipatterns: Lava Flow}
+\frametitle{Timer Coalescing}
 \begin{changemargin}{1cm}
-Old dead (useless) code hanging around in the software.
 
-Nobody changes/deletes it for fear of breaking something.
+Using timers has an impact on power consumption. 
 
-From the geological phenomenon: lava flows then solidifies.
+Suppose an interval timer set up with an interval of 1000ms. 
 
-Time wasted testing and refactoring this dead code.
-
-Solution: delete it (restore from version control if needed).
+Every second the system will execute the timer's action -- the system wakes up, runs the action, then goes back to sleep. 
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Antipatterns: Functional Decomposition}
+\frametitle{Timer Coalescing}
 \begin{changemargin}{1cm}
-Code resembles a structural language when using OOP.
 
-Often caused by non-OOP programmers writing in Java/C\#.
+What if there are multiple interval timers?
 
-Solution: Extract classes and methods, pull up common code.
+The system might never actually get to sleep; \\
+\quad constantly being woken up by interval timers.
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Antipatterns: Copy-and-Paste Programming}
-\begin{changemargin}{1cm}
-Code is copy-and-pasted; possibly modified slightly each time.
-
-Copies can be slightly different so bugs will not be solved if one is updated and the rest are not.
-
-Solution: extract class or method to replace all these copies.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Antipatterns: Poltergeists}
-\begin{changemargin}{1cm}
-Poltergeist (English): a ghost that allegedly causes noise or destruction and then vanishes.
-
-Poltergeists: classes with limited roles and effective life cycles.
-
-Objects that pop in, do one thing, then vanish.
-
-Waste of resources and inefficient.
-
-Solution: Call the Ghostbusters!\\
-\quad\quad Actually, inline their functionality to other classes.
-
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Antipatterns: Golden Hammer}
-\begin{changemargin}{1cm}
-``When all you have is hammer, everything looks like a nail.''
-
-Familiar concept or architecture applied to everything, whether that makes sense or not.
-
-Solution: Refactor the code to more appropriate design.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Antipatterns: Exceptions as Control Flow}
-\begin{changemargin}{1cm}
-``That error is supposed to happen.''
-
-Exceptions should not be considered normal.
-
-Exceptions are expensive to generate and handle.
-
-Solution: Refactor to avoid Exceptions where they are expected.
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Antipatterns: Spaghetti Code}
-\begin{changemargin}{1cm}
-Program with little or no structure.
-
-Typically small number of objects with long methods.
-
-No structure means difficult to extend or change things.
-
-Solution: refactor until the code has appropriate structure.
-
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Refactoring: Examples}
-\begin{changemargin}{1cm}
-
-We'll continue by talking about the
-refactorings in more detail; perhaps this will help you understand the
-goals of refactoring, so that you can do it in your own code.
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Refactoring: Encapsulate Field}
-\begin{changemargin}{1cm}
-
-Java programming practice: private fields, public accessor methods. 
-
-Replace {\tt x.foo} with {\tt x.getFoo()} and {\tt x.setFoo(y)}. 
-
-Why? Modularity, logging, flexibility, etc. \mnote{One implication is that you can change the way you store the internal
-data inside a class, and it won't affect any other classes. For instance,
-you can have a {\tt Point} class which you initially implement using 
-x/y coordinates, and then transparently change it to using polar
-coordinates without having to change any of the users of the {\tt Point}.}
-
-Should all fields be encapsulated? \mnote{For instance, if you 
-have a class which represents an RGB colour, it's probably OK to have 
-public fields for the red, green and blue fields.}
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Refactoring: Pull Up Method}
-\begin{changemargin}{1cm}
-
-This refactoring is an example of a generalization.
-
+\frametitle{Timer Coalescing}
 \begin{center}
-\includegraphics[width=0.85\textwidth]{images/pullUpMethod.png}
+	\includegraphics[width=0.85\textwidth]{images/coalesced_before.png}
 \end{center}
 
-\mnote{What we can see here is that the two subclasses {\tt Salesman} and
-{\tt Engineer} both have a common method {\tt getName}, with
-identical behaviour. It makes sense to move the method to the common
-superclass {\tt Employee}.}
+\end{frame}
+
+\begin{frame}
+\frametitle{Timer Coalescing Semantics}
+\begin{changemargin}{1cm}
+
+A critical insight about timers. 
+
+For a 1000ms timer, the system does not promise that the timer will run exactly 1000 ms from now. 
+
+What it really says is that the timer task will execute \alert{no sooner than} 1000 ms from now. 
+
+It could be 1004 ms or 1200 ms later;\\
+\quad yet it could not be 997 ms or 980 ms later.
+
 
 \end{changemargin}
 \end{frame}
 
-
 \begin{frame}
-\frametitle{Refactoring: Push Down Method}
+\frametitle{Timer Coalescing Semantics}
 \begin{changemargin}{1cm}
 
-Sometimes we want to do the opposite.
+The OS can do something clever using these semantics.
 
+Delay some timers a little bit so that they line up.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Timer Coalescing}
 \begin{center}
-\includegraphics[width=0.85\textwidth]{images/pushDownMethod.png}
+	\includegraphics[width=0.85\textwidth]{images/coalesced-after.png}
 \end{center}
 
-
-\mnote{In this case, the original design was flawed: {\tt Engineer}s don't
-have quotas, only {\tt Salesman}. So we improve the design by 
-putting {\tt getQuota} where it should be.}
-
-\mnote{I didn't show you the code, only the UML, but the transformation to the
-code should be obvious. Note that in both cases, it's not supposed
-to change the behaviour of the program, only improve its design.}
-
-\end{changemargin}
 \end{frame}
+
 
 \begin{frame}
-\frametitle{Refactoring: Inline Class}
+\frametitle{Timer Coalescing Semantics}
 \begin{changemargin}{1cm}
 
-Here, we get rid of helper classes that aren't useful.
+Now, this image is not a hundred percent accurate. 
 
-\begin{center}
-\includegraphics[width=0.85\textwidth]{images/inlineClass.png}
-\end{center}
+Some of the lines were moved to the left (back in time) to make them line up. \mnote{and that would violate the no-sooner-than semantics.}
 
+This is just artistic license; in reality the lines could only be shifted to the right.
 
-
-\mnote{The UML transformation corresponds to a code transformation where we
-fold the {\tt areaCode} and {\tt number} fields, along with the
-{\tt getTelephoneNumber} method, into the containing {\tt Person} class.
-Maybe we found that no one else was using the {\tt Telephone Number} class.
-Be sure to delete the class after you've inlined it.}
+Most modern operating systems do this, including Windows and Mac OS X.
 
 \end{changemargin}
 \end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Fixing an Antipattern: Exception as Control Flow}
-\begin{changemargin}{1cm}
-
-In this example, we are (ab)using an Exception and handler:
-
-\begin{verbatim}[language={Java}]
-try {
-   fileReader.readFile(
-      fileSelector.getSelection().getFileName());
-} catch (NullPointerException npe) {
-   showErrorDialog(Error.NO_FILE_SELECTED);
-   return;
-}
-\end{verbatim} 
-\end{changemargin}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Fixing an Antipattern: Exception as Control Flow}
-\begin{changemargin}{1cm}
-
-Rewrite to avoid the Exception in the first place:
-
-\begin{verbatim}[language={Java}]
-if (fileSelector.getSelection() == null) {
-   showErrorDialog(Error.NO_FILE_SELECTED);
-   return;
-}
-fileReader.readFile(
-      fileSelector.getSelection().getFileName());
-\end{verbatim} 
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Refactoring: Further Examples}
-\begin{changemargin}{1cm}
-
-Now we'll do some further examples on the board and/or Eclipse, if time allows.
-
-\begin{itemize}
-	\item Generalize Type
-	\item Replace Conditional with Polymorphism
-	\item Extract Method / Variable
-	\item ... and maybe more!
-\end{itemize}
-
-\end{changemargin}
-\end{frame}
-
 
 
 \end{document}

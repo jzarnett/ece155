@@ -1,8 +1,9 @@
 \input{configuration}
+\usepackage{tikz-3dplot}
 
-\title{Lecture 28 --- Interval \& Watchdog Timers}
+\title{Lecture 28 --- Simulation}
 
-\author{Patrick Lam \& Jeff Zarnett\\ \small \texttt{p.lam@ece.uwaterloo.ca} \& \texttt{jzarnett@uwaterloo.ca}}
+\author{Patrick Lam \& Jeff Zarnett \\ \small \texttt{p.lam@ece.uwaterloo.ca} \& \texttt{jzarnett@uwaterloo.ca}}
 \institute{Department of Electrical and Computer Engineering \\
   University of Waterloo}
 \date{\today}
@@ -13,402 +14,362 @@
   \titlepage
 \end{frame}
 
-
 \begin{frame}
-\frametitle{Concept: Timers in Embedded Systems}
+\frametitle{Examples of simulations}
 
 \begin{changemargin}{1cm}
-\large
+physics N-body simulation:\\
+\url{http://www.youtube.com/watch?v=HUGjUvjtwS8} \\[1em]
 
-Today: How to use timers,\\ \qquad \qquad e.g. in embedded~systems:
-\begin{itemize}
-\item Interval Timers
-\item Watchdog Timers
-\end{itemize}
-~\\
-We'll use Java timers to implement these,
-and learn the difference between Android and Java timers.
+aircraft:\\
+\url{http://www.youtube.com/watch?v=JGyJqXJWkuY} \\[1em]
 
+nuclear plant control room:\\
+\url{http://www.youtube.com/watch?v=No5N6uYJaNk} 
 \end{changemargin}
 
 \end{frame}
 
 \begin{frame}
-\frametitle{Applications of Timers}
-
-\Large
-\begin{changemargin}{1.3cm}
-Interval Timers---perform a task occasionally.\\[-0.5em]
-\begin{itemize}\item (raising alarms; polling).
-\end{itemize}
-~\\
-Watchdog Timers---reset a stuck system.
-~\\[1em]
-
-\end{changemargin}
-
-\end{frame}
-
-\part{Interval Timers}
-\frame{\partpage}
-
-\begin{frame}
-\frametitle{Interval Timers}
+\frametitle{Basic Idea}
 
 \begin{changemargin}{1cm}
-\large
+\huge
 
-Good for recurring tasks.\\[1em]
+A \structure{simulation} evaluates a mathematical model of a system
+to estimate the behaviour of the system.
 
-Example: Light sensor polling\\
- (but not on Android---receive sensor events instead).\\[1em]
-
-Previously: {\tt Handler} for interval timers.
-
-\end{changemargin}
-
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Handlers for Infinitely-Recurring Interval Timers}
-
-\begin{verbatim}
-  Handler h = new Handler();
-  Runnable r = new Runnable() {
-    public void run() {
-      // execute the task
-      h.postDelayed(this, delayInMS);
-    }
-  };
-  h.postDelayed(r, delayInMS);
-\end{verbatim}
-
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Cancelling Tasks}
-
-\begin{changemargin}{1cm}
-By the way, you can cancel an upcoming task like this:
-\begin{verbatim}
-  h.removeCallbacks(r);
-\end{verbatim}
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{True Interval Timers}
-
-\large
-\begin{changemargin}{1cm}
-Handlers run when the thread is available.\\[1em]
-
-True interval timers interrupt the processor.
-
-Can simulate with {\tt java.util.Timer}\footnote{\url{http://steve.odyfamily.com/?p=12}, accessed
-  February 3, 2013.}. \\[1em]
-
-Payload runs in a different thread:
-\begin{itemize}
-\item[(+)] more predictable timing;
-\item[(--)] can't update UI from other thread.
-\end{itemize}
-~\\
-Generally more overhead for {\tt java.util.Timer}, not great for Android apps.
-\end{changemargin}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Getting Around UI Thread Issues}
-
-\begin{changemargin}{1cm}
-Start the Timer like this:
-
-\begin{verbatim}
-  Timer t = new Timer();
-  t.schedule(new TimerTask() {
-    @Override
-    public void run() {
-      runOnUiThread(timerTick);
-    }
-  }, firstDelayMS, repeatIntervalMS);
-\end{verbatim}
-If you omit repeatIntervalMS, you get a one-shot timer.
-
-Don't call {\tt timerTick.run()} directly.
-\end{changemargin}
-
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Programming timerTick}
-
-\begin{changemargin}{1cm}
-Put your UI-manipulating code in {\tt timerTick}:
-\begin{verbatim}
-Runnable timerTick = new Runnable() {
-  @Override
-  public void run() {
-    Toast.makeText(getApplicationContext(), 
-                   "ding!", 
-                   Toast.LENGTH_SHORT).show();
-  }
-};
-\end{verbatim}
 \end{changemargin}
 
 \end{frame}
 
 \begin{frame}
-
-\frametitle{Java Timer summary}
+\frametitle{Why simulate?}
 
 \begin{changemargin}{1cm}
-\large
-To use a Java Timer:
-\begin{enumerate}
-\item instantiate a new {\tt Timer} object;
-\item schedule {\tt TimerTask} on that {\tt Timer};
-\item inside the {\tt TimerTask}, invoke {\tt Runnable} to run on the
-UI thread; and
-\item implement the {\tt run()} method on the {\tt Runnable} to effect
-  UI changes.  
-\end{enumerate}
+It's never as good as the real thing. But:
 \end{changemargin}
+\only<1>{\includegraphics[width=\textwidth]{images/800px-All_Nippon_Airways_Boeing_787-8_Dreamliner_JA801A_OKJ_in_flight.jpg}\\\hfill (credit Spaceaero2, wikipedia)}
+\only<2>{\begin{center}\includegraphics[width=.8\textwidth]{images/401px-STS-124_launch_from_a_distance.jpg}\end{center}}
+\only<3>{\includegraphics[width=\textwidth]{images/Three_Mile_Island_(color)-2.jpg}}
+\only<4>{\includegraphics[width=\textwidth]{images/800px-BrantaLeucopsisMigration.jpg}\\ \hfill (credit Thermos, wikipedia)}
+\only<5>{\begin{center}\includegraphics[width=.3\textwidth]{images/306px-Nexus_One.png}\end{center}}
 
 \end{frame}
 
-\part{Watchdog Timers}
-\frame{\partpage}
 
 \begin{frame}
-
-\frametitle{Goal of a Watchdog Timer}
-
-\Large
+\frametitle{Models are Inherently Wrong}
 \begin{changemargin}{1cm}
-Observe that a system appears to
-be stuck and take some action.
-\end{changemargin}
 
-\end{frame}
-
-\begin{frame}
-\frametitle{About Watchdog Timers}
-\begin{changemargin}{1cm}
-Commonly found in computer systems where humans cannot easily take corrective action.
-
-If a NASA satellite is stuck, it's hard to send astronauts up to push the reset button.
-
-If not for the ability to automatically restart, the satellite could be permanently disabled.
+\begin{quote}
+\textit{...essentially, all models are wrong, but some are useful.}
+\end{quote}
+\hfill George E. P. Box
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{About Watchdog Timers}
+\frametitle{Models are Inherently Wrong}
 \begin{changemargin}{1cm}
 
-The system needs to indicate, before the limit of the timer, that everything is okay. 
+Simulation is an abstraction and not as detailed as reality.
 
-If the system thinks all is well, either by checking some fault conditions or simply by default, the watchdog timer is reset. 
+$\pi$ has an infinite number of digits. After the first thousand digits, the error introduced by rounding is so small it has no relevance for architectural calculations. 
 
+How much is ``enough'' is a matter of engineering judgement.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Model Validity}
+\begin{changemargin}{1cm}
+Critical element: models have a range of validity.
+
+This range must be respected if the model is useful.
+
+Outside the range, the model is useless or misleading.
 
 \end{changemargin}
 \end{frame}
 
 
 \begin{frame}
-\frametitle{Watchdog Example}
+\frametitle{Model Validity Example: Physics}
 \begin{changemargin}{1cm}
+Newton's equations are valid at speeds below 0.1$c$.\\
+\quad \small{Where $c$ is the speed of light in a vacuum.}
 
-Checking if free memory is below 256~MB. 
+In that range, the error is small and can be ignored.
 
-If the system detects free memory is $>$256~MB, reset timer.
+If you try to apply it at speeds of 0.5$c$, your answer is wrong.
 
-If it is below 256~MB, then the watchdog timer is not reset. \\
-\quad The timer will fire.
+Instead, use Einstein's equations as the model.\\
+\quad They have a different (larger) range of validity.
 
-Corrective action takes place: (i.e., freeing up some memory).\mnote{Corrective action is variable, based on the system the watchdog is looking after. In some cases, corrective action is minor (killing a task), but in physical systems it might be necessary to turn off motors for safety. }
-
-
-\end{changemargin}
-\end{frame}
-
-
-
-\begin{frame}
-
-\frametitle{Implementing a Watchdog Timer}
-
-\begin{changemargin}{1cm}
-Can build a watchdog timer using an interval timer:
-\begin{itemize}
-\item Set the timer interval to be the largest allowable time for a task
-to take. Start the timer.
-\item If the timer fires, the task took too long.
-\item The timer event handler deals with
-the situation\\~~~~ (e.g. by killing the task.)
-\end{itemize}
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Resilience for Watchdog Timers}
-
-\Large
-\begin{changemargin}{1cm}
-In an embedded system: \\~~~specialized~hardware.\\[1em]
-
-Timer has some resilience: \\~~~runs in a separate thread.
-\end{changemargin}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Android Watchdog Timer}
-
-\begin{changemargin}{1cm}
-\large
-Summary: 
-\begin{itemize} 
-\item start the watchdog timer;
-\item the timer runs a task $t$ on the UI thread;
-\item task $t$ kills the activity; and
-\item set up a click listener to go to a web page instead.
-\end{itemize}
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Outcomes from Watchdog Timer}
-\begin{changemargin}{1cm}
-\Large
-\begin{enumerate}
-\item If you click the button soon enough, \\
-~~~app goes to the web page;
-\item Otherwise, the Activity finishes.
-\end{enumerate}
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Multiple Stage Watchdog Timers}
-\begin{changemargin}{1cm}
-So far corrective action has been all-or-nothing. 
-
-We can have multiple stages -- multiple levels of response. 
-
-If the first level of response does not resolve the problem: \\
-\quad second level of response activates; takes more drastic action. 
-
+Key point: understand the model's limitations.
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Two Stage Watchdog Timer Example}
+\frametitle{The Map and the Territory}
 \begin{changemargin}{1cm}
 
-The first watchdog timer attempts to restart \texttt{example.exe}. 
-
-The first level has a timer length of 180 seconds; every 60 seconds, \texttt{example.exe} resets the watchdog timer. 
-
-If the reset doesn't happen, the watchdog activates. 
-
-Watchdog 1: starts watchdog 2, with a length of 120 seconds. Then the first watchdog tries to restart \texttt{example.exe}. 
-
-If the first watchdog does not successfully restart the program within the 120 seconds, the second watchdog timer activates and restarts the computer.
-
+\begin{quote}
+\textit{The map is not the territory.}
+\end{quote}
+\hfill Alfred Korzybski
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Timer Coalescing}
+\frametitle{The Map and the Territory}
 \begin{changemargin}{1cm}
+Don't confuse the map (abstraction) and territory (reality).
 
-Using timers has an impact on power consumption. 
+The model can be helpful, but don't overdo it.
 
-Suppose an interval timer set up with an interval of 1000ms. 
+Don't spend all your time modelling or studying model output.
 
-Every second the system will execute the timer's action -- the system wakes up, runs the action, then goes back to sleep. 
+Also take time to understand the real challenges.
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Timer Coalescing}
+\frametitle{The Map and the Territory: Example}
 \begin{changemargin}{1cm}
+A literal example of the map and territory: Canada-US Border.
 
-What if there are multiple interval timers?
+West of Ontario, the border drawn on most maps as being exactly the $49^{th}$ parallel.
 
-The system might never actually get to sleep; \\
-\quad constantly being woken up by interval timers.
+This is, however, wrong.
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Timer Coalescing}
+\frametitle{The Map and the Territory: Example}
+\begin{changemargin}{1cm}
+Surveyors placed small monuments at discrete distances.
+
+The border is legally the series of line segments connecting these monuments.
+
+Given the level of technology available at the time of measurement, these are not in a perfectly straight line.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Map and the Territory: Example}
+\begin{changemargin}{1cm}
+Even a map representing those is wrong.
+
+Shrinking thousands of kilometres of country down to centimetres will introduce error and inaccuracy.
+
+How small can you print the dots marking the monuments?
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Case studies}
+
 \begin{center}
-	\includegraphics[width=0.85\textwidth]{images/coalesced_before.png}
+\includegraphics[width=.9\textwidth]{images/tribot}
 \end{center}
 
 \end{frame}
 
 \begin{frame}
-\frametitle{Timer Coalescing Semantics}
+\frametitle{Coarse Simulation}
+
 \begin{changemargin}{1cm}
+\Large
+Create a set of classes:
 
-A critical insight about timers. 
+\begin{itemize}
+\only<1>{\item class Board: says whether the class is black or white at
+a point.
 
-For a 1000ms timer, the system does not promise that the timer will run exactly 1000 ms from now. 
-
-What it really says is that the timer task will execute \alert{no sooner than} 1000 ms from now. 
-
-It could be 1004 ms or 1200 ms later;\\
-\quad yet it could not be 997 ms or 980 ms later.
-
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Timer Coalescing Semantics}
-\begin{changemargin}{1cm}
-
-The OS can do something clever using these semantics.
-
-Delay some timers a little bit so that they line up.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Timer Coalescing}
 \begin{center}
-	\includegraphics[width=0.85\textwidth]{images/coalesced-after.png}
+\includegraphics[width=.5\textwidth]{images/lab-board}
+\end{center}
+}
+\only<2>{\item class Robot: simulates the position and velocity of the robot;
+contains main logic.
+
+\begin{center}
+\includegraphics[width=.4\textwidth]{images/coarse-sim}
+\end{center}
+}
+
+\only<3>{
+\item class LightSensor: provides an interface between the
+{\tt Robot} and the {\tt Board}.
+}
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Coding the Coarse Simulation}
+
+\begin{changemargin}{2.5cm}
+
+\Large
+You'd provide a main simulation driver, which calls the {\tt Robot} to:
+\begin{itemize}
+\item update its position according to its velocity;
+\item turn the robot if necessary.
+\end{itemize}
+~\\
+
+Each call to the {\tt Robot}'s update simulates the effect of time moving forward
+by one time-step.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{\small Detailed Simulation: Visual Simulation Environment}
+
+\includegraphics[width=\textwidth]{images/vse-shot1}
+\begin{changemargin}{2.5cm}
+Implements physics. Calls your actual code.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Simulation Caveat}
+
+\begin{changemargin}{2.5cm}
+\huge
+Paraphrased: ``Everything worked fine in simulation, but needed
+lots more work in reality.''
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Other Simulation Examples}
+\begin{center}
+\includegraphics[width=.7\textwidth]{images/800px-Relogio_binario}
+\end{center}
+
+\begin{changemargin}{1cm}
+Use discrete techniques: gates change values at specific times,
+in response to changing inputs.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Other Simulation Examples}
+\begin{center}
+\includegraphics[width=.7\textwidth]{images/fig6}
+
+\hfill (credit: Russell et al, \url{http://www-ssc.igpp.ucla.edu/personnel/russell/papers/ggs-polar/})
+\end{center}
+
+\begin{changemargin}{1cm}
+Analog circuit: continuous techniques.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Techniques for simulation}
+
+\Large
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item Discrete: use an event queue.
+\item Continuous: numerically integrate an ordinary differential equation repeatedly (ECE204).
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Classifying simulations: Three axes}
+
+\begin{center}
+\tdplotsetmaincoords{60}{125}
+\begin{tikzpicture}
+		[tdplot_main_coords,
+			cube/.style={very thick,black},
+			grid/.style={very thin,gray},
+			axis/.style={->,blue,thick}]
+
+	%draw the axes
+	\draw[axis] (0,0,0) -- (3,0,0) node[anchor=east]{continuous/discrete};
+	\draw[axis] (0,0,0) -- (0,3,0) node[anchor=west]{dynamic/static};
+	\draw[axis] (0,0,0) -- (0,0,3) node[anchor=west]{deterministic/stochastic};
+	
+\end{tikzpicture}
 \end{center}
 
 \end{frame}
 
-
 \begin{frame}
-\frametitle{Timer Coalescing Semantics}
+\frametitle{Discrete versus Continuous}
+
+\Large
 \begin{changemargin}{1cm}
-
-Now, this image is not a hundred percent accurate. 
-
-Some of the lines were moved to the left (back in time) to make them line up. \mnote{and that would violate the no-sooner-than semantics.}
-
-This is just artistic license; in reality the lines could only be shifted to the right.
-
-Most modern operating systems do this, including Windows and Mac OS X.
-
+\begin{itemize}
+\item Discrete: time steps ahead in increments (e.g. finite state machine)
+\item Continuous: evaluate at discrete times, but system has values at all times.
+\end{itemize}
 \end{changemargin}
 \end{frame}
 
+\begin{frame}
+\frametitle{Dynamic versus Static}
+
+\Large
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item Dynamic: system evolves over time; recomputes state.
+\item Static: one-shot deal \\(e.g. what-if simulations).
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Deterministic versus Stochastic}
+
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item Deterministic: exactly computes state at every step
+\item Stochastic: uses randomness to guess expected behaviour (with high accuracy).
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Simulation Tools}
+
+\begin{changemargin}{1cm}
+Some examples:
+\begin{itemize}
+\item \emph{Microsoft Visual Simulation Environment}: MS robotics.
+\item \emph{Arena}: businesses, services, and manufacturing processes.
+\item \emph{Simulink}: time-varying systems, e.g. communications, controls, signal processing, video processing, and image processing.
+\item \emph{SPICE} \& variants: analog circuits.
+\end{itemize}
+
+Also: simulator-building languages.
+\end{changemargin}
+
+\end{frame}
 
 \end{document}

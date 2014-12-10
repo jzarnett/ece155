@@ -1,9 +1,8 @@
 \input{configuration}
-\usepackage{alltt}
 
-\title{Lecture 23 --- Debugging IV }
+\title{Lecture 23 --- Code Reviews}
 
-\author{Jeff Zarnett \\ \small \texttt{jzarnett@uwaterloo.ca}}
+\author{Patrick Lam \& Jeff Zarnett \\ \small \texttt{p.lam@ece.uwaterloo.ca} \& \texttt{jzarnett@uwaterloo.ca}}
 \institute{Department of Electrical and Computer Engineering \\
   University of Waterloo}
 \date{\today}
@@ -14,455 +13,473 @@
   \titlepage
 \end{frame}
 
-\part{Writing Debuggable Code}
+\part{Reviews}
 \frame{\partpage}
 
 \begin{frame}
-\frametitle{Writing Debuggable Code}
+\frametitle{On Reviews}
+
 \begin{changemargin}{1cm}
 
+\structure{Review}: \\activity where reviewers examine a work product
+to provide feedback.\\[1em]
 
-\begin{quote}
-	\emph{Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.} 
-\end{quote}
-\hfill Brian Kernighan
+Advantage: \\
+reveal defects early---defects less costly to fix.  \\[1em]
+
+What to review:\\
+requirements specifications; schedules; bug reports; \\design documents;
+\structure{code}; test plans; test cases.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Informal vs Formal}
+
+\large
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item \emph{informal review}: written or verbal review
+  requested by a developer of a work product.\\[1em]
+\item \emph{formal review}: written review conducted by a team
+  leader or a moderator to identify, document,
+  and fix defects in a work product.  
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Types of Reviews}
+
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item \structure{desk check}: informal review; \\ \qquad author distributes
+work to peers for reviews and comments.
+\item \structure{walkthrough}: informal review meeting; \\ \qquad moderated by the author.
+\item \structure{inspection}: formal review meeting; \\ \qquad guided by a moderator.\\
+Produces a log of identified defects in a work product.
+\item \structure{code review}: software inspection \\ \qquad identifying, logging, and perhaps correcting bugs.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Desk Checks}
+
+\begin{changemargin}{1cm}
+\structure{Desk check}: first line of defence against defects.  
+
+\begin{itemize}
+\item can speed up formal inspections \\ by taking care of simple defects in
+desk checks first. 
+\item for many work products, desk checks suffice; \\ often don't need a formal inspection.
+\end{itemize}
+
+But:
+\begin{itemize}
+\item only effective if taken seriously. 
+\item easy
+to just say ``LGTM'' (Looks Good To Me)\\ without actually checking the
+product. \\[1em]
+
+It's important to spend enough time on desk checks, and
+managers must allocate time for them. 
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Walkthroughs}
+
+\begin{changemargin}{1cm}
+\structure{Walkthrough}: guided review of a work
+product.
+
+\begin{itemize}
+\item allow people with less expertise to review a work
+product;
+\item users of the work product often invited to
+walkthroughs.  
+\item New points-of-view often help identify defects.
+\end{itemize}~\\
+
+
+Author of the work product presents the design and
+ensures that the attendees understand its design.\\[1em]
+
+How a walkthrough works:
+\begin{itemize}
+\item Before: distribute presentation materials.
+\item During: solicit feedback from the audience.
+\item After: follow up with attendees who have helped out by giving comments.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Inspection}
+
+\begin{changemargin}{1.5cm}
+\structure{Inspection}: formal review meeting where participants\\
+identify and document defects or possible improvements. \\[1em]
+
+Participants identify, and propose
+solutions to, defects. \\[1em]
+
+A good mix  of participants (but not too many!) helps\\
+find previously-overlooked defects (subtle, complex bugs).
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Steps in a formal inspection}
+
+\begin{changemargin}{1cm}
+\begin{itemize}
+\item \structure{Preparation}: Before the meeting, distribute the work project to each member of the inspection team, 
+plus a checklist indicating what to review.\\[0.5em]
+\item \structure{Overview}: Moderator
+provides an overview of the item.\\[0.5em]
+\item \structure{Page-by-page Review}: Moderator walks the inspection team
+through the work product and logs defects.\\[0.5em]
+\item \structure{Rework}: Afterwards, the author
+goes through the list of defects and fixes them.\\[0.5em]
+\item \structure{Follow-up}: Inspection team members verify that
+the author has fixed the defects.\\[0.5em]
+\item \structure{Approval}: Inspection team approves the work.\\[0.5em]
+\end{itemize}
+We do something similar for master's and PhD theses.
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Code Review}
+
+\begin{changemargin}{1cm}
+
+\structure{Code review}: examines source code (usually a patch)\\
+to identify defects or possible improvements.\\[1em]
+
+Coverage options:
+\begin{itemize}
+\item review everything (Mozilla); or,
+\item review a representative sample.
+\end{itemize}
+
+Representative sample: \\ \qquad developers tend to repeat the same mistakes.\\
+If you find one bug, look for similar ones nearby.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Code Review (sampling)}
+
+\begin{changemargin}{1cm}
+When sampling, here are some places to look:
+\begin{itemize}
+\item source code that only one person has the expertise to maintain;
+\item tricky algorithms that are susceptible to defects;
+\item source code that calls difficult-to-use libraries;
+\item code written by inexperienced developers; and
+\item functions that could fail catastrophically if a defect is present.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Code Review (who? what?)}
+
+\begin{changemargin}{1cm}
+In industry: by team?\\[1em]
+
+Open-source world: 1 or 2 experienced developers, independently.\\[1em]
+
+What to look for:
+\begin{itemize}
+\item clarity, maintainability, accuracy, reliability,
+\item robustness, security, scalability, reusability, efficiency.
+\end{itemize}
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Pair Programming}
+
+\begin{changemargin}{1cm}
+\Large 
+Part of Extreme Programming.\\[1em]
+
+Can also serve as instant code review.
+\end{changemargin}
+
+\end{frame}
+
+\part{Reviews at University}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{Reviews at University}
+
+\begin{changemargin}{1cm}
+We have the students do a lot of programming assignments...\\
+\quad but we do not review student code.
+
+We do not give feedback on variable names, comments, etc.
+
+Irrelevant to the compiler \& execution,\\
+\quad but important when someone (else) will need to read it.
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Writing Debuggable Code}
+\frametitle{Reviews at University}
+
 \begin{changemargin}{1cm}
+UW projects are, at most, 4 months long.\\
+\quad Possible exception: 4$^{th}$ year design project.
 
-Write code that is simple and easy to understand.
+There are no consequences for writing throwaway code.
 
-Syntactically clever might be shorter, but it's hard to follow.
+Maybe on co-op terms, but how much does it happen?
 
-It might make sense now, but will it in a few months?
+Trying to ask TAs to do code reviews in ECE~155 labs.
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Code Style}
+\frametitle{Problem Decomposition}
+
 \begin{changemargin}{1cm}
+Key thing to look for in code reviews: problem decomposition.
 
-Use a consistent style for all team members.
+Take a big, complex problem, break it down into a number of smaller problems that are easier to solve. 
 
-Easier to read the source written by others.
-
-Including something you wrote a long time ago.
+Each subproblem can be broken down further if necessary.
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Variable Names}
+\frametitle{Problem Decomposition}
+
 \begin{changemargin}{1cm}
 
-Choosing good variable names takes taste, which you can develop.
+If your starting problem is ``write ATM software'':
 
-If a variable has a short lifetime, like a loop variable, then a short name
-is good.
+Subproblems: Withdraw cash, deposit cash, check balance. 
 
-Example: {\tt for (int i = 0; i < 5; i++)}
+Each of those will need to be broken down into some series of other subproblems (like verify card and PIN). 
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Variable Names}
+\frametitle{Reviewing Problem Decomposition}
 \begin{changemargin}{1cm}
-
-If a variable is visible to a whole class or used in a calculation, you want a more descriptive name.
-
-Which of the following variable names is best for storing the total gross weight: \texttt{value}, \texttt{w}, \texttt{weight}, or \texttt{totalGrossWeight}? \mnote{ Typical programming style is to mash together all the words, with a capital letter at the start of each word except the first. So ``well chosen variable name'' becomes \texttt{wellChosenVariableName}.}
+Good programmers decompose the problems well into subproblems that can be:
+\begin{itemize}
+ \item clearly described, 
+ \item independently implemented, and 
+ \item easily tested. 
+\end{itemize}
+Documentation is often written in advance, but writing the documentation is simple because of the good structure.
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Spread Out}
+\frametitle{Reviewing Problem Decomposition}
 \begin{changemargin}{1cm}
+Adequate programmers decompose problems reasonably. 
 
-Don't try to squeeze too much code into one line. \mnote{Humans, studies show, read columns much better than long lines of text. That's why newspapers (you know, the kind they make out of dead trees) have columns instead of long lines.}
+They tend to have some awkward data structures which result in a lot of special-case code. 
+
+The code seems to be ``debugged'' into existence.
+
+Documentation written all at the end once things are finished.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Reviewing Problem Decomposition}
+\begin{changemargin}{1cm}
+Poor programmers decompose problems seemingly randomly. 
+
+Unhelpful variable and method names like \texttt{x}, \texttt{foo}, or \texttt{doIt()}. 
+
+Code is often poorly tested and fails on boundary conditions. 
+
+It sometimes appears that the code is ``evolved'' into existence: make random changes and see if that improves the output. 
+
+Documentation, if it exists, is difficult to read or misleading.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Reviewing Problem Decomposition}
+\begin{changemargin}{1cm}
+Problem decomposition is a skill; improve by practicing.
+
+Define your subproblems well, choose appropriate variable names, and write an outline of documentation early on. 
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Reviewing Problem Decomposition}
+\begin{changemargin}{1cm}
+Proper decomposing of the problems is valuable at UW: \\
+\quad you can complete assignments quicker and with fewer errors. 
+
+Variable names might not make a difference in assignments. 
+
+It will get you into the correct habits for later\\
+\quad and just might impress your employer!
+
+\end{changemargin}
+\end{frame}
+
+
+
+\part{Reviews for Open-Source Projects}
+\frame{\partpage}
+
+\begin{frame}
+\frametitle{How Open-Source Projects Work}
+
+\begin{changemargin}{1cm}
+Typically: 
+
+\begin{itemize}
+\item an official repository. (SVN, Git, Mercurial)\\[1em]
+\item a set of committers, who may commit changes.\\[1em]
+\end{itemize}
+
+Outside contributors: may send patches \\ \qquad (bug fixes, new features).
+\begin{itemize}
+\item a committer reviews the patch before committing it.
+\end{itemize}
+
+Committers may/must also seek review for their patches.
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Case Study: Reviews at Mozilla}
+
+\begin{changemargin}{1cm}
+Mozilla Foundation: develops the Firefox web browser \\
+(and other
+projects). 
+\end{changemargin}
 
 \begin{center}
-	\includegraphics[width=.65\textwidth]{images/newspaper.jpg}
-\end{center} 
-
-\end{changemargin}
+\includegraphics[width=.5\textwidth]{images/firefox-512-noshadow.png}
+\end{center}
 \end{frame}
 
 \begin{frame}
-\frametitle{Spread Out}
+\frametitle{Case Study: Reviews at Mozilla}
+
 \begin{changemargin}{1cm}
-
-A trivial example, but compare:\\
-\texttt{if (x < 47 \&\& y > 0) \{ z = 0;\} }\\
-vs.\\
-\texttt{if (x < 47 \&\& y > 0) \{\\ \hspace*{0.5cm} z = 0; \\ \} }
-
-The second is easier to read, but also easier to debug. \mnote{You can put a breakpoint now on the second line ( \texttt{z = 0;} which will trigger only when the \texttt{x} and \texttt{y} conditions are met.}
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Use Temporary Variables}
-\begin{changemargin}{1cm}
-Use a temporary variable for the sub-expressions.
-
-Instead of:\\
-\texttt{return getBaseAmount() + getInsuranceCorrection() + getFreightCorrection();}\\
-try:\\
-\texttt{double sum = getBaseAmount() + getInsuranceCorrection() + getFreightCorrection();\\ return sum;}\\
-
-\mnote{Once again, this makes debugging easier, because we can set a breakpoint at the creation of the sum and examine its value immediately before it is returned. If we're trying to track down an error, it's very tedious to have to enter each of the functions to see their values. It's longer, but easier to debug.}
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Write Testable Code}
-\begin{changemargin}{1cm}
-Code that is testable will be easier to work with than code which is difficult to test.
-
-If a test on a section passes, you can save time and look somewhere else first.
-
-You might be able to adapt a unit test to help you debug:\\
-\quad Invoice module is misbehaving for values above \$1~000~000 \\
-\quad You have some tests which use a value like \$10~000 \mnote{Adapt these tests and see if one of them helps you identify the problem}
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Write Testable Code: Avoid \texttt{void}}
-\begin{changemargin}{1cm}
-Example: minimize the use of \texttt{void} methods.
-
-Replace the void \texttt{invoice.calculateAndAddTax();}
-
-With: \\
-\quad \texttt{Money tax = invoice.calculateTax();} \\
-\quad \texttt{invoice.setTax(tax);}. 
-
-This produces two discrete, testable methods.\\
-\quad Previously there was only one harder-to-test method.
-
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Write Testable Code: Performance Optimizations}
-\begin{changemargin}{1cm}
-Performance optimizations can be a problem.
-
-Shortcuts and clever tricks might be faster, but harder to understand.
-
-Use them only if they are truly necessary.
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Comments}
-\begin{changemargin}{1cm}
-One view is that comments are necessary.
-
-Another is they are dangerous: misleading when out of date.
-
-Wrong comments are worse than no comments at all.
-
-Write code so it's ``self-document'' (easy for an expert to understand what is going on).
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Comment: Non-Obvious}
-\begin{changemargin}{1cm}
-Another view is ``comment anything non-obvious''.
-
-Problem: obvious to one programmer is not obvious to others. \mnote{In particular, a programmer who has spent a long time looking at a module or section of code has a good understanding of what it is and how it should work. If he or she comments only what is non obvious to him/her, and then quits the company, the next person to work on this module may be faced with code that is very difficult to understand.}
-
-Potential solution: code reviews. \mnote{A co-worker at the same company will have the basic knowledge of the software but may not know the specifics of the code under review. The reviewer can point out areas that need comments to aid in their understanding.}
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Comments}
-\begin{changemargin}{1cm}
-My view: comments should be used to explain \emph{why} something is done.
-
-Example:\\
-\texttt{//We multiply the numerator and denominator by 15/16 before the division takes place}\\
-vs.\\
-\texttt{//We multiply the numerator and denominator by 15/16 to work around the Pentium FDIV bug}\\
-
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{Comments}
-\begin{changemargin}{1cm}
-Other things we might comment:
+Huge codebase $\Rightarrow$ elaborate
+reviewing
+policy\footnote{\url{http://www.mozilla.org/hacking/reviewers.html}, 
+\url{https://developer.mozilla.org/en/Code_Review_FAQ}}.
 
 \begin{itemize}
-	\item What the function is supposed to do.
-	\item Assumptions.
-	\item Parameters to a function.
-	\item Bug fixes (noting the ticket number).
-	\item Unexpected side effects.
-	\item Workarounds (see previous slide).
+\item require at least one review (``owner/peer review'') for all
+patches, plus
+\item second review (``super-review'') for many 
+patches.
 \end{itemize}
-
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Documentation}
-\begin{changemargin}{1cm}
-If the documents are crap, nobody will read them.
-
-A small amount of good documentation is best.
-
-Don't waste time writing too much.
-
-Like comments, try to write self-explanatory code;\\
-\quad write documents where necessary.
-
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{Documentation}
+\frametitle{Case Study: Peer review at Mozilla}
 \begin{changemargin}{1cm}
-Same problem as comments: might be out of date.
+\structure{Owner/peer review}: by a domain expert who understands the code
+being modified and the implications of the change.  
 
-Wrong docs are worse than no docs at all.
-\end{changemargin}
-\end{frame}
+\begin{quote} 
+A
+review is focused on a patch's design, implementation, usefulness in
+fixing a stated problem, and fit within its module.
+\end{quote}
 
-\begin{frame}
-\frametitle{Log Files}
-\begin{changemargin}{1cm}
-Create log files. They help in diagnosing problems.
-
-Airplanes have ``black boxes'' that record flight data.
-
-If there is a crash/incident, data is available to investigators.
-
-Choose wisely how detailed the logging is.\\
-\quad Too much: important data lost in the noise.\\
-\quad Too little: insufficient data to reconstruct the incident.
-
-
-\end{changemargin}
-\end{frame}
-
-\part{The Golden Rules of Debugging}
-\frame{\partpage \mnote{We'll now sum up our section on debugging with 13 golden rules of debugging. These are some generally applicable hints that you should follow. If you are choosing to violate these rules, you'd better have a good reason.}} 
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 1: \emph{Understand the Requirements}
-
-Before you begin: check the specification / documentation.
-
-Maybe the software is already doing what it is supposed to do.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 2: \emph{Make it Fail}
-
-Create a test case to reproduce the failure. \mnote{This will be needed to ensure the problem is fixed when the code is changed, can be used in the regression test, and helps you understand all factors that contribute to the failure.}
-
-Bug reports are like eyewitness accounts: incomplete, conflicting, and full of interpretation mixed with fact. \mnote{Bug reports are a bit like eyewitness accounts: they are usually incomplete, conflicting, and contain interpretation as well as fact. Even if the users are trying their best to give a truthful and complete account, it will be necessary to sort through the the data and find the facts.}
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 3: \emph{Simplify the Test Case}
-
-Make the test case simpler:
-
+Reviews check for: 
 \begin{itemize}
-	\item Rule out irrelevant factors.
-	\item Reduce runtime.
-	\item Make the case easier to understand.
+\item whether the patch fixes a problem; 
+\item API/design; 
+\item maintainability; 
+\item security; 
+\item integration; 
+\item testing; and
+\item license compliance.
+\end{itemize}
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Case Study: Super-reviews at Mozilla}
+
+\begin{changemargin}{1cm}
+Super-reviews by ``strong hackers''.
+\begin{itemize}
+\item understand the way
+Mozilla code is supposed to look,
+\item need not have domain expertise.
+\end{itemize}
+~\\[1em]
+
+They look out
+for: 
+\begin{itemize}
+\item proper use of APIs; 
+\item adherence to Mozilla's portability
+guidelines; 
+\item cross-module effects; and 
+\item respect of Mozilla coding
+practices.
 \end{itemize}
 
 \end{changemargin}
 \end{frame}
 
 \begin{frame}
-\frametitle{The Golden Rules of Debugging}
+\frametitle{Other organizations}
+
+\begin{center}
+\includegraphics[width=.4\textwidth]{images/Googlelogo.png} \quad
+\includegraphics[width=.4\textwidth]{images/Tux.png}
+\end{center}
 \begin{changemargin}{1cm}
+Many organizations, including Google and Linux kernel hackers,
+review extensively.\\
 
-Rule 4: \emph{Look at the Right Error Message}
-
-Which error message do we look at?
-
-The first one!
-
-Subsequent problems are sometimes caused by the first error.
+Gerrit\footnote{\url{http://lwn.net/Articles/359489/}}: a tool out of
+Google for code reviews.
 
 \end{changemargin}
-\end{frame}
 
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 5: \emph{Check the Environment}
-
-Check what is otherwise really obvious.\\
-\quad ``Is it plugged in?'' ``Is it turned on?''\\
-\quad ``Have you tried turning it off and on again?''
-
-Is the disk full? Is there enough memory? \mnote{does the user have permissions on the operating system?}
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 6: \emph{Separate facts from interpretation}
-
-Examine the bug report and find out what is a fact.
-
-Suppose the process fails on a file with a name $>32$ chars.\\
-\quad Is it the file name length?\\
-\quad Or the content of the file?
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 7: \emph{Divide and Conquer}
-
-Consider potential causes of the problem.\\
-\quad Examples: Source code change, library update, OS upgrade.
-
-Check version control history. \mnote{Start by looking at the version control history of your software. Have there been any changes to the area where things are going wrong? If one sticks out to you, you can always backtrack to just before that commit and see if the problem still occurs. If you are really stuck, go back one step at a time until you get to a version you know worked. If you find the one commit that is responsible for the bug, then you can examine the diffs of that commit to find the bug.}
-
-If you revert all changes and the problem still happens -- check the environment.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 8: \emph{Use the Right Tool}
-
-The debugger is not the only tool in your arsenal.
-
-\begin{itemize}
-	\item Memory debuggers
-	\item Log files
-	\item Static analysis tools
-	\item Your own eyes
-\end{itemize}
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 9: \emph{Make One Change at a Time}
-
-Make a change and test to see if it fixed it.
-
-If it didn't, revert the change before you go on.
-
-If you discover something else, note it for later.
-
-\end{changemargin}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 10: \emph{Keep an Audit Trail}
-
-Take notes on what you have tried and the results.
-
-Important when you work with others.
-
-Also important to resume after an interruption.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 11: \emph{Get a Fresh Perspective}
-
-If stuck, try explaining the problem to someone else.
-
-They might have valuable input. \mnote{Their fresh perspective might help you to think of something you have not thought of before. If they are an expert, they may have an alternate theory, or just insight into how you might modify an existing one.}
-
-Weird tip: explaining it to a rubber duck might help. \mnote{Neat tip: sometimes explaining the problem to an inanimate object (like a rubber duck) helps. The act of trying to explain the problem out loud (even to an object incapable of listening) might help you solve the problem.}
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 12: \emph{If you didn't fix it...}
-
-You changed something, the bug went away, but you don't know why...
-
-Maybe you didn't fix the bug. Maybe it's hidden or occurs for different input.
-
-\end{changemargin}
-\end{frame}
-
-\begin{frame}
-\frametitle{The Golden Rules of Debugging}
-\begin{changemargin}{1cm}
-
-Rule 13: \emph{Create a Regression Test}
-
-Bug fixed? Excellent.
-
-Use the fix as the basis for a regression test.
-
-\end{changemargin}
 \end{frame}
 
 
