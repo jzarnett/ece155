@@ -168,6 +168,57 @@ Too many red lines in the project means more tests (or better tests) are needed.
 \end{changemargin}
 \end{frame}
 
+\begin{frame}
+\frametitle{Exam Question Example}
+\begin{changemargin}{1cm}
+
+
+Each line of a method containing logic or a statement is colour-coded:
+\vspace{-1em}
+\begin{itemize}
+\item Red: if the line was not executed;
+\item Yellow: if the line is a conditional where only one branch was taken;
+or
+\item Green: if the line was executed, or in the case of a conditional, both branches were taken.
+\end{itemize}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Compute Value Function}
+\begin{changemargin}{1cm}
+
+
+
+{\scriptsize
+\begin{verbatim}
+public double computeValue(int input1, int input2) {
+  if (input1 < 0) {
+    throw new IllegalArgumentException(``Input 1 may not be negative'');
+  }
+  
+  if (input2 == -1) {
+    return 0;
+  } else if (input2 <= 1) {
+    return 1;
+  }
+ 
+  int result = (input1 * input2); 
+  result += (input1 / input2);
+  
+  return result;
+
+}
+\end{verbatim}
+}
+
+Test case 1: \texttt{computeValue(7, -1)}\\
+Test case 2: \texttt{computeValue(0, 1000)}
+
+\end{changemargin}
+\end{frame}
 
 \part{Testing for Android}
 \frame{\partpage}

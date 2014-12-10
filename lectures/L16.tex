@@ -46,6 +46,63 @@ In addition to colour-coding the lines, EclEmma will provide a report that shows
 
 Using the coverage data, you can decide if your tests are effective in testing the logic of the code. Too many red lines in the project means more tests (or better tests) are needed.
 
+\subsection*{Example: Testing \texttt{computeValue}}
+
+Recall that in Code Coverage Analysis, each line of a method containing logic or a statement (that is, not just a \texttt{\}} brace) is colour-coded:
+\vspace{-1em}
+\begin{itemize}
+\item Red: if the line was not executed;
+\item Yellow: if the line is a conditional where only one branch was taken;
+or
+\item Green: if the line was executed, or in the case of a conditional, both branches were taken.
+\end{itemize}
+\vspace{-1em}
+To the left of each line of code of the function \texttt{computeValue}, indicate whether it is coded as green (G), yellow (Y), or red (R) at the end of all tests (cumulative results) if the JUnit tests invoke the method as \texttt{computeValue(7, -1)} and \texttt{computeValue(0, 1000)}.
+
+\begin{verbatim}
+public double computeValue(int input1, int input2) {
+  if (input1 < 0) {
+    throw new IllegalArgumentException(``Input 1 may not be negative'');
+  }
+  
+  if (input2 == -1) {
+    return 0;
+  } else if (input2 <= 1) {
+    return 1;
+  }
+ 
+  int result = (input1 * input2); 
+  result += (input1 / input2);
+  
+  return result;
+
+}
+\end{verbatim}
+
+\paragraph{Solution:}
+
+\begin{verbatim}
+public double computeValue(int input1, int input2) {
+Y  if (input1 < 0) {
+R    throw new IllegalArgumentException(``Input 1 may not be negative'');
+   }
+  
+G  if (input2 == -1) {
+G    return 0;
+Y  } else if (input2 <= 1) {
+R    return 1;
+  }
+ 
+G  int result = (input1 * input2); 
+G  result += (input1 / input2);
+  
+G  return result;
+}
+\end{verbatim}
+
+
+
+
 \section*{Testing for Android}
 
 
