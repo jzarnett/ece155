@@ -188,6 +188,26 @@ Suppose there is a system with a two-stage watchdog timer. Under normal operatio
 
 Example: the software has a two-stage watchdog timer. The first watchdog timer attempts to restart the application \texttt{example.exe}. The first level has a timer length of 180 seconds; every 60 seconds, \texttt{example.exe} resets the watchdog timer. If the reset doesn't happen, the watchdog activates. Its first step is to start another watchdog timer, with a length of 120 seconds. Then the first watchdog tries to restart \texttt{example.exe}. If the first watchdog does not successfully restart the program within the 120 seconds, the second watchdog timer activates and restarts the computer.
 
+
+\paragraph{Mars Pathfinder}
+We said earlier that NASA can't just go up in orbit and press the reset button and they might have a timer to do it for them. Here's an example from the 1997 Mars Pathfinder mission. The watchdog timer they set up fired frequently, resetting the lander and losing data. Here is a summary of the problem they had, and the solution, excerpted verbatim from~\cite{pathfinder}:
+
+\begin{quote}
+A few days into the mission, not long after Pathfinder started gathering meteorological data, the spacecraft began experiencing total system resets, each resulting in losses of data. The press reported these failures in terms such as ``software glitches'' and ``the computer was trying to do too many things at once''.
+
+...
+
+Pathfinder contained an ``information bus'', which you can think of as a shared memory area used for passing information between different components of the spacecraft. A bus management task ran frequently with high priority to move certain kinds of data in and out of the information bus. Access to the bus was synchronized with mutual exclusion locks (mutexes).
+
+The meteorological data gathering task ran as an infrequent, low priority thread, and used the information bus to publish its data. When publishing its data, it would acquire a mutex, do writes to the bus, and release the mutex. If an interrupt caused the information bus thread to be scheduled while this mutex was held, and if the information bus thread then attempted to acquire this same mutex in order to retrieve published data, this would cause it to block on the mutex, waiting until the meteorological thread released the mutex before it could continue. The spacecraft also contained a communications task that ran with medium priority.
+
+Most of the time this combination worked fine. However, very infrequently it was possible for an interrupt to occur that caused the (medium priority) communications task to be scheduled during the short interval while the (high priority) information bus thread was blocked waiting for the (low priority) meteorological data thread. In this case, the long-running communications task, having higher priority than the meteorological task, would prevent it from running, consequently preventing the blocked information bus task from running. After some time had passed, a watchdog timer would go off, notice that the data bus task had not been executed for some time, conclude that something had gone drastically wrong, and initiate a total system reset.
+
+This scenario is a classic case of priority inversion.
+
+
+\end{quote}
+
 \subsection*{Timer Coalescing}
 
 Using timers has an impact on power consumption in an embedded or mobile system (phones, laptops, et cetera). Suppose we have a phone with an interval timer set up with an interval of 1000ms. Then every second the system will execute the timer's action -- the system wakes up, runs the action, then goes back to sleep. This is okay, but if we have multiple concurrent interval timers then the system might never actually get to sleep, because it is constantly being woken up by interval timers that are just slightly out of sync with one another. See the example below:

@@ -326,6 +326,93 @@ If the first watchdog does not successfully restart the program within the 120 s
 \end{frame}
 
 \begin{frame}
+\frametitle{Mars Pathfinder}
+\begin{changemargin}{1cm}
+
+\begin{center}
+	\includegraphics[width=0.8\textwidth]{images/Pathfinder01.jpg}
+\end{center}
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Mars Pathfinder}
+\begin{changemargin}{1cm}
+
+A few days into the mission, the lander began experiencing resets.
+
+Data was being lost.
+
+The press reported these failures in terms such as ``software glitches'' and ``the computer was trying to do too many things at once''.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Mars Pathfinder}
+\begin{changemargin}{1cm}
+
+Pathfinder contained an ``information bus''.
+
+A bus management task ran frequently with high priority to move certain kinds of data in and out.
+
+Access to the bus was synchronized with mutual exclusion locks.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Mars Pathfinder}
+\begin{changemargin}{1cm}
+
+The meteorological data gathering task ran as an infrequent, low priority task.
+
+When publishing, it would lock the bus, do writes to the bus, and then unlock it.
+
+The spacecraft also contained a communications task that ran with medium priority.
+
+If an interrupt caused the information bus thread to be scheduled while the bus was locked, the problem occurred.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Mars Pathfinder}
+\begin{changemargin}{1cm}
+Most of the time this combination worked fine. 
+
+It was possible for the communications task to be scheduled while the information bus task was waiting for the low priority task.
+
+The communications task, having higher priority, would prevent the lower priority meteorolocigcal task from running.
+
+... and therefore the information bus task could not run.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Mars Pathfinder}
+\begin{changemargin}{1cm}
+
+
+After some time had passed, a watchdog timer would go off.
+
+Tthe data bus task had not been executed for some time. 
+
+The watchdog concluded that something had gone drastically wrong, and initiated a total system reset.
+
+\end{changemargin}
+\end{frame}
+
+\part{Timer Coalescing}
+
+\begin{frame}
+\partpage
+\end{frame}
+
+\begin{frame}
 \frametitle{Timer Coalescing}
 \begin{changemargin}{1cm}
 
