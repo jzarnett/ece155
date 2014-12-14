@@ -14,11 +14,11 @@ Which one should one use?
 We expect that the answer is, ``it depends on your application.'' However, it
 is reasonable to expect that there exist some criteria to which we should
 be able to agree based on which we compare different implementations of \j{Set}.
-We adopt the following two criteria.
-\begin{itemize}
+We adopt the following two criteria:
+\begin{enumerate}
     \item We want additions to the set to be fast.
     \item We want membership-checking to be fast.
-\end{itemize}
+\end{enumerate}
 
 These criteria, in turn, suggest an objective way of saying that
 a set-implementation is better than another. Thus, our goal is
@@ -28,13 +28,13 @@ is better than another based on these criteria.
 
 \section{Statistics} \label{sec:statistics}
 
-We use statistics to try and establish that a set-implementation
+We use statistics to try to establish that (if?) one set-implementation
 is better than another. How do we go about doing this? The answer
 to this question is not straightforward. To illustrate this via
-an example, consider the following process that Alice uses.
+an example, consider Alice's process below:
 
-\begin{itemize}
-\item Randomly choose a bunch of, e.g., 100, integers.
+\begin{enumerate}
+\item Randomly choose a bunch of integers (let's say 100).
 
 \item Use some API for measuring time on the computer.
 Write Java code to measure the time it takes to add each of
@@ -46,7 +46,7 @@ $I_2$ to get the average $a_2$ for it.
 
 \item If $a_1 < a_2$, conclude that the first set-implementation
 is better than the second from the standpoint of additions to the set.
-\end{itemize}
+\end{enumerate}
 
 What is wrong with adopting the above process? Following are some
 questions and concerns.
@@ -55,7 +55,7 @@ questions and concerns.
     \item How do we know that the random set of integers Alice chooses
 	is representative of all possible integers we may want to
 	add to a set?
-    \item Don't we have to consider the order in which we add
+    \item Do we have to consider the order in which we add
 	the integers? For example, starting with a set $S$, it
 	is possible that adding integer $i_1$ then $i_2$ may
 	result in a different total time for the two additions
@@ -64,7 +64,7 @@ questions and concerns.
 	conclusion?
     \item Even if we feel that use of the average is meaningful,
 	how do we know that the averages are \emph{statistically
-	significant}. That is, how do we know that we can make a
+	significant}? That is, how do we know that we can make a
 	conclusion based on the fact that $a_1 < a_2$? Is it possible
 	that in a run of this experiment, we ended up with
 	$a_1 < a_2$ purely by chance?
@@ -83,7 +83,7 @@ as the above, it is very important to recognize the concern. And
 at the minimum articulate an assumption explicitly.
 
 \subsection{Basics} \label{sec:statistics:basics}
-A \emph{function} is defined as follows. Given two sets,
+A (mathematical) \emph{function} is defined as follows. Given two sets,
 a domain and a range, a function associates a member of the
 range with every member of the domain.
 

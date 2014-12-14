@@ -212,6 +212,133 @@ It cannot be some mixup of the two like $(10, 7)$.
 \end{changemargin}
 \end{frame}
 
+
+\begin{frame}
+\frametitle{Locking \& Unlocking in Java}
+\begin{changemargin}{1cm}
+
+\begin{quote}
+\textit{``Knock knock.'' ``Race Condition.'' ``Who's there?''}
+\end{quote}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Java Keyword}
+\begin{changemargin}{1cm}
+
+In Java, there is a keyword that can be used to implement this lock-modify-unlock behaviour: \texttt{synchronized}.
+
+A synchronized block in Java is synchronized ``on'' some object. 
+
+All synchronized blocks synchronized on the same object can only have one thread executing inside the synchronized area at a time.
+
+All other threads attempting to enter the synchronized block must wait their turn.
+
+\end{changemargin}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Applying the Keyword}
+\begin{changemargin}{1cm}
+
+We can apply the keyword to the following blocks:
+\begin{enumerate}
+	\item Instance methods
+	\item Static methods
+	\item Code blocks methods
+\end{enumerate}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Applying Synchronized}
+\begin{changemargin}{1cm}
+
+To make a method synchronized, just add the keyword \texttt{synchronized} to the function signature.
+
+\texttt{public synchronized int foo()}.
+
+A synchronized instance method in Java is synchronized on the instance of the class.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Applying Synchronized}
+\begin{changemargin}{1cm}
+
+What If the method is also static?
+
+\texttt{public static synchronized int bar()}
+
+Synchronized on the class.
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Synchronizing on a Block}
+\begin{changemargin}{1cm}
+
+It's not necessary to make the entire method synchronized.
+
+The synchronized section should be as small as it can be.
+
+If you use the statement \texttt{synchronized(s)} the following block will be synchronized on that object \texttt{s}:
+\begin{verbatim}
+synchronized(s) {
+    s.count++;
+}
+\end{verbatim}
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}
+\frametitle{Synchronizing on a Block}
+\begin{changemargin}{1cm}
+
+At \texttt{synchronized(s)}, the this thread will try to get the lock. 
+
+If someone has the lock, this thread will wait until the owner releases it and it is this thread's turn. 
+
+If nobody else has the lock, or it becomes this thread's turn, it succeeds in getting the lock. 
+
+Only once it has successfully acquired the lock can the code inside the braces execute. 
+
+When execution reaches the closing brace of the synchronized block, the lock is released.
+
+
+\end{changemargin}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Applying this to Location}
+\begin{changemargin}{1cm}
+
+Let's take that technique and apply it to the location example:
+
+{\scriptsize
+\begin{verbatim}
+synchronized(location) {                    synchronized(location) {
+    location.setX(5);                           location.setX(10);
+    location.setY(7);                           location.setY(0);
+}                                          }
+\end{verbatim}
+}
+
+Problem occurred if a switch happened after the first thread set the X value and before it set the Y value. 
+
+What happens in that scenario now that we have locks?
+
+\end{changemargin}
+\end{frame}
+
+
 \begin{frame}
 \frametitle{Debugging Embedded Systems}
 \begin{changemargin}{1cm}

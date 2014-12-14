@@ -63,6 +63,48 @@ How the \texttt{lock} and \texttt{unlock} functions work is beyond the scope of 
 
 Relating all of this back to debugging: if you find some record or object that is in an inconsistent state (or some other kind of Heisenbug or shared data), then probably the error can be resolved with locking and unlocking the object.
 
+
+\subsection*{Locking and Unlocking in Java}
+
+\begin{quote}
+\textit{``Knock knock.'' ``Race Condition.'' ``Who's there?''}
+\end{quote}
+
+
+In Java, there is a keyword that can be used to implement this lock-modify-unlock behaviour: \texttt{synchronized}. Let's examine proper use of this keyword, with information from the tutorial in~\cite{jenkov}. A synchronized block in Java is synchronized ``on'' some object. All synchronized blocks synchronized on the same object can only have one thread executing inside the synchronized area at the same time. All other threads attempting to enter the synchronized block must wait their turn.
+
+We can apply the keyword to the following blocks:
+\begin{enumerate}
+	\item Instance methods
+	\item Static methods
+	\item Code blocks methods
+\end{enumerate}
+
+To make a method synchronized, just add the keyword \texttt{synchronized} to the function signature, such as: \texttt{public synchronized int foo()}. A synchronized instance method in Java is synchronized on the instance of the class. Thus if there are two instances, one thread can be in the synchronized block of each instance (so two threads). If the method is also static (e.g., \texttt{public static synchronized int bar()}) then they are synchronized on the class. If there are two instances of the class, only one thread can be inside method \texttt{bar} at a time. 
+
+It's not necessary to make the entire method synchronized if we don't have to; in fact, the synchronized section should be as small as it can be. Suppose you have an object \texttt{s} that is shared between multiple threads. If you use the statement \texttt{synchronized(s)} the following block will be synchronized on that object \texttt{s}:
+\begin{verbatim}
+synchronized(s) {
+    s.count++;
+}
+\end{verbatim}
+
+At the line \texttt{synchronized(s)}, the this thread will try to get the lock. If someone has the lock, this thread will wait until the owner releases it and it is this thread's turn. If nobody else has the lock, or it becomes this thread's turn, it succeeds in getting the lock. Only once it has successfully acquired the lock can the code inside the braces execute. When execution reaches the closing brace of the synchronized block, the lock is released.
+
+So let's take that technique and apply it to the location example from before:
+
+\begin{verbatim}
+synchronized(location) {                    synchronized(location) {
+    location.setX(5);                           location.setX(10);
+    location.setY(7);                           location.setY(0);
+}                                          }
+\end{verbatim}
+
+The scenario that was a problem earlier occurred if a thread switch happened after the first thread set the X value and before it set the Y value. What happens in that scenario now that we have locks?
+
+Thread one gets to the lock first. Nobody has the lock, so thread one gets it. Then, because it has the exclusive access to that lock, it can execute the code in the block, and it sets X to 5. At that time, we have a context switch and thread two runs. Because thread one has entered the synchronized block, thread two has to wait at the synchronized line for its turn. Then when thread one runs again, it sets Y to 7 and exits from the synchronized block (releasing the lock). Then, when thread two runs again, it can get the lock and it can update the location.
+
+
 \section*{Debugging Embedded Systems: Challenges}
 Embedded systems present a number of special challenges when it comes to debugging. Many of the challenges will result from the limitations of the system. For example, there may be no console output to print debugging messages, perhaps the debugger cannot be attached, or there might be no screen! There might also be difficulties with getting data into the system: how do you set up the environment you need?
 
