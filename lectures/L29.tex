@@ -3,35 +3,35 @@
 
 \begin{document}
 
-\lecture{ 29 --- Software Statistics}{\term}{Eric David Hollbach \& Mahesh Tripunitara}
+\lecture{ 29 --- Software Statistics}{\term}{Eric David Hollbach \& Mahesh Tripunitara, edited by Jeff Zarnett}
 
-\section{The Setting}\label{sec:setting}
-The Java SDK \cite{xxx} specifies an interface called \j{Set}. Its semantics
-is the mathematical notion of a set --- an unordered collection of unique items.
-Several implementations of \j{Set} are provided by the SDK.
-Which one should one use?
+\section*{The Setting}\label{sec:setting}
+The Java SDK \cite{java:set} specifies an interface called \j{Set}. Its semantics
+is the mathematical notion of a set --- an unordered collection of unique items. You can have a set of integers like \{ 8, 16, 44, 18, 99, -1 \}, but duplicates are not permitted in a set.
+Several implementations of \j{Set} are provided by the SDK. Are they all the same? If not, which one should we use?
 
-We expect that the answer is, ``it depends on your application.'' However, it
-is reasonable to expect that there exist some criteria to which we should
+They are not identical, so we expect that the answer is: ``it depends on your application.'' However, it is reasonable to expect that there exist some criteria to which we should
 be able to agree based on which we compare different implementations of \j{Set}.
-We adopt the following two criteria:
+We want these two operations to be fast:
 \begin{enumerate}
-    \item We want additions to the set to be fast.
-    \item We want membership-checking to be fast.
+    \item Addition (putting something in the set); and
+    \item Membership-checking (finding out if an element is a member of the set) to be fast.
 \end{enumerate}
 
-These criteria, in turn, suggest an objective way of saying that
-a set-implementation is better than another. Thus, our goal is
-more modest than the absolute, non-comparative, criteria we
-enunciate above. We seek only to establish that a set-implementation
-is better than another based on these criteria.
+These criteria, in turn, provide an objective way of evaluating if
+one implementation is better than another. Thus, our goal is
+more modest than the absolute, non-comparative, criterion of ``fast''. 
+We are just figuring out if one set-implementation
+is ``better than'' (faster than) another in these two operations.
 
-\section{Statistics} \label{sec:statistics}
+The question now is: how can we evaluate two given implementations in a rigorous and consistent way?
+
+\section*{Statistics} \label{sec:statistics}
 
 We use statistics to try to establish that (if?) one set-implementation
-is better than another. How do we go about doing this? The answer
+is better than another. The application of statistics 
 to this question is not straightforward. To illustrate this via
-an example, consider Alice's process below:
+an example, consider a scenario where Alice follows the process below:
 
 \begin{enumerate}
 \item Randomly choose a bunch of integers (let's say 100).
@@ -39,7 +39,7 @@ an example, consider Alice's process below:
 \item Use some API for measuring time on the computer.
 Write Java code to measure the time it takes to add each of
 those integers to an instance of a set-implementation $I_1$,
-starting at $I_1 = \emptyset$. Compute the average time, $a_1$.
+starting at $I_1 = \emptyset$ (the empty set). Compute the average time, $a_1$.
 
 \item Repeat for an instance of another set-implementation
 $I_2$ to get the average $a_2$ for it.
@@ -48,8 +48,7 @@ $I_2$ to get the average $a_2$ for it.
 is better than the second from the standpoint of additions to the set.
 \end{enumerate}
 
-What is wrong with adopting the above process? Following are some
-questions and concerns.
+What is wrong with adopting the above process?
 
 \begin{enumerate}
     \item How do we know that the random set of integers Alice chooses
@@ -82,12 +81,12 @@ Even if we are unable to conclusively address a concern such
 as the above, it is very important to recognize the concern. And
 at the minimum articulate an assumption explicitly.
 
-\subsection{Basics} \label{sec:statistics:basics}
+\subsection*{Basics} \label{sec:statistics:basics}
 A (mathematical) \emph{function} is defined as follows. Given two sets,
 a domain and a range, a function associates a member of the
 range with every member of the domain.
 
-One can associate the time it takes to add or membership-check
+We can associate the time it takes to add or membership-check
 an element against a set as a \emph{random variable}.
 A random variable is a function
 $f\!\! : E \longrightarrow \mathbb{R}$, where $E$ is a set
@@ -110,7 +109,7 @@ A probability distribution is itself a function. It maps
 each event in $E$ to a probability that it occurs.
 For example, it is possible that the
 probability that we add the integer $15$ to a set,
-is different from the probability that we add the $32$.
+is different from the probability that we add $32$.
 Thus, the probability we associate with the event
 $\tuple{15}$ is different from the probability
 we associate with the event $\tuple{32}$.
@@ -121,7 +120,7 @@ two different set-implementations, then we can draw a conclusion.
 This has two challenges: (1) what is a ``typical'' $e \in E$, and,
 (2) how do we compute $a$ and $m$ even if we know this $e$?
 
-\subsection{Characterizing $a$ and $m$}\label{sec:statictics:charac}
+\subsection*{Characterizing $a$ and $m$}\label{sec:statictics:charac}
 The domain of a random variable ($E$, above) is called a
 \emph{population}. To characterize a random variable, an approach
 is to determine to what value in the range it maps every member of
@@ -182,10 +181,10 @@ That is, we do not know what kinds of
 integers are added/membership-checked
 in them. We resolve this issue by assumption.
 
-One would of course like to minimize the number and nature of
+We would of course like to minimize the number and nature of
 assumptions in any study. However, practicality may require that
 we make some. And it is okay to make assumptions, provided
-we clearly state them.
+we clearly state them, and remember them when the time comes to draw conclusions.
 %This is a very important part
 %of being an objective techie --- being clear and open about any
 %assumptions that are made in an analysis.
@@ -216,7 +215,8 @@ In our hypothesis testing below, we assume that the population
 is distributed normally. In such a case, the mean and median
 are the same. Note that it is possible to test for normality,
 rather than simply assume it. We omit a discussion of that, and
-urge you to take a stats course.
+urge you to take a stats course. Statistics is a big and complex
+subject and easily takes up a whole course all on its own.
 
 \paragraph{Computing the centre for $a, m$} Given our above
 assumptions, to compute the centre (average, in our case), we
@@ -251,12 +251,12 @@ There are some additional issues we need to consider, however.
 	those.
 \end{itemize}
 
-\subsection{Hypothesis Testing}\label{sec:statistics:hypo}
+\subsection*{Hypothesis Testing}\label{sec:statistics:hypo}
 Now that we have decided on a centre and how to compute it,
 we can compare the three implementations of set across
 each of the two axes, add-time and query-time.
 We do this by comparing two implementations at a time.
-Given two implementations, say, TreeSet and HashSet,
+Given two implementations, say, \texttt{TreeSet} and \texttt{HashSet},
 we ask whether the difference in the centres for them
 is statistically significant. An effective way to establish
 this is via a hypothesis test.
@@ -268,24 +268,26 @@ we typically enunciate a \emph{null hypothesis}.
 It is called that because it is usually a hypothesis of
 `no effect,' or `no difference.' In our case, an appropriate
 null hypothesis is that there is no difference in performance
-between two different implementations of set, say,
-HashSet and TreeSet.
+between two different implementations of set.
 
 The complement of the null hypothesis is called an
 \emph{alternate hypothesis}.
 If we articulate a null hypothesis as above, then the alternate
 hypothesis is that there is a difference in performance
-between HashSet and TreeSet.
+between \texttt{HashSet} and \texttt{TreeSet}.
 
 It is important to point out that our null hypothesis was posed
 before we designed the statistical experiments. Posing hypotheses
 after looking at data is dangerous, as it 
-can compromise objectivity and lead to incorrect inferences.
+can compromise objectivity and lead to incorrect inferences. As
+Sherlock Holmes said, it's unwise to form the theory before getting the facts;
+we have a tendency to twist the facts to fit the theory when we should
+be using the facts to generate the theory.
 
 Once we choose a null hypothesis,
 we choose a probability $p$ which is the threshold at which
 we \emph{reject} the null hypothesis and adopt the alternate
-hypothesis. The meaning of a value for $p$ is the following.
+hypothesis. The meaning of a value for $p$ is:
 \begin{quote}
     If the null hypothesis is true, then
     there is a probability $p$ of observing a difference
@@ -301,9 +303,13 @@ the fact that we did observe it, and can presumably reproduce
 the observations if we repeat the experiment, suggests that
 probabilistically, the null hypothesis is false.
 
+\begin{center}
+\includegraphics[width=0.5\textwidth]{images/significant.png}~\cite{xkcd:significance}
+\end{center}
+
 \paragraph{Choice of test} There are a number of tests from
 which one could choose. The main thing to note here is the
-pre-requisites each tests requires for it to be sound.
+prerequisites each tests requires for it to be sound.
 For example, a number of tests require that the underlying
 population is distributed normally.
 
@@ -318,37 +324,38 @@ The requirements for the Student's t-test in our context
 are: (1) the data is continuous, (2) the data follows a normal
 probability distribution, (3) the samples are independent, and
 (4) they are simple random samples from the respective populations.
-We know that (1) is true if we assume that any value for time my
+We know that (1) is true if we assume that any value for time may
 occur, and we ensure (3) and (4) from the
 manner in which we choose the samples. We satisfy (2) by
 assumption.
 
 \paragraph{Results} Following are the average and standard
-deviation, in seconds, for HashSet, LinkedHashSet and TreeSet for
+deviation, in seconds, for \texttt{HashSet}, \texttt{LinkedHashSet }
+and \texttt{TreeSet} for
 adding 250,000 integers starting from the empty set.
 \begin{center}
-    \begin{tabular}{|l|c|c|}
-	\cline{2-3}
-	\multicolumn{1}{c|}{} & Average & Std.~Dev.\\ \hline
-	HashSet & $0.183095$ & $0.00124$ \\ \hline
-	LinkedHashSet & $0.20011$ & $0.000609$ \\ \hline
-	TreeSet & $0.3975$ & $0.00222$ \\ \hline
+    \begin{tabular}{l|c|c}
+	\textbf{Implementation} & \textbf{Average} & \textbf{Std.~Dev.}\\ \hline
+	\texttt{HashSet} & $0.183095$ & $0.00124$ \\ \hline
+	\texttt{LinkedHashSet} & $0.20011$ & $0.000609$ \\ \hline
+	\texttt{TreeSet} & $0.3975$ & $0.00222$ \\
     \end{tabular}
 \end{center}
 
 Following are the average and standard
-deviation, in seconds, for HashSet, LinkedHashSet and TreeSet for
+deviation, in seconds, for \texttt{HashSet}, 
+\texttt{LinkedHashSet} and \texttt{TreeSet} for
 querying each of the 250,000 integers that have been added.
 Thus, our queries are elements we know to be in the set only.
 We articulate our null hypothesis accordingly to account for
 not testing for elements that are not in the set.
 \begin{center}
-    \begin{tabular}{|l|c|c|}
-	\cline{2-3}
-	\multicolumn{1}{c|}{} & Average & Std.~Dev.\\ \hline
-	HashSet & $0.029934$ & $0.000685$ \\ \hline
-	LinkedHashSet & $0.083366$ & $0.001148$ \\ \hline
-	TreeSet & $0.097701$ & $0.002612$ \\ \hline
+    \begin{tabular}{l|c|c}
+	
+	\textbf{Implementation} & \textbf{Average} & \textbf{Std.~Dev.}\\ \hline
+	\texttt{HashSet} & $0.029934$ & $0.000685$ \\ \hline
+	\texttt{LinkedHashSet} & $0.083366$ & $0.001148$ \\ \hline
+	\texttt{TreeSet} & $0.097701$ & $0.002612$ \\
     \end{tabular}
 \end{center}
 
@@ -390,7 +397,7 @@ So, we reject the null hypothesis if the calculated probability
 is less than $0.01$.
 
 Our first null hypothesis is, ``To add 250,000 integers, there
-is no difference in time between HashSet and LinkedHashSet.''
+is no difference in time between \texttt{HashSet} and \texttt{LinkedHashSet}.''
 The Student's t-test run with our above mean, standard deviation
 and $N$ (number of samples, which in our case is $30$) produces
 the following output:
@@ -404,14 +411,15 @@ more issue, however. Our alternate hypothesis is that there
 is a difference in performance. But not that a particular one
 of those is better than the other. However, we could informally
 look at our data and conclude that our experiments suggest that
-HashSet performs better than LinkedHashSet, given all our
+\texttt{HashSet} performs better than \texttt{LinkedHashSet}, given all our
 assumptions and choices.
 
 We can similarly perform the other two comparisons,
-HashSet vs.~TreeSet, and LinkedHashSet vs.~TreeSet, and get
+\texttt{HashSet} vs. \texttt{TreeSet}, and \texttt{LinkedHashSet}
+ vs. \texttt{TreeSet}, and get
 similar results. Similarly, a Student's t-test for the
 null hypothesis, ``there is no difference in querying 250,000
-members of LinkedHashSet and TreeSet'' using our data from
+members of \texttt{LinkedHashSet} and \texttt{TreeSet}'' using our data from
 the table above for querying produces the same output as above:
 \begin{quote}
     The two-tailed P value is less than $0.0001$.
@@ -457,6 +465,13 @@ probability above for erroneously rejecting at least
 one null hypothesis is the way to compute an exact
 correction, but we omit the details.
 
+\paragraph{Closing}
+This is just an introduction to the use of statistics in evaluating
+software performance. The techniques are sound but this is a complicated
+subject and the brief overview in this lecture is by no means a substitute
+for a full course on statistics. However, it should serve to alert you
+to the issues and perhaps whet your appetite to investigate such matters
+further in the future. 
 
 \input{bibliography.tex}
 
