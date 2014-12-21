@@ -148,8 +148,8 @@ friend here!) If so, take it.
   towards. When the user reaches that end of the wall, your algorithm will calculate
   something different.
 \end{itemize}
-Such an algorithm should give you full marks in this grading scheme, but is not a complete
-solution; it gets stuck in corners. You'll get a bonus mark if you implement a solution that never gets stuck.
+Such an algorithm should give you almost full marks in this grading scheme, but is not a complete
+solution; it gets stuck in corners. You'll get all the marks if you implement a solution that never gets stuck.
 
 \paragraph{Wall-following algorithm.} You can implement a wall-following algorithm.
 As long as every wall in the maze touches the edges of the maze, you
@@ -198,13 +198,6 @@ Your app must:
 To reduce congestion during testing, we may use a different room for your demo. Your application should support all the rooms for which we provide maps.
 
 We will measure your app on up to three routes, each with between 20 and 30 steps, and give points based on what your algorithm can do. First, we will test your application on a direct route, free of obstacles, from the origin to the destination. You can earn 2 points for this trial by 1) updating the position on the map and 2) pointing the user in the right direction. Next, we will test the behaviour of your application in going around an obstacle. You can earn 1 point on this trial simply by preventing the user position from being inside a wall---the TA will simulate a step through a wall and observe the app's behavious. You can earn 1 additional point by navigating the user along an indirect route which reaches the destination. Finally, on the third trial, the TA will walk in the wrong direction on an indirect route for a while. If your application correctly handles this situation and directs the user to the right destination, you will earn the 1 final mark on the lab, for full marks. In all cases, your application should tell the user when to stop upon reaching the destination.
-
-We will also give a bonus mark for implementing a more robust
-navigational algorithm than the one that I've described. If you tell
-us that you'd like this mark, we will carry out a fourth trial where
-we test your application with a more complicated map and a route which
-will foil the simple algorithm.  If it works, you'll get an extra
-mark.
 
 %We understand that it is hard to be exact when dealing with sensors, especially given that you only have two weeks to write this application. 
 
@@ -265,10 +258,11 @@ detection during development and only enable it for final testing.
 \item does not walk through walls;
 \item finds and presents indirect route to destination (going around one obstacle); and
 \item compensates for user errors while walking on an indirect route.
+\item One additional mark for not getting stuck in corners.
 \end{itemize}
-There's also a bonus mark. We've simplified the default map. If you
+We've simplified the default map. If you
 use the complex map ({\tt Lab-room.svg} in the repository)
 and correctly solve all of navigational challenges without getting
-stuck in corners, you will get a bonus mark.
+stuck in corners, you will get the final mark.
 
 \end{document}
