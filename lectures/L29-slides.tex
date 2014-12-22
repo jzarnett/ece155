@@ -22,13 +22,13 @@
 
 The Java SDK specifies an interface called \j{Set}. 
 
-Its semantics is the mathematical notion of a set --- an unordered collection of unique items.
+Its semantics is the mathematical notion of a set:\\
+\quad an unordered collection of unique items.
 
 Several implementations of \j{Set} are provided by the SDK. 
 
-Are they all the same? 
-
-If not, which one should we use?
+Are they all the same? \\
+\quad If not, which one should we use?
 
 \end{changemargin}
 \end{frame}
@@ -37,7 +37,8 @@ If not, which one should we use?
 \frametitle{The Setting}
 \begin{changemargin}{1cm}
 
-They are not identical, so we expect that the answer is: ``it depends on your application.''
+They are not identical, so we expect that the answer is: \\
+\quad ``it depends on your application.''
 
 We need comparison criteria.
 
@@ -84,10 +85,9 @@ Statistics!
 \begin{enumerate}
 \item Randomly choose a bunch of integers (let's say 100).
 
-\item Use some API for measuring time on the computer.
-Write Java code to measure the time it takes to add each of
+\item Measure the time it takes to add each of
 those integers to an instance of a set-implementation $I_1$,
-starting at $I_1 = \emptyset$ (the empty set). Compute the average time, $a_1$.
+starting at $I_1 = \emptyset$.\\ Compute the average time, $a_1$.
 
 \item Repeat for an instance of another set-implementation
 $I_2$ to get the average $a_2$ for it.
@@ -171,7 +171,9 @@ In this example, $E$ is the set of all integers.
 \frametitle{Random Variables}
 \begin{changemargin}{1cm}
 
-we adopt two random variables, $a$ (adding) and $m$(membership-checking). 
+We adopt two random variables:\\
+\quad $a$ (adding), and \\
+\quad $m$ (membership-checking). 
 
 Each maps an integer to a time-value. 
 
@@ -225,10 +227,10 @@ This has two challenges: \\
 The domain of a random variable ($E$, above) is called a
 \emph{population}. 
 
-To characterize a random variable, an approach
-is to determine to what value in the range it maps every member of
-the population, and then compute a \emph{central tendency} or
-\emph{centre} of those values.
+We need to characterize the random variable
+
+Determine to what value in the range it maps every member of
+the population; then compute a \emph{central tendency} (\emph{centre}) of those values.
 
 \end{changemargin}
 \end{frame}
@@ -296,7 +298,7 @@ the samples may not reflect the properties of the population.
 \frametitle{Sampling}
 \begin{changemargin}{1cm}
 
-Given a random variable $X$ whose underlying
+For a random variable $X$ whose underlying
 probability distribution is $P$, a well-accepted property of
 samples is that they are: 
 \begin{enumerate}
@@ -317,12 +319,16 @@ in its own right, has the same distribution $P$ as $X$.
 
 Suppose $X$ is the random variable that is the height
 of a person. 
+
+
 The manner in which we collect samples must
 reflect the distribution of heights amongst individuals.
 
 If the probability that there exists a person of height $h$ in
-the entire population is $\rho$, then the probability that height
-$h$ ends up in our set of samples must be $\rho$.
+the entire population is $\rho$: 
+
+The probability that height
+$h$ is in our set of samples must be~$\rho$.
 
 \end{changemargin}
 \end{frame}
@@ -384,7 +390,7 @@ We have restricted ourselves to integer items only.
 We make the assumption that every integer is
 equally likely to be added to, or queried for, in a set.
 
-This restriction and assumption limits the applicability
+This restriction \& assumption limits the applicability
 of our results. 
 
 \end{changemargin}
@@ -460,16 +466,18 @@ We resolve this by performing
 \frametitle{Practical Issues in Computing the Centre}
 \begin{changemargin}{1cm}
 
-Java VMs demonstrate strange behaviour when running
-	such experiments. Specifically, there is a ``warm up''
+Java VMs demonstrate strange behaviour when running experiments. 
+
+Specifically, there is a ``warm up''
 	period for every VM after it starts to run
 	that we need to exclude.
 
 
 	A way that to deal with this
 	is to measure a statistic called the coefficient
-	of variance (CoV) across some number, call it
-	$k$, of measurements. Then, check whether this
+	of variance (CoV) across some number of measurements. 
+	
+	Then, check whether this
 	CoV is below some threshold.
 
 \end{changemargin}
@@ -479,7 +487,7 @@ Java VMs demonstrate strange behaviour when running
 \frametitle{Hypothesis Testing}
 \begin{changemargin}{1cm}
 
-Now that we have decided on a centre and how to compute it,
+Now
 we can compare the three implementations of set across
 each of the two axes, add-time and query-time.
 
@@ -547,7 +555,9 @@ As Sherlock Holmes says...
 \begin{changemargin}{1cm}
 
 Once we choose a null hypothesis,
-we choose a probability $p$ which is the threshold at which
+we choose a probability $p$.
+
+This is the threshold at which
 we \emph{reject} the null hypothesis and adopt the alternate
 hypothesis. 
 
@@ -574,10 +584,12 @@ This is because if the null hypothesis
 is indeed true, then there is only a small chance of observing
 the difference. 
 
-Therefore,
-the fact that we did observe it, and can presumably reproduce
-the observations if we repeat the experiment, suggests that
-probabilistically, the null hypothesis is false.
+Therefore:\\
+\quad  the fact that we did observe it, and \\
+\quad  can presumably reproduce
+the observations, suggests:
+
+Probabilistically, the null hypothesis is false.
 
 \end{changemargin}
 \end{frame}
@@ -587,7 +599,7 @@ probabilistically, the null hypothesis is false.
 \begin{changemargin}{1cm}
 
 \begin{center}
-\includegraphics[width=0.3\textwidth]{images/significant.png}
+\includegraphics[width=0.25\textwidth]{images/significant.png}
 \end{center}
 
 \end{changemargin}
@@ -615,10 +627,10 @@ population is distributed normally.
 
 The requirements for the Student's t-test are: 
 \begin{enumerate}
-	\item the data is continuous, 
-	\item the data follows a normal probability distribution
-	\item the samples are independent, and
-	\item they are simple random samples from the respective populations.
+	\item The data is continuous, 
+	\item The data follows a normal probability distribution
+	\item The samples are independent, and
+	\item They are simple random samples from the respective populations.
 \end{enumerate}
 \end{changemargin}
 \end{frame}
@@ -680,10 +692,10 @@ Our queries are elements we know to be in the set only.
 We now articulate null hypothesis,
 and a choice for the threshold $p$ value, and conduct our tests.
 
-we have chosen a two-tailed, unpaired
+We have chosen a two-tailed, unpaired
 Student's t-test. 
 
-Again, we urge you to take a stats course
+Again, take a stats course
 to understand the test in more depth.
 
 \end{changemargin}
@@ -695,16 +707,17 @@ to understand the test in more depth.
 
 As $p$ value, we choose, say, $0.01$, i.e., $1\%$. 
 
-This choice
-is arbitrary, and really depends on what your peers will accept.
+This is arbitrary, and really depends on what your peers will accept.
 
 In conducting a hypothesis test in the context of the discovery
 of Higgs Boson, for example, the $p$ value was chosen as
-``five-sigma'' (i.e., $5$ times the standard deviation), which
+``five-sigma''.
+
+Five sigma is $5$ times the standard deviation, which
 corresponds to a $p$ threshold value of $3\times 10^{-7}$.
 
 We choose a much more conservative threshold of $0.01$.
-So, we reject the null hypothesis if the calculated probability
+We reject the null hypothesis if the calculated probability
 is less than $0.01$.
 
 
@@ -716,8 +729,8 @@ is less than $0.01$.
 \begin{changemargin}{1cm}
 
 The Student's t-test run with our above mean, standard deviation
-and $N$ (number of samples, which in our case is $30$) produces
-the following output:
+and $N$ (number of samples, which in our case is $30$) produces:
+
 \begin{quote}
     The two-tailed P value is less than $0.0001$.
 \end{quote}
@@ -740,32 +753,24 @@ is a difference in performance.
 But not that a particular one
 of those is better than the other. 
 
-However, we could informally
-look at our data and conclude that our experiments suggest that
+Informally, our experiments suggest that
 \texttt{HashSet} performs better than \texttt{LinkedHashSet}, given all our
 assumptions and choices.
 
 \end{changemargin}
 \end{frame}
 
-\begin{frame}
-\frametitle{}
-\begin{changemargin}{1cm}
-
-
-\end{changemargin}
-\end{frame}
 
 \begin{frame}
 \frametitle{The Other Comparisons}
 \begin{changemargin}{1cm}
 
-We can similarly perform the other two comparisons,
+We can perform the other two comparisons,
 \texttt{HashSet} vs. \texttt{TreeSet}, and \texttt{LinkedHashSet}
  vs. \texttt{TreeSet}, and get
 similar results.
 
-Similarly, a Student's t-test for the
+A Student's t-test for the
 null hypothesis, ``there is no difference in querying 250,000
 members of \texttt{LinkedHashSet} and \texttt{TreeSet}'' using our data from
 the table above for querying produces the same output as above:
@@ -778,7 +783,7 @@ the table above for querying produces the same output as above:
 
 
 \begin{frame}
-\frametitle{Multiple Compaisons}
+\frametitle{Multiple Comparisons}
 \begin{changemargin}{1cm}
 
 Are we done? Unfortunately, not quite. 
@@ -788,7 +793,7 @@ We have performed a pairwise comparison of three groups.
 This is an example of a situation that makes
 us susceptible to a problem known as \emph{multiple comparisons}.
 
-The problem is that we posed multiple hypotheses using the same
+The problem is we posed multiple hypotheses using the same
 data.
 
 Therefore, the chance that we see statistical significance
@@ -829,7 +834,9 @@ of $s/k$.
 
 In our case, $k=3$, and so we need to test
 each of our pairwise hypotheses at a threshold of
-$0.0033$ so that the family of tests has a threshold
+$0.0033$ 
+
+Then the family of tests has a threshold
 of $0.01$.
 
 
