@@ -482,5 +482,89 @@ Google for code reviews.
 
 \end{frame}
 
+\begin{frame}
+\frametitle{Fog Creek Checklist}
+\begin{changemargin}{1cm}
+
+Here is a Code Review Checklist from Fog Creek. 
+
+This can serve as the basis of your code review checklist.
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fog Creek Checklist: General}
+\begin{changemargin}{1cm}
+
+\begin{itemize}
+\item Does the code work?
+\item Is all the code easily understood?
+\item Does it conform to your agreed coding conventions?
+\item Is there any redundant or duplicate code?
+\item Is the code as modular as possible?
+\item Can any global variables be replaced?
+\item Is there any commented out code?
+\item Do loops have a set length and correct termination conditions?
+\item Can any of the code be replaced with library functions?
+\item Can any logging or debugging code be removed?
+\end{itemize}
+
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fog Creek Checklist: Security}
+\begin{changemargin}{1cm}
+
+\begin{itemize}
+\item Are all data inputs checked and encoded?
+\item Where third-party utilities are used, are returning errors being caught?
+\item Are output values checked and encoded?
+\item Are invalid parameter values handled?
+\end{itemize}
+
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fog Creek Checklist: Documentation}
+\begin{changemargin}{1cm}
+
+\begin{itemize}
+\item Do comments exist and describe the intent of the code?
+\item Are all functions commented?
+\item Is any unusual behavior or edge-case handling described?
+\item Is the use and function of third-party libraries documented?
+\item Are data structures and units of measurement explained?
+\item Is there any incomplete code? If so, should it be removed or flagged with a suitable marker like \texttt{TODO}?
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fog Creek Checklist: Testing}
+\begin{changemargin}{1cm}
+
+\begin{itemize}
+\item Is the code testable?
+\item Do tests exist and are they comprehensive?
+\item Do unit tests actually test that the code is performing the intended functionality?
+\item Are arrays checked for ``out-of-bound'' errors?
+\item Could any test code be replaced with the use of an existing API?
+\end{itemize}
+
+\end{changemargin}
+
+\end{frame}
+
+
 
 \end{document}
