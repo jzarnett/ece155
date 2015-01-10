@@ -85,7 +85,7 @@ using System;
 
 class FootConverter {
   static double ConvertFeetToMeters(double feet) {
-    return feet * 3.28;
+    return feet / 3.28;
   }
   static void Main(string[] s) {
     Console.WriteLine("{0} ft is {1} m.", s[0], 
@@ -98,7 +98,7 @@ class FootConverter {
 \begin{minipage}{.45\textwidth} \begin{verbatim}
 class FootConverter {
   static double convertFeetToMeters(double feet) {
-    return feet * 3.28;
+    return feet / 3.28;
   }
   public static void main(String[] s) {
     System.out.printf("%s ft is %.2f m.\n", s[0],
