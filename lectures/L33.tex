@@ -59,7 +59,7 @@ One potential advantage is that it might be possible to solve problems this way 
 
 
 \subsection*{Publish-Subscribe Architecture}
-In the publish-subscribe architecture, communication takes place by passing messages. The sender of a message is called a \textit{Publisher}. The publisher does not know whom the reciever(s) of the message is (are). On the other side, receivers, called \textit{Subscribers}, register their interest in certain kids of messages without knowledge of any publishers.
+In the publish-subscribe architecture, communication takes place by passing messages. The sender of a message is called a \textit{Publisher}. The publisher does not know whom the reciever(s) of the message is (are). On the other side, receivers, called \textit{Subscribers}, register their interest in certain kinds of messages without knowledge of any publishers.
 
 There may be a third party involved, called a \textit{Broker}, whose job it is to connect the publishers and subscribers indirectly. If there is no Broker, any subscriber who is not ``listening'' at the time the message is published will not receive the message. The broker is a place where the publisher can publish the message such that subscribers can collect the message at their convenience.
 
